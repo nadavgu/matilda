@@ -24,6 +24,7 @@ tasks.jar {
             copy {
                 from(outputFile)
                 into(rootProject.layout.projectDirectory.dir(providers.gradleProperty("RESOURCES_DIR_PATH")))
+                rename {"agent.jar"}
             }
         }
     }
