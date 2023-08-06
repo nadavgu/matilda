@@ -1,7 +1,9 @@
 from subprocess import Popen, PIPE
 
 from matilda.exceptions.matilda_java_process_not_started_exception import MatildaJavaProcessNotStartedException
+from matilda.matilda_connection import MatildaConnection
 from matilda.matilda_runner import MatildaRunner
+from matilda.popen_matilda_connection import PopenMatildaConnection
 from matilda.resources.resources import get_resource_path
 
 
@@ -9,10 +11,11 @@ PING_BYTE = 0
 
 
 class JavaProcessMatildaRunner(MatildaRunner):
-    def run(self):
+    def run(self) -> MatildaConnection:
         popen = Popen(args=["java", "-cp", get_resource_path("agent.jar"), "org.matilda.Main"],
-                      stdout=PIPE, stderr=PIPE)
+                      stdin=PIPE, stdout=PIPE, stderr=PIPE)
         self.__verify_agent_loaded(popen)
+        return PopenMatildaConnection(popen)
 
     @staticmethod
     def __verify_agent_loaded(popen: Popen):
@@ -23,4 +26,5 @@ class JavaProcessMatildaRunner(MatildaRunner):
 
 
 if __name__ == '__main__':
-    JavaProcessMatildaRunner().run()
+    with JavaProcessMatildaRunner().run() as connection:
+        print(connection.agent_output.read())
