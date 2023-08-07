@@ -10,6 +10,11 @@ repositories {
     mavenCentral()
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 dependencies {
     implementation("com.google.protobuf:protobuf-java:3.16.3")
     implementation("com.google.dagger:dagger:2.47")
