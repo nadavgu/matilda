@@ -23,8 +23,3 @@ class JavaProcessMatildaRunner(MatildaRunner):
         if len(ping_byte) != 1 or ping_byte[0] != PING_BYTE:
             exit_code = popen.wait()
             raise MatildaJavaProcessNotStartedException(exit_code, popen.stderr.read())
-
-
-if __name__ == '__main__':
-    with JavaProcessMatildaRunner().run() as connection:
-        print(connection.agent_output.read())
