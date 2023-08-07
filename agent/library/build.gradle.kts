@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    java
     id("com.google.protobuf") version "0.9.4"
 }
 
@@ -20,18 +20,6 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-}
-
-tasks.jar {
-    doLast {
-        outputs.files.forEach { outputFile ->
-            copy {
-                from(outputFile)
-                into(rootProject.layout.projectDirectory.dir(providers.gradleProperty("RESOURCES_DIR_PATH")))
-                rename {"agent.jar"}
-            }
-        }
-    }
 }
 
 protobuf {
