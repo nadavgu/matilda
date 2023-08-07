@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "org.matilda"
-version = "0.1.0"
+version = providers.gradleProperty("VERSION").get()
 
 repositories {
     mavenCentral()
