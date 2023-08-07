@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("com.google.protobuf") version "0.9.4"
 }
 
 group = "org.matilda"
@@ -10,6 +11,7 @@ repositories {
 }
 
 dependencies {
+    implementation("com.google.protobuf:protobuf-java:3.16.3")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
@@ -25,6 +27,28 @@ tasks.jar {
                 from(outputFile)
                 into(rootProject.layout.projectDirectory.dir(providers.gradleProperty("RESOURCES_DIR_PATH")))
                 rename {"agent.jar"}
+            }
+        }
+    }
+}
+
+protobuf {
+    protoc {
+        // The artifact spec for the Protobuf Compiler
+        artifact = "com.google.protobuf:protoc:3.16.3"
+    }
+
+    generateProtoTasks {
+        all().configureEach {
+            builtins {
+                create("python") {
+                    doLast {
+                        copy {
+                            from(getOutputDir(this@create))
+                            into(rootProject.layout.projectDirectory.dir(providers.gradleProperty("GENERATED_PROTO_DIR_PATH")))
+                        }
+                    }
+                }
             }
         }
     }
