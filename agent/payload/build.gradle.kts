@@ -1,5 +1,6 @@
 plugins {
     java
+    application
 }
 
 group = "org.matilda"
@@ -35,4 +36,8 @@ tasks.jar {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+application {
+    mainClass.set("org.matilda.Main")
 }
