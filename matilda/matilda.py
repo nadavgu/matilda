@@ -36,7 +36,13 @@ class Matilda:
         return dependency_container
 
     @staticmethod
-    def __start_message_listener(message_listener: MessageListener, destruction_manager: DestructionManager):
+    def __start_message_listener(message_listener: MessageListener, destruction_manager: DestructionManager, connection: MatildaConnection):
         thread = Thread(target=message_listener.start)
         thread.start()
-        destruction_manager.add_destructor(thread.join)
+        destruction_manager.add_destructor(lambda: Matilda.__stop_message_listener(thread, connection))
+
+    @staticmethod
+    def __stop_message_listener(message_listener_thread: Thread, connection: MatildaConnection):
+        connection.close()
+        message_listener_thread.join()
+
