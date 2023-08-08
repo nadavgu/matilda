@@ -2,14 +2,16 @@ package org.matilda.di;
 
 import dagger.Module;
 import dagger.Provides;
-import org.matilda.di.destructors.DestructionManager;
+import org.matilda.messages.handlers.MessageDispatcher;
 import org.matilda.messages.handlers.MessageHandler;
 
-@Module
+import java.util.concurrent.ExecutorService;
+
+@Module(includes = ExecutorServiceModule.class)
 public class MessageHandlerFactory {
     @Provides
-    MessageHandler create(DestructionManager destructionManager) {
-        destructionManager.addDestructor(() -> System.out.println("Done"));
-        return message -> System.out.printf("%d %s\n", message.type, new String(message.data));
+    MessageHandler create(ExecutorService executorService) {
+        return new MessageDispatcher(executorService,
+                message -> System.out.printf("%d %s %d\n", message.type, new String(message.data), Thread.currentThread().getId()));
     }
 }

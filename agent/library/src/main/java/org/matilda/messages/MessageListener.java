@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import java.io.EOFException;
 import java.io.IOException;
 
-public class MessageDispatcher {
+public class MessageListener {
     @Inject
     MessageReceiver mMessageReceiver;
 
@@ -14,7 +14,7 @@ public class MessageDispatcher {
     MessageHandler mMessageHandler;
 
     @Inject
-    public MessageDispatcher() {}
+    public MessageListener() {}
 
     public void start() throws IOException {
         while (true) {
