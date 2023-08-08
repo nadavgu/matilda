@@ -18,7 +18,7 @@ class Matilda:
     @staticmethod
     def __create_matilda_process(connection: MatildaConnection) -> MatildaProcess:
         dependency_container = DependencyContainer()
-        dependency_container.add_dependency(connection)
+        dependency_container.add(MatildaConnection, connection)
         add_dependency_providers(dependency_container)
         return dependency_container.get(MatildaProcess)
 
