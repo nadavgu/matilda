@@ -3,7 +3,7 @@ from typing import IO
 from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 
-from matilda.matilda_connection import MatildaConnection
+from matilda.di.dependency_tags import DependencyTags
 from matilda.messages.message import Message
 from matilda.messages.message_sender import MessageSender
 from matilda.messages.message_serializer import MessageSerializer
@@ -23,5 +23,5 @@ class BinaryMessageSender(MessageSender, Dependency):
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'BinaryMessageSender':
         return BinaryMessageSender(dependency_container.get(MessageSerializer),
-                                   dependency_container.get(MatildaConnection).agent_input)
+                                   dependency_container.get(IO, tag=DependencyTags.AGENT_INPUT))
 
