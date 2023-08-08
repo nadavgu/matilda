@@ -15,12 +15,18 @@ class BinaryMessageReceiver(MessageReceiver, Dependency):
         self.__input_stream = input_stream
 
     def receive(self) -> Message:
-        length_bytes = self.__input_stream.read(4)
+        length_bytes = self.__read_bytes(4)
         if length_bytes == b'':
             raise EOFError()
         length = int.from_bytes(length_bytes, byteorder='little')
-        packet = self.__input_stream.read(length)
+        packet = self.__read_bytes(length)
         return self.__serializer.deserialize(packet)
+
+    def __read_bytes(self, length):
+        try:
+            return self.__input_stream.read(length)
+        except ValueError:
+            raise EOFError
 
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'BinaryMessageReceiver':
