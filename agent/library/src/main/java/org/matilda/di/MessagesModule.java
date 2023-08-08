@@ -7,7 +7,7 @@ import org.matilda.messages.MessageReceiver;
 import org.matilda.messages.MessageSerializer;
 import org.matilda.messages.ProtobufMessageSerializer;
 
-@Module
+@Module(includes = MessageHandlerFactory.class)
 public interface MessagesModule {
     @Binds
     MessageReceiver bindMessageReceiver(BinaryMessageReceiver messageReceiver);
