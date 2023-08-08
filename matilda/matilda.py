@@ -1,5 +1,6 @@
 from maddie.dependency_container import DependencyContainer
 
+from matilda.di.dependency_providers import add_dependency_providers
 from matilda.java_process_matilda_runner import JavaProcessMatildaRunner
 from matilda.matilda_connection import MatildaConnection
 from matilda.matilda_process import MatildaProcess
@@ -18,5 +19,6 @@ class Matilda:
     def __create_matilda_process(connection: MatildaConnection) -> MatildaProcess:
         dependency_container = DependencyContainer()
         dependency_container.add_dependency(connection)
+        add_dependency_providers(dependency_container)
         return dependency_container.get(MatildaProcess)
 

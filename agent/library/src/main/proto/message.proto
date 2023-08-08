@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option java_package = "org.matilda.messages.protobuf";
+option java_outer_classname = "OuterMessagesClass";
+option java_multiple_files = true;
+
+
+message ProtobufMessage {
+  int32 type = 1;
+  bytes data = 2;
+}
