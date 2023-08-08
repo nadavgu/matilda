@@ -21,6 +21,8 @@ public class MatildaAgent {
             mMatildaComponent.messageDispatcher().start();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            mMatildaComponent.destructionManager().destruct();
         }
     }
 }
