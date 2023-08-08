@@ -15,7 +15,7 @@ class ProtobufMessageSerializer(MessageSerializer, Dependency):
 
     def deserialize(self, binary: bytes) -> Message:
         protobuf_message = ProtobufMessage()
-        protobuf_message.ParseFromString()
+        protobuf_message.ParseFromString(binary)
         return Message(message_type=protobuf_message.type, data=protobuf_message.data)
 
     @staticmethod
