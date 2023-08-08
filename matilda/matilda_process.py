@@ -1,3 +1,4 @@
+from threading import Thread
 from typing import IO
 
 from maddie.dependency import Dependency
@@ -29,5 +30,11 @@ class MatildaProcess(Dependency):
         dependency_container.get(IO, DependencyTags.AGENT_INPUT).close()
         destruction_manager = dependency_container.get(DestructionManager)
         destruction_manager.add_destructor(lambda: print("Destruct"))
-        dependency_container.get(MessageListener).start()
+        MatildaProcess.__start_message_listener(dependency_container.get(MessageListener), destruction_manager)
         return MatildaProcess(destruction_manager)
+
+    @staticmethod
+    def __start_message_listener(message_listener: MessageListener, destruction_manager: DestructionManager):
+        thread = Thread(target=message_listener.start)
+        thread.start()
+        destruction_manager.add_destructor(thread.join)
