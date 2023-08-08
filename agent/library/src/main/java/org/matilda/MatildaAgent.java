@@ -18,8 +18,7 @@ public class MatildaAgent {
 
     public void run() {
         try {
-            Message message = mMatildaComponent.messageReceiver().receive();
-            System.out.printf("%d %s", message.type, new String(message.data));
+            mMatildaComponent.messageDispatcher().start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

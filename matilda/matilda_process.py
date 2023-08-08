@@ -12,5 +12,7 @@ class MatildaProcess(Dependency):
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'MatildaProcess':
         dependency_container.get(MessageSender).send(Message(10, b"hello"))
-        print(dependency_container.get(IO, DependencyTags.AGENT_OUTPUT).read())
+        dependency_container.get(MessageSender).send(Message(11, b"jello"))
+        dependency_container.get(IO, DependencyTags.AGENT_INPUT).close()
+        print(dependency_container.get(IO, DependencyTags.AGENT_OUTPUT).read().decode())
         return MatildaProcess()
