@@ -1,9 +1,9 @@
 package org.matilda.di;
 
 import dagger.Component;
-import org.matilda.MatildaConnection;
+import org.matilda.messages.MessageReceiver;
 
-@Component(modules = MatildaConnectionModule.class)
+@Component(modules = {MatildaConnectionModule.class, MessagesModule.class})
 public interface MatildaComponent {
-    MatildaConnection matildaConnection();
+    MessageReceiver messageReceiver();
 }

@@ -3,6 +3,7 @@ package org.matilda;
 import org.matilda.di.DaggerMatildaComponent;
 import org.matilda.di.MatildaComponent;
 import org.matilda.di.MatildaConnectionModule;
+import org.matilda.messages.Message;
 
 import java.io.IOException;
 
@@ -17,8 +18,8 @@ public class MatildaAgent {
 
     public void run() {
         try {
-            mMatildaComponent.matildaConnection().outputStream.write("hello".getBytes());
-            mMatildaComponent.matildaConnection().outputStream.flush();
+            Message message = mMatildaComponent.messageReceiver().receive();
+            System.out.printf("%d %s", message.type, new String(message.data));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
