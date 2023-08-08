@@ -16,7 +16,7 @@ java {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:3.16.3")
+    implementation("com.google.protobuf:protobuf-java:3.23.0")
     implementation("com.google.dagger:dagger:2.47")
     annotationProcessor("com.google.dagger:dagger-compiler:2.47")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
@@ -30,7 +30,7 @@ tasks.test {
 protobuf {
     protoc {
         // The artifact spec for the Protobuf Compiler
-        artifact = "com.google.protobuf:protoc:3.16.3"
+        artifact = "com.google.protobuf:protoc:3.23.0"
     }
 
     generateProtoTasks {
