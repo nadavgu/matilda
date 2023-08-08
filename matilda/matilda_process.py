@@ -5,7 +5,7 @@ from maddie.dependency_container import DependencyContainer
 
 from matilda.di.dependency_tags import DependencyTags
 from matilda.messages.message import Message
-from matilda.messages.message_receiver import MessageReceiver
+from matilda.messages.message_listener import MessageListener
 from matilda.messages.message_sender import MessageSender
 
 
@@ -14,6 +14,5 @@ class MatildaProcess(Dependency):
     def create(dependency_container: DependencyContainer) -> 'MatildaProcess':
         dependency_container.get(MessageSender).send(Message(11, b"jello"))
         dependency_container.get(IO, DependencyTags.AGENT_INPUT).close()
-        print(dependency_container.get(MessageReceiver).receive())
-        print(dependency_container.get(IO, DependencyTags.AGENT_OUTPUT).read().decode())
+        dependency_container.get(MessageListener).start()
         return MatildaProcess()
