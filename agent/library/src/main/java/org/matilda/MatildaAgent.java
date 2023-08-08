@@ -3,7 +3,6 @@ package org.matilda;
 import org.matilda.di.DaggerMatildaComponent;
 import org.matilda.di.MatildaComponent;
 import org.matilda.di.MatildaConnectionModule;
-import org.matilda.messages.Message;
 
 import java.io.IOException;
 
@@ -14,6 +13,7 @@ public class MatildaAgent {
         mMatildaComponent = DaggerMatildaComponent.builder()
                 .matildaConnectionModule(new MatildaConnectionModule(matildaConnection))
                 .build();
+        mMatildaComponent.destructionManager().addDestructor(matildaConnection::close);
     }
 
     public void run() {
