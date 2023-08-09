@@ -4,7 +4,7 @@ import dagger.Binds;
 import dagger.Module;
 import org.matilda.messages.*;
 
-@Module(includes = MessageHandlerFactory.class)
+@Module(includes = {MessageHandlerModule.class})
 public interface MessagesModule {
     @Binds
     MessageSender bindMessageSender(BinaryMessageSender messageReceiver);

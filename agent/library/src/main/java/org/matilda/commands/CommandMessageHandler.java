@@ -24,6 +24,9 @@ public class CommandMessageHandler implements MessageHandler {
     @Inject
     Logger mLogger;
 
+    @Inject
+    CommandMessageHandler() {}
+
     @Override
     public void handle(Message message) {
         try {
