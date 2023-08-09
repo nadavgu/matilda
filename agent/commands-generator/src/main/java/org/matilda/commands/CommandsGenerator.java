@@ -9,7 +9,7 @@ import javax.lang.model.element.TypeElement;
 import java.util.Set;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@SupportedAnnotationTypes({"org.matilda.commands.ProtobufCommand"})
+@SupportedAnnotationTypes({"org.matilda.commands.MatildaService", "org.matilda.commands.MatildaCommand"})
 public class CommandsGenerator extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
