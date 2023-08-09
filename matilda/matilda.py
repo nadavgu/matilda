@@ -23,7 +23,8 @@ class Matilda:
     def __create_matilda_process(connection: MatildaConnection) -> MatildaProcess:
         dependency_container = Matilda.__create_dependency_container(connection)
         Matilda.__start_message_listener(dependency_container.get(MessageListener),
-                                         dependency_container.get(DestructionManager))
+                                         dependency_container.get(DestructionManager),
+                                         connection)
         dependency_container.get(DestructionManager).add_destructor(connection.close)
 
         return dependency_container.get(MatildaProcess)
