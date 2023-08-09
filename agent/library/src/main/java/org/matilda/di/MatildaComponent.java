@@ -6,7 +6,7 @@ import org.matilda.messages.MessageListener;
 
 import javax.inject.Singleton;
 
-@Component(modules = {MatildaConnectionModule.class, MessagesModule.class})
+@Component(modules = {MatildaConnectionModule.class, MessagesModule.class, LoggerModule.class})
 @Singleton
 public interface MatildaComponent {
     MessageListener messageListener();
