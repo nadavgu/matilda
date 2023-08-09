@@ -1,7 +1,7 @@
 package org.matilda.commands.collectors;
 
 import org.matilda.commands.MatildaService;
-import org.matilda.commands.info.ProjectServicesInfo;
+import org.matilda.commands.info.ProjectServices;
 import org.matilda.commands.info.ServiceInfo;
 
 import javax.annotation.processing.RoundEnvironment;
@@ -16,8 +16,8 @@ public class ServicesCollector {
     @Inject
     public ServicesCollector() {}
 
-    public ProjectServicesInfo collect() {
-        return new ProjectServicesInfo(mRoundEnvironment.getElementsAnnotatedWith(MatildaService.class)
+    public ProjectServices collect() {
+        return new ProjectServices(mRoundEnvironment.getElementsAnnotatedWith(MatildaService.class)
                 .stream()
                 .map(this::collectService)
                 .collect(Collectors.toList()));
