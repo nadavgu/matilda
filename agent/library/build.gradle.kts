@@ -20,6 +20,7 @@ dependencies {
     implementation("com.google.dagger:dagger:2.47")
     annotationProcessor("com.google.dagger:dagger-compiler:2.47")
     annotationProcessor(project(":commands-generator"))
+    implementation(project(":commands-generator-api"))
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
