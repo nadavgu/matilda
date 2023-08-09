@@ -9,3 +9,8 @@ message ProtobufMessage {
   int32 type = 1;
   bytes data = 2;
 }
+
+enum MessageType {
+  COMMAND = 0;
+  COMMAND_RESPONSE = 1;
+}
