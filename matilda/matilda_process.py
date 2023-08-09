@@ -1,14 +1,11 @@
-from threading import Thread
 from typing import IO
 
 from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 
+from matilda.commands.command_sender import CommandSender
 from matilda.di.dependency_tags import DependencyTags
 from matilda.di.destructors.destruction_manager import DestructionManager
-from matilda.messages.message import Message
-from matilda.messages.message_listener import MessageListener
-from matilda.messages.message_sender import MessageSender
 
 
 class MatildaProcess(Dependency):
@@ -26,7 +23,8 @@ class MatildaProcess(Dependency):
 
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'MatildaProcess':
-        dependency_container.get(MessageSender).send(Message(11, b"jello"))
+        from matilda.generated.proto.command_pb2 import CommandType
+        dependency_container.get(CommandSender).send(CommandType.ECHO, 12, b"1234")
         dependency_container.get(IO, DependencyTags.AGENT_INPUT).close()
         destruction_manager = dependency_container.get(DestructionManager)
         destruction_manager.add_destructor(lambda: print("Destruct"))
