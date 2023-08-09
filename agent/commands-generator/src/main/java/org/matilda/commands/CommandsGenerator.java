@@ -1,15 +1,17 @@
 package org.matilda.commands;
 
-import javax.annotation.processing.RoundEnvironment;
+import org.matilda.commands.collectors.ServicesCollector;
+
 import javax.inject.Inject;
 
 public class CommandsGenerator {
     @Inject
-    RoundEnvironment mRoundEnvironment;
+    ServicesCollector mServicesCollector;
 
     @Inject
     CommandsGenerator() {}
 
     public void generate() {
+        mServicesCollector.collect();
     }
 }
