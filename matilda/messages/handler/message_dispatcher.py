@@ -4,6 +4,7 @@ from maddie.dependency import Dependency, T
 from maddie.dependency_container import DependencyContainer
 
 from matilda.messages.handler.message_handler import MessageHandler
+from matilda.messages.handler.message_handler_registry import MessageHandlerRegistry
 from matilda.messages.message import Message
 
 
@@ -17,4 +18,5 @@ class MessageDispatcher(Dependency):
 
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'MessageDispatcher':
-        return MessageDispatcher(dependency_container.get(ThreadPoolExecutor), lambda message: print(message))
+        return MessageDispatcher(dependency_container.get(ThreadPoolExecutor),
+                                 dependency_container.get(MessageHandlerRegistry).handle_message)
