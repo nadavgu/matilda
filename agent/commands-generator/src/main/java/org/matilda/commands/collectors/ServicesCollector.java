@@ -7,11 +7,15 @@ import org.matilda.commands.info.ServiceInfo;
 import javax.annotation.processing.RoundEnvironment;
 import javax.inject.Inject;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import java.util.stream.Collectors;
 
 public class ServicesCollector {
     @Inject
     RoundEnvironment mRoundEnvironment;
+
+    @Inject
+    CommandsCollector mCommandsCollector;
 
     @Inject
     public ServicesCollector() {}
@@ -25,6 +29,6 @@ public class ServicesCollector {
 
     private ServiceInfo collectService(Element element) {
         System.out.println(element);
-        return new ServiceInfo();
+        return new ServiceInfo(mCommandsCollector.collect((TypeElement) element));
     }
 }

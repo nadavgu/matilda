@@ -1,6 +1,6 @@
 package org.matilda.commands.processors;
 
-import org.matilda.commands.info.ServiceInfo;
+import org.matilda.commands.info.ProjectServices;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -9,7 +9,7 @@ public class ProcessorFactory {
     @Inject
     public ProcessorFactory() {}
 
-    public Processor<ServiceInfo> createServiceProcessor() {
+    public Processor<ProjectServices> createProcessor() {
         return new CompoundProcessor<>(List.of());
     }
 }

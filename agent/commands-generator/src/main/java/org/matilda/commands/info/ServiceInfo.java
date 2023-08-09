@@ -1,4 +1,6 @@
 package org.matilda.commands.info;
 
-public record ServiceInfo() {
+import java.util.List;
+
+public record ServiceInfo(List<CommandInfo> commands) {
 }
