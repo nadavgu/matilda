@@ -19,4 +19,6 @@ class PopenMatildaConnection(MatildaConnection):
     def close(self):
         self.agent_input.close()
         self.agent_output.close()
-        self.__popen.wait()
+        return_code = self.__popen.wait()
+        if return_code != 0:
+            print(self.__popen.stderr.read().decode())
