@@ -8,7 +8,7 @@ from matilda.java_process_matilda_runner import JavaProcessMatildaRunner
 from matilda.matilda_connection import MatildaConnection
 from matilda.matilda_process import MatildaProcess
 from matilda.matilda_runner import MatildaRunner
-from matilda.messages.message_listener import MessageListener
+from matilda.messages.message_server import MessageServer
 
 
 class Matilda:
@@ -22,9 +22,9 @@ class Matilda:
     @staticmethod
     def __create_matilda_process(connection: MatildaConnection) -> MatildaProcess:
         dependency_container = Matilda.__create_dependency_container(connection)
-        Matilda.__start_message_listener(dependency_container.get(MessageListener),
-                                         dependency_container.get(DestructionManager),
-                                         connection)
+        Matilda.__start_message_server(dependency_container.get(MessageServer),
+                                       dependency_container.get(DestructionManager),
+                                       connection)
         dependency_container.get(DestructionManager).add_destructor(connection.close)
 
         return dependency_container.get(MatildaProcess)
@@ -37,13 +37,13 @@ class Matilda:
         return dependency_container
 
     @staticmethod
-    def __start_message_listener(message_listener: MessageListener, destruction_manager: DestructionManager, connection: MatildaConnection):
-        thread = Thread(target=message_listener.start)
+    def __start_message_server(message_server: MessageServer, destruction_manager: DestructionManager, connection: MatildaConnection):
+        thread = Thread(target=message_server.start)
         thread.start()
-        destruction_manager.add_destructor(lambda: Matilda.__stop_message_listener(thread, connection))
+        destruction_manager.add_destructor(lambda: Matilda.__stop_message_server(thread, connection))
 
     @staticmethod
-    def __stop_message_listener(message_listener_thread: Thread, connection: MatildaConnection):
+    def __stop_message_server(message_server_thread: Thread, connection: MatildaConnection):
         connection.close()
-        message_listener_thread.join()
+        message_server_thread.join()
 

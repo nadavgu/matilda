@@ -5,7 +5,7 @@ from matilda.messages.handler.message_dispatcher import MessageDispatcher
 from matilda.messages.message_receiver import MessageReceiver
 
 
-class MessageListener(Dependency):
+class MessageServer(Dependency):
     def __init__(self, message_receiver: MessageReceiver, message_dispatcher: MessageDispatcher):
         self.__message_receiver = message_receiver
         self.__message_dispatcher = message_dispatcher
@@ -20,6 +20,6 @@ class MessageListener(Dependency):
                 return
 
     @staticmethod
-    def create(dependency_container: DependencyContainer) -> 'MessageListener':
-        return MessageListener(dependency_container.get(MessageReceiver),
-                               dependency_container.get(MessageDispatcher))
+    def create(dependency_container: DependencyContainer) -> 'MessageServer':
+        return MessageServer(dependency_container.get(MessageReceiver),
+                             dependency_container.get(MessageDispatcher))
