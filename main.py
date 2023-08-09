@@ -1,5 +1,3 @@
-import time
-
 from matilda.matilda import Matilda
 
 if __name__ == '__main__':
