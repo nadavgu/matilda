@@ -3,6 +3,7 @@ package org.matilda.commands;
 import org.matilda.commands.di.AnnotationProcessorModule;
 import org.matilda.commands.di.CommandsGeneratorComponent;
 import org.matilda.commands.di.DaggerCommandsGeneratorComponent;
+import org.matilda.commands.exceptions.AnnotationProcessingException;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -27,6 +28,9 @@ public class CommandsGeneratingAnnotationProcessor extends AbstractProcessor {
                     .annotationProcessorModule(new AnnotationProcessorModule(annotations, roundEnv, mProcessingEnvironment))
                     .build();
             component.commandsGenerator().generate();
+        } catch (AnnotationProcessingException e) {
+            e.printStackTrace();
+            mProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage(), e.element);
         } catch (Throwable e) {
             e.printStackTrace();
             mProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
