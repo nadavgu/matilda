@@ -1,4 +1,4 @@
 package org.matilda.commands.info;
 
-public record CommandInfo() {
+public record CommandInfo(String name, ServiceInfo service) {
 }

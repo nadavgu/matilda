@@ -9,7 +9,12 @@ public class ProcessorFactory {
     @Inject
     public ProcessorFactory() {}
 
+    @Inject
+    RawCommandClassGenerator mRawCommandClassGenerator;
+
     public Processor<ProjectServices> createProcessor() {
-        return new CompoundProcessor<>(List.of());
+        return new CompoundProcessor<>(List.of(
+                new ProjectCommandsProcessor(mRawCommandClassGenerator)
+        ));
     }
 }
