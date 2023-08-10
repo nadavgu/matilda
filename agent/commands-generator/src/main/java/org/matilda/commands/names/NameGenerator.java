@@ -1,5 +1,7 @@
 package org.matilda.commands.names;
 
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
 import org.apache.commons.lang3.StringUtils;
 import org.matilda.commands.info.CommandInfo;
 import org.matilda.commands.info.ServiceInfo;
@@ -30,6 +32,7 @@ public class NameGenerator {
     public static final String MAIN_GENERATED_PACKAGE = "org.matilda.generated";
     public static final String COMMANDS_GENERATED_PACKAGE = joinPackages(MAIN_GENERATED_PACKAGE, "commands");
     public static final String RAW_COMMAND_CLASSES_PACKAGE = joinPackages(COMMANDS_GENERATED_PACKAGE, "raw");
+    public static final String COMMAND_MAP_MODULE_CLASS_NAME = "CommandMapModule";
 
     public static final List<String> ORIGINAL_PACKAGE_PARTS = List.of("org", "matilda", "commands");
 
@@ -83,6 +86,16 @@ public class NameGenerator {
 
             public String getRawCommandPackageName() {
                 return joinPackages(RAW_COMMAND_CLASSES_PACKAGE, getServiceRelativePackageName());
+            }
+
+            public TypeName getRawCommandTypeName() {
+                return ClassName.get(getRawCommandPackageName(), getRawCommandClassName());
+            }
+
+            public String getFullCommandName() {
+                return getServiceRelativePackageNameParts().stream()
+                        .map(StringUtils::capitalize)
+                        .collect(Collectors.joining()) + getRawCommandClassName();
             }
         }
     }

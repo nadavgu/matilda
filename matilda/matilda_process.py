@@ -38,9 +38,8 @@ class MatildaProcess(Dependency):
 
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'MatildaProcess':
-        from matilda.generated.proto.command_pb2 import CommandType
-        print(parse_int(dependency_container.get(CommandRunner).run(CommandType.ECHO, build_int(3))))
-        print(parse_int(dependency_container.get(CommandRunner).run(CommandType.ECHO, build_int(4))))
+        print(parse_int(dependency_container.get(CommandRunner).run(-514589277, build_int(3))))
+        print(parse_int(dependency_container.get(CommandRunner).run(-514589277, build_int(4))))
 
         dependency_container.get(IO, DependencyTags.AGENT_INPUT).close()
         destruction_manager = dependency_container.get(DestructionManager)
