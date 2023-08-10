@@ -33,7 +33,8 @@ public class NameGenerator {
     public static final String COMMANDS_GENERATED_PACKAGE = joinPackages(MAIN_GENERATED_PACKAGE, "commands");
     public static final String RAW_COMMAND_CLASSES_PACKAGE = joinPackages(COMMANDS_GENERATED_PACKAGE, "raw");
     public static final String COMMANDS_MODULE_CLASS_NAME = "CommandsModule";
-
+    public static final TypeName COMMANDS_MODULE_TYPE_NAME = ClassName.get(COMMANDS_GENERATED_PACKAGE,
+            COMMANDS_MODULE_CLASS_NAME);
     public static final List<String> ORIGINAL_PACKAGE_PARTS = List.of("org", "matilda", "commands");
 
     public static class ServiceNameGenerator {
