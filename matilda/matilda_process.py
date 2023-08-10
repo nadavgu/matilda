@@ -8,6 +8,19 @@ from matilda.commands.command_runner import CommandRunner
 from matilda.commands.command_sender import CommandSender
 from matilda.di.dependency_tags import DependencyTags
 from matilda.di.destructors.destruction_manager import DestructionManager
+from google.protobuf.wrappers_pb2 import Int32Value
+
+
+def parse_int(data: bytes) -> int:
+    protobuf_int = Int32Value()
+    protobuf_int.ParseFromString(data)
+    return protobuf_int.value
+
+
+def build_int(value: int) -> bytes:
+    protobuf_int = Int32Value()
+    protobuf_int.value = value
+    return protobuf_int.SerializeToString()
 
 
 class MatildaProcess(Dependency):
@@ -26,8 +39,8 @@ class MatildaProcess(Dependency):
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'MatildaProcess':
         from matilda.generated.proto.command_pb2 import CommandType
-        print(dependency_container.get(CommandRunner).run(CommandType.ECHO, b"1234"))
-        print(dependency_container.get(CommandRunner).run(CommandType.ECHO, b"1235"))
+        print(parse_int(dependency_container.get(CommandRunner).run(CommandType.ECHO, build_int(3))))
+        print(parse_int(dependency_container.get(CommandRunner).run(CommandType.ECHO, build_int(4))))
 
         dependency_container.get(IO, DependencyTags.AGENT_INPUT).close()
         destruction_manager = dependency_container.get(DestructionManager)

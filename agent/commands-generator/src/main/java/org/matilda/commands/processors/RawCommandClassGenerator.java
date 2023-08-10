@@ -37,6 +37,7 @@ public class RawCommandClassGenerator implements Processor<CommandInfo> {
 
     private TypeSpec createClassSpec(CommandInfo command) {
         return TypeSpec.classBuilder(mNameGenerator.forCommand(command).getRawCommandClassName())
+                .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(Command.class)
                 .addField(createServiceField(command))
                 .addMethod(createInjectConstructor())
