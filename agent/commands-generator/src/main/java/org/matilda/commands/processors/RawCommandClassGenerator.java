@@ -2,6 +2,7 @@ package org.matilda.commands.processors;
 
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import org.matilda.commands.Command;
 import org.matilda.commands.info.CommandInfo;
 import org.matilda.commands.names.NameGenerator;
 
@@ -33,6 +34,7 @@ public class RawCommandClassGenerator implements Processor<CommandInfo> {
 
     private TypeSpec createClassSpec(CommandInfo command) {
         return TypeSpec.classBuilder(mNameGenerator.forCommand(command).getRawCommandClassName())
+                .addSuperinterface(Command.class)
                 .build();
     }
 }
