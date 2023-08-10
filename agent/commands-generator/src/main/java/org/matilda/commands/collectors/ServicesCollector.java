@@ -29,7 +29,8 @@ public class ServicesCollector {
     }
 
     private ServiceInfo collectService(TypeElement element) {
-        ServiceInfo serviceInfo = new ServiceInfo(element.getQualifiedName().toString(), new ArrayList<>());
+        ServiceInfo serviceInfo = new ServiceInfo(element.getQualifiedName().toString(), element.asType(),
+                new ArrayList<>());
         serviceInfo.commands().addAll(mCommandsCollector.collect(serviceInfo, element));
         return serviceInfo;
     }
