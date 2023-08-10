@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
 
-public class CommandMapModuleClassGenerator implements Processor<ProjectServices> {
+public class CommandsModuleClassGenerator implements Processor<ProjectServices> {
     @Inject
     Filer mFiler;
 
@@ -26,7 +26,7 @@ public class CommandMapModuleClassGenerator implements Processor<ProjectServices
     CommandIdGenerator mCommandIdGenerator;
 
     @Inject
-    public CommandMapModuleClassGenerator() {}
+    public CommandsModuleClassGenerator() {}
 
     @Override
     public void process(ProjectServices services) {
@@ -41,16 +41,16 @@ public class CommandMapModuleClassGenerator implements Processor<ProjectServices
     }
 
     private TypeSpec createClassSpec(ProjectServices services) {
-        return TypeSpec.classBuilder(NameGenerator.COMMAND_MAP_MODULE_CLASS_NAME)
+        return TypeSpec.classBuilder(NameGenerator.COMMANDS_MODULE_CLASS_NAME)
                 .addAnnotation(Module.class)
                 .addModifiers(Modifier.PUBLIC)
-                .addMethod(createCommandMapProviderMethod(services))
+                .addMethod(createCommandRegistryProviderMethod(services))
                 .build();
     }
 
     private static final String COMMAND_REGISTRY_VARIABLE_NAME = "commandRegistry";
-    private MethodSpec createCommandMapProviderMethod(ProjectServices services) {
-        var builder = MethodSpec.methodBuilder("commandMap")
+    private MethodSpec createCommandRegistryProviderMethod(ProjectServices services) {
+        var builder = MethodSpec.methodBuilder("commandRegistry")
                 .addAnnotation(Provides.class)
                 .returns(CommandRegistry.class);
 

@@ -13,7 +13,7 @@ public class ProcessorFactory {
     RawCommandClassGenerator mRawCommandClassGenerator;
 
     @Inject
-    CommandMapModuleClassGenerator mCommandMapModuleClassGenerator;
+    CommandsModuleClassGenerator mCommandsModuleClassGenerator;
 
     @Inject
     boolean mWasRun;
@@ -21,7 +21,7 @@ public class ProcessorFactory {
     public Processor<ProjectServices> createProcessor() {
         return new CompoundProcessor<>(List.of(
                 new ProjectCommandsProcessor(mRawCommandClassGenerator),
-                new OnlyRunOnceProcessor<>(mWasRun, mCommandMapModuleClassGenerator)
+                new OnlyRunOnceProcessor<>(mWasRun, mCommandsModuleClassGenerator)
         ));
     }
 }
