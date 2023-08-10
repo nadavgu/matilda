@@ -3,6 +3,8 @@ package org.matilda.commands.di;
 import dagger.Module;
 import dagger.Provides;
 
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.TypeElement;
 import java.util.Set;
@@ -12,9 +14,13 @@ public class AnnotationProcessorModule {
     private final Set<? extends TypeElement> mAnnotations;
     private final RoundEnvironment mRoundEnvironment;
 
-    public AnnotationProcessorModule(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    private final ProcessingEnvironment mProcessingEnvironment;
+
+    public AnnotationProcessorModule(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv,
+                                     ProcessingEnvironment processingEnvironment) {
         mAnnotations = annotations;
         mRoundEnvironment = roundEnv;
+        mProcessingEnvironment = processingEnvironment;
     }
 
     @Provides
@@ -25,5 +31,15 @@ public class AnnotationProcessorModule {
     @Provides
     RoundEnvironment roundEnvironment() {
         return mRoundEnvironment;
+    }
+
+    @Provides
+    ProcessingEnvironment processingEnvironment() {
+        return mProcessingEnvironment;
+    }
+
+    @Provides
+    Filer filer() {
+        return mProcessingEnvironment.getFiler();
     }
 }
