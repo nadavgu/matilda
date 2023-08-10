@@ -9,6 +9,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.inject.Inject;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,19 +46,28 @@ public class ServicesCollector {
             return false;
         }
 
-        if (constructors.stream().noneMatch(constructor -> constructor.getAnnotation(Inject.class) != null)) {
+        if (constructors.stream().anyMatch(constructor -> constructor.getAnnotation(Inject.class) != null)) {
+            return true;
+        }
+
+        if (constructors.stream().anyMatch(this::isNonDefaultConstructor)) {
             throw new AnnotationProcessingException("This service has non-default constructors that aren't marked " +
-                    "with @Inject. In order for you to use the sweet sweet DI, either mark a constructor with " +
-                    "@Inject, or delete all the constructors, so that I will be able to @Provide it to you",
+                    "with @Inject. In order for you to use the sweet sweet DI, mark a constructor with " +
+                    "@Inject, or, if you don't want amazing DI, delete all the non-default constructors," +
+                    " so that I will be able to @Provide you",
                     constructors.get(0));
         }
 
-        return true;
+        return false;
     }
 
     private List<Element> getConstructors(TypeElement element) {
         return element.getEnclosedElements().stream()
                 .filter(enclosedElement -> enclosedElement.getKind() == ElementKind.CONSTRUCTOR)
                 .collect(Collectors.toList());
+    }
+
+    private boolean isNonDefaultConstructor(Element constructor) {
+        return ((ExecutableElement) constructor).getParameters().size() > 0;
     }
 }
