@@ -17,12 +17,14 @@ public class AnnotationProcessorModule {
     private final RoundEnvironment mRoundEnvironment;
 
     private final ProcessingEnvironment mProcessingEnvironment;
+    private final boolean mWasRun;
 
     public AnnotationProcessorModule(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv,
-                                     ProcessingEnvironment processingEnvironment) {
+                                     ProcessingEnvironment processingEnvironment, boolean wasRun) {
         mAnnotations = annotations;
         mRoundEnvironment = roundEnv;
         mProcessingEnvironment = processingEnvironment;
+        mWasRun = wasRun;
     }
 
     @Provides
@@ -53,5 +55,10 @@ public class AnnotationProcessorModule {
     @Provides
     Elements elements() {
         return mProcessingEnvironment.getElementUtils();
+    }
+
+    @Provides
+    boolean wasRun() {
+        return mWasRun;
     }
 }

@@ -15,6 +15,7 @@ import java.util.Set;
 @SupportedAnnotationTypes({"org.matilda.commands.MatildaService", "org.matilda.commands.MatildaCommand"})
 public class CommandsGeneratingAnnotationProcessor extends AbstractProcessor {
     private ProcessingEnvironment mProcessingEnvironment;
+    private boolean mWasRun = false;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -25,9 +26,11 @@ public class CommandsGeneratingAnnotationProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         try {
             CommandsGeneratorComponent component = DaggerCommandsGeneratorComponent.builder()
-                    .annotationProcessorModule(new AnnotationProcessorModule(annotations, roundEnv, mProcessingEnvironment))
+                    .annotationProcessorModule(new AnnotationProcessorModule(annotations, roundEnv,
+                            mProcessingEnvironment, mWasRun))
                     .build();
             component.commandsGenerator().generate();
+            mWasRun = true;
         } catch (AnnotationProcessingException e) {
             e.printStackTrace();
             mProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage(), e.element);
