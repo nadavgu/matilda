@@ -17,6 +17,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.12.0")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation("com.google.protobuf:protobuf-java:3.23.0")
 }
 
 tasks.test {

@@ -1,4 +1,6 @@
 package org.matilda.commands.info;
 
-public record CommandInfo(String name, ServiceInfo service) {
+import javax.lang.model.type.TypeMirror;
+
+public record CommandInfo(String name, ServiceInfo service, TypeMirror parameterType, TypeMirror returnType) {
 }

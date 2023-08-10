@@ -7,6 +7,8 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.util.Set;
 
 @Module
@@ -41,5 +43,15 @@ public class AnnotationProcessorModule {
     @Provides
     Filer filer() {
         return mProcessingEnvironment.getFiler();
+    }
+
+    @Provides
+    Types types() {
+        return mProcessingEnvironment.getTypeUtils();
+    }
+
+    @Provides
+    Elements elements() {
+        return mProcessingEnvironment.getElementUtils();
     }
 }
