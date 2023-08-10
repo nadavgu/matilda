@@ -43,7 +43,7 @@ public class CommandsModuleClassGenerator implements Processor<ProjectServices> 
 
     private TypeSpec createClassSpec(ProjectServices services) {
         var builder = TypeSpec.classBuilder(NameGenerator.COMMANDS_MODULE_CLASS_NAME)
-                .addAnnotation(Module.class)
+                .addAnnotation(createModuleAnnotation())
                 .addModifiers(Modifier.PUBLIC);
 
         services.processEachCommand(command -> builder.addField(createCommandField(command)));
@@ -51,6 +51,12 @@ public class CommandsModuleClassGenerator implements Processor<ProjectServices> 
         return builder.addMethod(createInjectConstructor())
                 .addMethod(createRegisterCommandsMethod(services))
                 .addMethod(createCommandRegistryProviderMethod())
+                .build();
+    }
+
+    private AnnotationSpec createModuleAnnotation() {
+        return AnnotationSpec.builder(Module.class)
+                .addMember("includes", "$T.class", NameGenerator.SERVICES_MODULE_TYPE_NAME)
                 .build();
     }
 

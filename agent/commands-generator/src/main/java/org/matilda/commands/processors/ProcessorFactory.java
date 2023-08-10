@@ -16,12 +16,16 @@ public class ProcessorFactory {
     CommandsModuleClassGenerator mCommandsModuleClassGenerator;
 
     @Inject
+    ServicesModuleClassGenerator mServicesModuleClassGenerator;
+
+    @Inject
     boolean mWasRun;
 
     public Processor<ProjectServices> createProcessor() {
         return new CompoundProcessor<>(List.of(
                 new ProjectCommandsProcessor(mRawCommandClassGenerator),
-                new OnlyRunOnceProcessor<>(mWasRun, mCommandsModuleClassGenerator)
+                new OnlyRunOnceProcessor<>(mWasRun, mCommandsModuleClassGenerator),
+                new OnlyRunOnceProcessor<>(mWasRun, mServicesModuleClassGenerator)
         ));
     }
 }

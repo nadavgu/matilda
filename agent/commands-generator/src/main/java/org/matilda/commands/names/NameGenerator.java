@@ -35,6 +35,9 @@ public class NameGenerator {
     public static final String COMMANDS_MODULE_CLASS_NAME = "CommandsModule";
     public static final TypeName COMMANDS_MODULE_TYPE_NAME = ClassName.get(COMMANDS_GENERATED_PACKAGE,
             COMMANDS_MODULE_CLASS_NAME);
+    public static final String SERVICES_MODULE_CLASS_NAME = "ServicesModule";
+    public static final TypeName SERVICES_MODULE_TYPE_NAME = ClassName.get(COMMANDS_GENERATED_PACKAGE,
+            SERVICES_MODULE_CLASS_NAME);
     public static final List<String> ORIGINAL_PACKAGE_PARTS = List.of("org", "matilda", "commands");
 
     public static class ServiceNameGenerator {
@@ -101,7 +104,11 @@ public class NameGenerator {
         }
     }
 
+    public ServiceNameGenerator forService(ServiceInfo serviceInfo) {
+        return new ServiceNameGenerator(serviceInfo);
+    }
+
     public ServiceNameGenerator.CommandNameGenerator forCommand(CommandInfo commandInfo) {
-        return new ServiceNameGenerator(commandInfo.service()).new CommandNameGenerator(commandInfo);
+        return forService(commandInfo.service()).new CommandNameGenerator(commandInfo);
     }
 }
