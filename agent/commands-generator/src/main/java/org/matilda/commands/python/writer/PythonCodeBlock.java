@@ -1,6 +1,7 @@
 package org.matilda.commands.python.writer;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class PythonCodeBlock {
     private enum ElementKind {
@@ -13,6 +14,10 @@ public class PythonCodeBlock {
     private final CodeBlock mCodeBlock;
     private final int mEmptyLinesBetweenStuff;
     private ElementKind mLastElementKind;
+
+    public PythonCodeBlock() {
+        this(new CodeBlock());
+    }
 
     public PythonCodeBlock(CodeBlock codeBlock) {
         this(codeBlock, NORMAL_EMPTY_LINES);
@@ -72,5 +77,9 @@ public class PythonCodeBlock {
         for (int i = 0; i < mEmptyLinesBetweenStuff; i++) {
             mCodeBlock.addEmptyLine();
         }
+    }
+
+    public Stream<String> getLines() {
+        return mCodeBlock.getLines();
     }
 }
