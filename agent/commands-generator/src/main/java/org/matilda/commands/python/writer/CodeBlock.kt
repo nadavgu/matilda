@@ -1,50 +1,38 @@
-package org.matilda.commands.python.writer;
+package org.matilda.commands.python.writer
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
+import java.util.stream.Stream
 
-public class CodeBlock implements Token {
-    private final String mPrefix;
-    private final List<Token> mTokens;
+class CodeBlock private constructor(private val mPrefix: String) : Token {
+    private val mTokens = mutableListOf<Token>()
 
-    public CodeBlock() {
-        this("");
+    constructor() : this("")
+
+    fun addStatement(statement: String) {
+        mTokens.add(Statement(mPrefix + statement))
     }
 
-    private CodeBlock(String prefix) {
-        mPrefix = prefix;
-        mTokens = new ArrayList<>();
+    fun addStatement(format: String, vararg args: Any) {
+        addStatement(format.format(*args))
     }
 
-    public void addStatement(String statement) {
-        mTokens.add(new Statement(mPrefix + statement));
+    fun addEmptyLine() {
+        mTokens.add(Statement(""))
     }
 
-    public void addStatement(String format, Object... args) {
-        addStatement(String.format(format, args));
+    fun newCodeBlock(): CodeBlock {
+        return newCodeBlock(mPrefix)
     }
 
-    public void addEmptyLine() {
-        mTokens.add(new Statement(""));
+    fun newCodeBlockWithIndentation(): CodeBlock {
+        return newCodeBlock(mPrefix + "\t")
     }
 
-    public CodeBlock newCodeBlock() {
-        return newCodeBlock(mPrefix);
+    private fun newCodeBlock(prefix: String): CodeBlock {
+        val codeBlock = CodeBlock(prefix)
+        mTokens.add(codeBlock)
+        return codeBlock
     }
 
-    public CodeBlock newCodeBlockWithIndentation() {
-        return newCodeBlock(mPrefix + "\t");
-    }
-
-    private CodeBlock newCodeBlock(String prefix) {
-        CodeBlock codeBlock = new CodeBlock(prefix);
-        mTokens.add(codeBlock);
-        return codeBlock;
-    }
-
-    @Override
-    public Stream<String> getLines() {
-        return mTokens.stream().flatMap(Token::getLines);
-    }
+    override val lines: Stream<String>
+        get() = mTokens.stream().flatMap(Token::lines)
 }

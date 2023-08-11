@@ -1,21 +1,17 @@
-package org.matilda.commands.python.writer;
+package org.matilda.commands.python.writer
 
-import java.util.List;
+data class PythonClassSpec(val name: String, val superclasses: List<String>) {
+    constructor(name: String, vararg superclasses: String) : this(name, listOf(*superclasses))
 
-public record PythonClassSpec(String name, List<String> superclasses) {
-    public PythonClassSpec(String name, String... superclasses) {
-        this(name, List.of(superclasses));
-    }
-
-    public String getDeclaration() {
-        StringBuilder stringBuilder = new StringBuilder("class ")
-                .append(name);
-        if (!superclasses.isEmpty()) {
-            stringBuilder.append("(")
-                    .append(String.join(", ", superclasses))
-                    .append(")");
+    val declaration: String
+        get() {
+            val stringBuilder = StringBuilder("class ")
+                .append(name)
+            if (superclasses.isNotEmpty()) {
+                stringBuilder.append("(")
+                    .append(superclasses.joinToString(", "))
+                    .append(")")
+            }
+            return stringBuilder.toString()
         }
-
-        return stringBuilder.toString();
-    }
 }

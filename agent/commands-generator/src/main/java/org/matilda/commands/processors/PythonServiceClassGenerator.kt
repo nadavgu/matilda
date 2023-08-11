@@ -6,7 +6,10 @@ import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
-import org.matilda.commands.python.PythonClasses
+import org.matilda.commands.python.COMMAND_RUNNER_CLASS
+import org.matilda.commands.python.DEPENDENCY_CLASS
+import org.matilda.commands.python.DEPENDENCY_CONTAINER_CLASS
+import org.matilda.commands.python.PROTO_WRAPPERS_PACKAGE
 import org.matilda.commands.python.writer.*
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
@@ -30,7 +33,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
 
     private fun addClass(pythonFile: PythonFile, service: ServiceInfo) {
         val pythonClass = pythonFile.newClass(
-            PythonClassSpec(getClassName(service), PythonClasses.DEPENDENCY_CLASS.className)
+            PythonClassSpec(getClassName(service), DEPENDENCY_CLASS.className)
         )
         addConstructor(pythonClass)
         addDICreator(pythonClass, service)
@@ -40,7 +43,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     private fun addConstructor(pythonClass: PythonClass) {
         pythonClass.addInstanceMethod(
             PythonFunctionSpec.constructorBuilder()
-                .addParameter(COMMAND_RUNNER_PARAMETER_NAME, PythonClasses.COMMAND_RUNNER_CLASS.className)
+                .addParameter(COMMAND_RUNNER_PARAMETER_NAME, COMMAND_RUNNER_CLASS.className)
                 .build()
         )
             .addStatement("self.%s = %s", COMMAND_RUNNER_FIELD_NAME, COMMAND_RUNNER_PARAMETER_NAME)
@@ -49,12 +52,12 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     private fun addDICreator(pythonClass: PythonClass, service: ServiceInfo) {
         pythonClass.addStaticMethod(
             PythonFunctionSpec.functionBuilder("create")
-                .addParameter(DEPENDENCY_CONTAINER_PARAMETER_NAME, PythonClasses.DEPENDENCY_CONTAINER_CLASS.className)
+                .addParameter(DEPENDENCY_CONTAINER_PARAMETER_NAME, DEPENDENCY_CONTAINER_CLASS.className)
                 .returnTypeHint("'" + getClassName(service) + "'").build()
         )
             .addStatement(
                 "return %s(%s.get(%s))", getClassName(service),
-                DEPENDENCY_CONTAINER_PARAMETER_NAME, PythonClasses.COMMAND_RUNNER_CLASS.className
+                DEPENDENCY_CONTAINER_PARAMETER_NAME, COMMAND_RUNNER_CLASS.className
             )
     }
 
@@ -91,10 +94,10 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     companion object {
         private const val COMMAND_RUNNER_FIELD_NAME = "__command_runner"
         private fun addImports(pythonFile: PythonFile) {
-            pythonFile.addFromImport(PythonClasses.DEPENDENCY_CLASS)
-                .addFromImport(PythonClasses.DEPENDENCY_CONTAINER_CLASS)
-                .addFromImport(PythonClasses.COMMAND_RUNNER_CLASS)
-                .addFromImport(PythonClasses.PROTO_WRAPPERS_PACKAGE, "*")
+            pythonFile.addFromImport(DEPENDENCY_CLASS)
+                .addFromImport(DEPENDENCY_CONTAINER_CLASS)
+                .addFromImport(COMMAND_RUNNER_CLASS)
+                .addFromImport(PROTO_WRAPPERS_PACKAGE, "*")
         }
 
         private const val COMMAND_RUNNER_PARAMETER_NAME = "command_runner"

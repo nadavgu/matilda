@@ -1,92 +1,80 @@
-package org.matilda.commands.python.writer;
+package org.matilda.commands.python.writer
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+data class PythonFunctionSpec(
+    val name: String,
+    val parameters: List<PythonVariable>,
+    val annotations: List<String>,
+    val returnTypeHint: String?
+) {
+    constructor(name: String, vararg parameters: PythonVariable) : this(
+        name,
+        listOf<PythonVariable>(*parameters),
+        listOf<String>(),
+        null
+    )
 
-public record PythonFunctionSpec(String name, List<PythonVariable> parameters, List<String> annotations,
-                                 String returnTypeHint) {
-    public PythonFunctionSpec(String name, PythonVariable... parameters) {
-        this(name, List.of(parameters), List.of(), null);
-    }
-
-    public String getDeclaration() {
-        StringBuilder builder = new StringBuilder("def ")
+    val declaration: String
+        get() {
+            val builder = StringBuilder("def ")
                 .append(name)
                 .append("(")
-                .append(parameters.stream()
-                        .map(PythonVariable::getDeclaration)
-                        .collect(Collectors.joining(", ")))
-                .append(")");
-        if (returnTypeHint != null) {
-            builder.append(" -> ").append(returnTypeHint);
+                .append(parameters.joinToString(", ") { variable -> variable.declaration })
+                .append(")")
+            if (returnTypeHint != null) {
+                builder.append(" -> ").append(returnTypeHint)
+            }
+            return builder.toString()
         }
 
-        return builder.toString();
+    fun copyBuilder() =
+        Builder(name).addParameters(parameters).addAnnotations(annotations).returnTypeHint(returnTypeHint)
+
+    class Builder(private val mName: String) {
+        private val mParameters = mutableListOf<PythonVariable>()
+        private val mAnnotations = mutableListOf<String>()
+        private var mReturnTypeHint: String? = null
+
+        fun addParameters(parameters: List<PythonVariable>): Builder {
+            mParameters.addAll(parameters)
+            return this
+        }
+
+        fun addParameter(parameter: String): Builder {
+            mParameters.add(PythonVariable(parameter))
+            return this
+        }
+
+        fun addParameter(parameter: String, typeHint: String): Builder {
+            mParameters.add(PythonVariable(parameter, typeHint))
+            return this
+        }
+
+        fun addParameterAtStart(parameter: String): Builder {
+            mParameters.add(0, PythonVariable(parameter))
+            return this
+        }
+
+        fun addAnnotations(annotations: List<String>): Builder {
+            mAnnotations.addAll(annotations)
+            return this
+        }
+
+        fun addAnnotation(annotation: String): Builder {
+            mAnnotations.add(annotation)
+            return this
+        }
+
+        fun returnTypeHint(returnTypeHint: String?): Builder {
+            mReturnTypeHint = returnTypeHint
+            return this
+        }
+
+        fun build() = PythonFunctionSpec(mName, mParameters, mAnnotations, mReturnTypeHint)
     }
 
-    public static Builder functionBuilder(String name) {
-        return new Builder(name);
-    }
+    companion object {
+        fun functionBuilder(name: String) = Builder(name)
 
-    public static Builder constructorBuilder() {
-        return functionBuilder("__init__");
-    }
-
-    public Builder copyBuilder() {
-        return new Builder(name).addParameters(parameters).addAnnotations(annotations).returnTypeHint(returnTypeHint);
-    }
-
-    public static class Builder {
-        private final String mName;
-        private final List<PythonVariable> mParameters;
-        private final List<String> mAnnotations;
-        private String mReturnTypeHint;
-
-        private Builder(String name) {
-            mName = name;
-            mParameters = new ArrayList<>();
-            mAnnotations = new ArrayList<>();
-            mReturnTypeHint = null;
-        }
-
-        public Builder addParameters(List<PythonVariable> parameters) {
-            mParameters.addAll(parameters);
-            return this;
-        }
-
-        public Builder addParameter(String parameter) {
-            mParameters.add(new PythonVariable(parameter));
-            return this;
-        }
-
-        public Builder addParameter(String parameter, String typeHint) {
-            mParameters.add(new PythonVariable(parameter, typeHint));
-            return this;
-        }
-
-        public Builder addParameterAtStart(String parameter) {
-            mParameters.add(0, new PythonVariable(parameter));
-            return this;
-        }
-
-        public Builder addAnnotations(List<String> annotations) {
-            mAnnotations.addAll(annotations);
-            return this;
-        }
-
-        public Builder addAnnotation(String annotation) {
-            mAnnotations.add(annotation);
-            return this;
-        }
-
-        public Builder returnTypeHint(String returnTypeHint) {
-            mReturnTypeHint = returnTypeHint;
-            return this;
-        }
-
-        public PythonFunctionSpec build() {
-            return new PythonFunctionSpec(mName, mParameters, mAnnotations, mReturnTypeHint);
-        }
+        fun constructorBuilder() = functionBuilder("__init__")
     }
 }

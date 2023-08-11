@@ -1,16 +1,8 @@
-package org.matilda.commands.python;
+package org.matilda.commands.python
 
-import org.matilda.commands.utils.Package;
+import org.matilda.commands.utils.Package
 
-public class PythonClasses {
-    public static PythonClassName DEPENDENCY_CLASS =
-            new PythonClassName(new Package("maddie", "dependency"), "Dependency");
-
-    public static PythonClassName DEPENDENCY_CONTAINER_CLASS =
-            new PythonClassName(new Package("maddie", "dependency_container"), "DependencyContainer");
-
-    public static PythonClassName COMMAND_RUNNER_CLASS =
-            new PythonClassName(new Package("matilda", "commands", "command_runner"), "CommandRunner");
-
-    public static Package PROTO_WRAPPERS_PACKAGE = new Package("google", "protobuf", "wrappers_pb2");
-}
+val DEPENDENCY_CLASS = PythonClassName(Package("maddie", "dependency"), "Dependency")
+val DEPENDENCY_CONTAINER_CLASS = PythonClassName(Package("maddie", "dependency_container"), "DependencyContainer")
+val COMMAND_RUNNER_CLASS = PythonClassName(Package("matilda", "commands", "command_runner"), "CommandRunner")
+val PROTO_WRAPPERS_PACKAGE = Package("google", "protobuf", "wrappers_pb2")

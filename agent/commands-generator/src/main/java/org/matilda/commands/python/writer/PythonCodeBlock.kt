@@ -1,85 +1,77 @@
-package org.matilda.commands.python.writer;
+package org.matilda.commands.python.writer
 
-import java.util.List;
-import java.util.stream.Stream;
+import java.util.stream.Stream
 
-public class PythonCodeBlock {
-    private enum ElementKind {
+open class PythonCodeBlock protected constructor(
+    private val mCodeBlock: CodeBlock,
+    private val mEmptyLinesBetweenStuff: Int
+) {
+    private enum class ElementKind {
         NONE,
         STATEMENT,
-        BLOCK,
-    }
-    private static final int NORMAL_EMPTY_LINES = 2;
-
-    private final CodeBlock mCodeBlock;
-    private final int mEmptyLinesBetweenStuff;
-    private ElementKind mLastElementKind;
-
-    public PythonCodeBlock() {
-        this(new CodeBlock());
+        BLOCK
     }
 
-    public PythonCodeBlock(CodeBlock codeBlock) {
-        this(codeBlock, NORMAL_EMPTY_LINES);
-    }
-    protected PythonCodeBlock(CodeBlock codeBlock, int emptyLines) {
-        mCodeBlock = codeBlock;
-        mEmptyLinesBetweenStuff = emptyLines;
-        mLastElementKind = ElementKind.NONE;
+    private var mLastElementKind = ElementKind.NONE
+
+    constructor(codeBlock: CodeBlock = CodeBlock()) : this(codeBlock, NORMAL_EMPTY_LINES)
+
+    fun newFunction(function: PythonFunctionSpec): PythonCodeBlock {
+        addSeparatorBeforeBlock()
+        addAnnotations(function.annotations)
+        mCodeBlock.addStatement("%s:", function.declaration)
+        return PythonCodeBlock(createNewCodeBlockWithIndentation())
     }
 
-    public PythonCodeBlock newFunction(PythonFunctionSpec function) {
-        addSeparatorBeforeBlock();
-        addAnnotations(function.annotations());
-        mCodeBlock.addStatement("%s:", function.getDeclaration());
-        return new PythonCodeBlock(createNewCodeBlockWithIndentation());
+    private fun addAnnotations(annotations: List<String>) {
+        annotations.forEach { annotation -> addStatement("@%s", annotation) }
     }
 
-    private void addAnnotations(List<String> annotations) {
-        annotations.forEach(annotation -> addStatement("@%s", annotation));
+    fun newClass(classSpec: PythonClassSpec): PythonClass {
+        addSeparatorBeforeBlock()
+        mCodeBlock.addStatement("%s:", classSpec.declaration)
+        return PythonClass(createNewCodeBlockWithIndentation())
     }
 
-    public PythonClass newClass(PythonClassSpec classSpec) {
-        addSeparatorBeforeBlock();
-        mCodeBlock.addStatement("%s:", classSpec.getDeclaration());
-        return new PythonClass(createNewCodeBlockWithIndentation());
-    }
-    private CodeBlock createNewCodeBlockWithIndentation() {
-        mLastElementKind = ElementKind.BLOCK;
-        return mCodeBlock.newCodeBlockWithIndentation();
+    private fun createNewCodeBlockWithIndentation(): CodeBlock {
+        mLastElementKind = ElementKind.BLOCK
+        return mCodeBlock.newCodeBlockWithIndentation()
     }
 
-    public PythonCodeBlock addStatement(String statement) {
-        addSeparatorBeforeStatement();
-        mLastElementKind = ElementKind.STATEMENT;
-        mCodeBlock.addStatement(statement);
-        return this;
+    fun addStatement(statement: String): PythonCodeBlock {
+        addSeparatorBeforeStatement()
+        mLastElementKind = ElementKind.STATEMENT
+        mCodeBlock.addStatement(statement)
+        return this
     }
 
-    public PythonCodeBlock addStatement(String format, Object... args) {
-        mCodeBlock.addStatement(format, args);
-        return this;
+    fun addStatement(format: String, vararg args: Any): PythonCodeBlock {
+        mCodeBlock.addStatement(format, *args)
+        return this
     }
 
-    private void addSeparatorBeforeStatement() {
+    private fun addSeparatorBeforeStatement() {
         if (mLastElementKind == ElementKind.BLOCK) {
-            addSeparator();
+            addSeparator()
         }
     }
 
-    private void addSeparatorBeforeBlock() {
+    private fun addSeparatorBeforeBlock() {
         if (mLastElementKind != ElementKind.NONE) {
-            addSeparator();
+            addSeparator()
         }
     }
 
-    public void addSeparator() {
-        for (int i = 0; i < mEmptyLinesBetweenStuff; i++) {
-            mCodeBlock.addEmptyLine();
+    private fun addSeparator() {
+        repeat (mEmptyLinesBetweenStuff) {
+            mCodeBlock.addEmptyLine()
         }
     }
 
-    public Stream<String> getLines() {
-        return mCodeBlock.getLines();
+    open val lines: Stream<String>
+        get() = mCodeBlock.lines
+
+    companion object {
+        private const val NORMAL_EMPTY_LINES = 2
     }
 }

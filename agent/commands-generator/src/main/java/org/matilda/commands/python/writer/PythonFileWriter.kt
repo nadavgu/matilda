@@ -1,33 +1,24 @@
-package org.matilda.commands.python.writer;
+package org.matilda.commands.python.writer
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.File
+import java.io.IOException
 
-public class PythonFileWriter {
-    private final File mBaseFile;
-
-    public PythonFileWriter(File baseFile) {
-        mBaseFile = baseFile;
+class PythonFileWriter(private val mBaseFile: File) {
+    fun write(pythonFile: PythonFile) {
+        val file = getFile(pythonFile)
+        ensureParentDirectoriesExist(file)
+        file.writeText(pythonFile.content)
     }
 
-    public void write(PythonFile pythonFile) throws IOException {
-        File file = getFile(pythonFile);
-        ensureParentDirectoriesExist(file);
-        try (FileWriter fileWriter = new FileWriter(file)) {
-            fileWriter.write(pythonFile.getContent());
-        }
+    private fun getFile(pythonFile: PythonFile): File {
+        return File(mBaseFile, pythonFile.packageName.toPath() + ".py")
     }
 
-    private File getFile(PythonFile pythonFile) {
-        return new File(mBaseFile, pythonFile.getPackage().toPath() + ".py");
-    }
-
-    private void ensureParentDirectoriesExist(File file) throws IOException {
-        File parentFile = file.getParentFile();
+    private fun ensureParentDirectoriesExist(file: File) {
+        val parentFile = file.parentFile
         if (!parentFile.exists()) {
             if (!parentFile.mkdirs()) {
-                throw new IOException("Failed to ensure that directory exists: " + parentFile);
+                throw IOException("Failed to ensure that directory exists: $parentFile")
             }
         }
     }

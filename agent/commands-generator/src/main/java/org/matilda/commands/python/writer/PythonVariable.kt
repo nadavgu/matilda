@@ -1,14 +1,10 @@
-package org.matilda.commands.python.writer;
+package org.matilda.commands.python.writer
 
-public record PythonVariable(String name, String typeHint) {
-    public PythonVariable(String name) {
-        this(name, null);
-    }
+data class PythonVariable(val name: String, val typeHint: String?) {
+    constructor(name: String) : this(name, null)
 
-    public String getDeclaration() {
-        if (typeHint == null) {
-            return name;
-        }
-        return name + ": " + typeHint;
-    }
+    val declaration: String
+        get() = if (typeHint == null) {
+            name
+        } else "$name: $typeHint"
 }

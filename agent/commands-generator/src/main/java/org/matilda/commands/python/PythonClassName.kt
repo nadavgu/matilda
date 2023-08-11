@@ -1,6 +1,5 @@
-package org.matilda.commands.python;
+package org.matilda.commands.python
 
-import org.matilda.commands.utils.Package;
+import org.matilda.commands.utils.Package
 
-public record PythonClassName(Package packageName, String className) {
-}
+data class PythonClassName(val packageName: Package, val className: String)
