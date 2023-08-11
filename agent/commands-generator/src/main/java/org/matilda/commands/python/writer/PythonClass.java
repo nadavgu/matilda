@@ -11,4 +11,9 @@ public class PythonClass extends PythonCodeBlock {
         PythonFunctionSpec methodSpec = functionSpec.copyBuilder().addParameterAtStart("self").build();
         return newFunction(methodSpec);
     }
+
+    public PythonCodeBlock addStaticMethod(PythonFunctionSpec functionSpec) {
+        PythonFunctionSpec methodSpec = functionSpec.copyBuilder().addAnnotation("staticmethod").build();
+        return newFunction(methodSpec);
+    }
 }

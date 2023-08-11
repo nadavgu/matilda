@@ -77,6 +77,19 @@ internal class PythonCodeBlockTest  {
             "\t\tstatement"
         ))
     }
+
+    @Test
+    fun `test that class static method is written well`() {
+        pythonCodeBlock.newClass(PythonClassSpec("clazz"))
+            .addStaticMethod(PythonFunctionSpec.functionBuilder("func").addParameter("param").build())
+            .addStatement("statement")
+        assertEquals(codeBlock.lines.toList(), listOf(
+            "class clazz:",
+            "\t@staticmethod",
+            "\tdef func(param):",
+            "\t\tstatement"
+        ))
+    }
     @Test
     fun `test that constructor is written well`() {
         pythonCodeBlock.newClass(PythonClassSpec("clazz"))
