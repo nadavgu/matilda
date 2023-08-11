@@ -1,23 +1,19 @@
-package org.matilda.commands;
+package org.matilda.commands
 
-import org.matilda.commands.collectors.ServicesCollector;
-import org.matilda.commands.info.ProjectServices;
-import org.matilda.commands.processors.Processor;
+import org.matilda.commands.collectors.ServicesCollector
+import org.matilda.commands.info.ProjectServices
+import org.matilda.commands.processors.Processor
+import javax.inject.Inject
 
-import javax.inject.Inject;
-
-public class CommandsGenerator {
+class CommandsGenerator @Inject constructor() {
     @Inject
-    ServicesCollector mServicesCollector;
-
-    @Inject
-    Processor<ProjectServices> mProjectServicesProcessor;
+    lateinit var mServicesCollector: ServicesCollector
 
     @Inject
-    CommandsGenerator() {}
+    lateinit var mProjectServicesProcessor: Processor<ProjectServices>
 
-    public void generate() {
-        ProjectServices services = mServicesCollector.collect();
-        mProjectServicesProcessor.process(services);
+    fun generate() {
+        val services = mServicesCollector.collect()
+        mProjectServicesProcessor.process(services)
     }
 }
