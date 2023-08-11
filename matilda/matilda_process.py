@@ -9,12 +9,6 @@ from matilda.generated.commands.math_service import MathService
 from google.protobuf.wrappers_pb2 import Int32Value
 
 
-def build_int(value: int) -> Int32Value:
-    protobuf_int = Int32Value()
-    protobuf_int.value = value
-    return protobuf_int
-
-
 class MatildaProcess(Dependency):
     def __init__(self, destruction_manager: DestructionManager):
         self.__destruction_manager = destruction_manager
@@ -30,8 +24,8 @@ class MatildaProcess(Dependency):
 
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'MatildaProcess':
-        print(dependency_container.get(MathService).square(build_int(3)).value)
-        print(dependency_container.get(MathService).square(build_int(4)).value)
+        print(dependency_container.get(MathService).square(Int32Value(value=3)).value)
+        print(dependency_container.get(MathService).square(Int32Value(value=4)).value)
 
         dependency_container.get(IO, DependencyTags.AGENT_INPUT).close()
         destruction_manager = dependency_container.get(DestructionManager)
