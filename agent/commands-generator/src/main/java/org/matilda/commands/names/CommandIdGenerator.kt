@@ -1,26 +1,16 @@
-package org.matilda.commands.names;
+package org.matilda.commands.names
 
-import org.matilda.commands.info.CommandInfo;
+import org.matilda.commands.info.CommandInfo
+import java.nio.ByteBuffer
+import java.security.MessageDigest
+import javax.inject.Inject
 
-import javax.inject.Inject;
-import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-public class CommandIdGenerator {
-    @Inject
-    CommandIdGenerator() {}
-
-    public int generate(CommandInfo commandInfo) {
-        try {
-            var digest = MessageDigest.getInstance("SHA-1");
-            digest.update(commandInfo.service().fullName().getBytes());
-            digest.update(commandInfo.name().getBytes());
-            byte[] hashBytes = digest.digest();
-
-            return ByteBuffer.wrap(hashBytes).getInt();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+class CommandIdGenerator @Inject constructor() {
+    fun generate(commandInfo: CommandInfo): Int {
+        val digest = MessageDigest.getInstance("SHA-1")
+        digest.update(commandInfo.service.fullName.toByteArray())
+        digest.update(commandInfo.name.toByteArray())
+        val hashBytes = digest.digest()
+        return ByteBuffer.wrap(hashBytes).getInt()
     }
 }
