@@ -143,4 +143,20 @@ internal class PythonCodeBlockTest  {
             "\tinFunction2"
         ))
     }
+    @Test
+    fun `test that only one newline is added between stuff in class`() {
+        val classBlock = pythonCodeBlock.newClass(PythonClassSpec("clazz"))
+        classBlock.newFunction(PythonFunctionSpec("func1"))
+            .addStatement("inFunction1")
+        classBlock.newFunction(PythonFunctionSpec("func2"))
+            .addStatement("inFunction2")
+        assertEquals(codeBlock.lines.toList(), listOf(
+            "class clazz:",
+            "\tdef func1():",
+            "\t\tinFunction1",
+            "",
+            "\tdef func2():",
+            "\t\tinFunction2"
+        ))
+    }
 }
