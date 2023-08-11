@@ -4,15 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record PythonFunctionSpec(String name, List<PythonVariable> parameters, List<String> annotations) {
+public record PythonFunctionSpec(String name, List<PythonVariable> parameters, List<String> annotations,
+                                 String returnTypeHint) {
     public PythonFunctionSpec(String name, PythonVariable... parameters) {
-        this(name, List.of(parameters), List.of());
+        this(name, List.of(parameters), List.of(), null);
     }
 
     public String getDeclaration() {
-        return "def " + name + "(" +
-                parameters.stream().map(PythonVariable::getDeclaration).collect(Collectors.joining(", "))
-                + ")";
+        StringBuilder builder = new StringBuilder("def ")
+                .append(name)
+                .append("(")
+                .append(parameters.stream()
+                        .map(PythonVariable::getDeclaration)
+                        .collect(Collectors.joining(", ")))
+                .append(")");
+        if (returnTypeHint != null) {
+            builder.append(" -> ").append(returnTypeHint);
+        }
+
+        return builder.toString();
     }
 
     public static Builder functionBuilder(String name) {
@@ -31,11 +41,13 @@ public record PythonFunctionSpec(String name, List<PythonVariable> parameters, L
         private final String mName;
         private final List<PythonVariable> mParameters;
         private final List<String> mAnnotations;
+        private String mReturnTypeHint;
 
         private Builder(String name) {
             mName = name;
             mParameters = new ArrayList<>();
             mAnnotations = new ArrayList<>();
+            mReturnTypeHint = null;
         }
 
         public Builder addParameters(List<PythonVariable> parameters) {
@@ -68,8 +80,13 @@ public record PythonFunctionSpec(String name, List<PythonVariable> parameters, L
             return this;
         }
 
+        public Builder returnTypeHint(String returnTypeHint) {
+            mReturnTypeHint = returnTypeHint;
+            return this;
+        }
+
         public PythonFunctionSpec build() {
-            return new PythonFunctionSpec(mName, mParameters, mAnnotations);
+            return new PythonFunctionSpec(mName, mParameters, mAnnotations, mReturnTypeHint);
         }
     }
 }

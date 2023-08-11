@@ -37,6 +37,18 @@ internal class PythonCodeBlockTest  {
     }
 
     @Test
+    fun `test that function with return value hint is written well`() {
+        pythonCodeBlock.newFunction(PythonFunctionSpec.functionBuilder("func")
+            .returnTypeHint("returnType")
+            .build())
+            .addStatement("statement")
+        assertEquals(codeBlock.lines.toList(), listOf(
+            "def func() -> returnType:",
+            "\tstatement"
+        ))
+    }
+
+    @Test
     fun `test that class is written well with superclasses`() {
         pythonCodeBlock.newClass(
             PythonClassSpec(
