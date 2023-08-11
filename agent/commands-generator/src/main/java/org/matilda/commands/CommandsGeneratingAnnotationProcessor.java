@@ -11,9 +11,12 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.util.Set;
 
+import static org.matilda.commands.python.PythonProperties.PYTHON_GENERATED_PACKAGE_OPTION;
+import static org.matilda.commands.python.PythonProperties.PYTHON_ROOT_DIR_OPTION;
+
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes({"org.matilda.commands.MatildaService", "org.matilda.commands.MatildaCommand"})
-@SupportedOptions({"pythonRootDir", "pythonGeneratedPackage"})
+@SupportedOptions({PYTHON_ROOT_DIR_OPTION, PYTHON_GENERATED_PACKAGE_OPTION})
 public class CommandsGeneratingAnnotationProcessor extends AbstractProcessor {
     private ProcessingEnvironment mProcessingEnvironment;
     private boolean mWasRun = false;
