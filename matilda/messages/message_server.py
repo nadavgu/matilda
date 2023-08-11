@@ -16,7 +16,6 @@ class MessageServer(Dependency):
                 message = self.__message_receiver.receive()
                 self.__message_dispatcher.dispatch(message)
             except EOFError:
-                print("Done")
                 return
 
     @staticmethod

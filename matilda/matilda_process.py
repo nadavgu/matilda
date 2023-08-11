@@ -27,8 +27,6 @@ class MatildaProcess(Dependency):
         print(dependency_container.get(MathService).square(Int32Value(value=3)).value)
         print(dependency_container.get(MathService).square(Int32Value(value=4)).value)
 
-        dependency_container.get(IO, DependencyTags.AGENT_INPUT).close()
         destruction_manager = dependency_container.get(DestructionManager)
-        destruction_manager.add_destructor(lambda: print("Destruct"))
         return MatildaProcess(destruction_manager)
 
