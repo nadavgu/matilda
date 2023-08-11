@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record PythonFunctionSpec(String name, List<PythonVariable> parameters) {
+public record PythonFunctionSpec(String name, List<PythonVariable> parameters, List<String> annotations) {
     public PythonFunctionSpec(String name, PythonVariable... parameters) {
-        this(name, List.of(parameters));
+        this(name, List.of(parameters), List.of());
     }
 
     public String getDeclaration() {
@@ -24,16 +24,18 @@ public record PythonFunctionSpec(String name, List<PythonVariable> parameters) {
     }
 
     public Builder copyBuilder() {
-        return new Builder(name).addParameters(parameters);
+        return new Builder(name).addParameters(parameters).addAnnotations(annotations);
     }
 
     static class Builder {
         private final String mName;
         private final List<PythonVariable> mParameters;
+        private final List<String> mAnnotations;
 
         private Builder(String name) {
             mName = name;
             mParameters = new ArrayList<>();
+            mAnnotations = new ArrayList<>();
         }
 
         public Builder addParameters(List<PythonVariable> parameters) {
@@ -51,8 +53,18 @@ public record PythonFunctionSpec(String name, List<PythonVariable> parameters) {
             return this;
         }
 
+        public Builder addAnnotations(List<String> annotations) {
+            mAnnotations.addAll(annotations);
+            return this;
+        }
+
+        public Builder addAnnotation(String annotation) {
+            mAnnotations.add(annotation);
+            return this;
+        }
+
         public PythonFunctionSpec build() {
-            return new PythonFunctionSpec(mName, mParameters);
+            return new PythonFunctionSpec(mName, mParameters, mAnnotations);
         }
     }
 }

@@ -1,5 +1,7 @@
 package org.matilda.commands.python.writer;
 
+import java.util.List;
+
 public class PythonCodeBlock {
     private enum ElementKind {
         NONE,
@@ -23,8 +25,13 @@ public class PythonCodeBlock {
 
     public PythonCodeBlock newFunction(PythonFunctionSpec function) {
         addEmptyLinesBeforeBlock();
+        addAnnotations(function.annotations());
         mCodeBlock.addStatement("%s:", function.getDeclaration());
         return new PythonCodeBlock(createNewCodeBlockWithIndentation());
+    }
+
+    private void addAnnotations(List<String> annotations) {
+        annotations.forEach(annotation -> addStatement("@%s", annotation));
     }
 
     public PythonClass newClass(PythonClassSpec classSpec) {

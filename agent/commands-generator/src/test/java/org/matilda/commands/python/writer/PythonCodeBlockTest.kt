@@ -24,6 +24,19 @@ internal class PythonCodeBlockTest  {
     }
 
     @Test
+    fun `test that function with annotations is written well`() {
+        pythonCodeBlock.newFunction(PythonFunctionSpec.functionBuilder("func")
+            .addAnnotation("annotation")
+            .build())
+            .addStatement("statement")
+        assertEquals(codeBlock.lines.toList(), listOf(
+            "@annotation",
+            "def func():",
+            "\tstatement"
+        ))
+    }
+
+    @Test
     fun `test that class is written well with superclasses`() {
         pythonCodeBlock.newClass(
             PythonClassSpec(
