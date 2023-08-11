@@ -32,7 +32,7 @@ public class CommandsModuleClassGenerator implements Processor<ProjectServices> 
     @Override
     public void process(ProjectServices services) {
         try {
-            JavaFile.builder(NameGenerator.COMMANDS_GENERATED_PACKAGE,
+            JavaFile.builder(NameGenerator.COMMANDS_GENERATED_PACKAGE.getPackageName(),
                             createClassSpec(services))
                     .build()
                     .writeTo(mFiler);

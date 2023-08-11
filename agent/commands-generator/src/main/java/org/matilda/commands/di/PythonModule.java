@@ -3,6 +3,7 @@ package org.matilda.commands.di;
 import dagger.Module;
 import dagger.Provides;
 import org.matilda.commands.python.PythonProperties;
+import org.matilda.commands.utils.Package;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import java.io.File;
@@ -18,7 +19,8 @@ public class PythonModule {
         if (!pythonRootDir.exists()) {
             throw new RuntimeException("Specified python directory doesn't exist: " + pythonRootDir);
         }
-        String pythonGeneratedPackage = processingEnvironment.getOptions().get(PYTHON_GENERATED_PACKAGE_OPTION);
+        Package pythonGeneratedPackage =
+                Package.fromString(processingEnvironment.getOptions().get(PYTHON_GENERATED_PACKAGE_OPTION));
 
         return new PythonProperties(pythonRootDir, pythonGeneratedPackage);
     }
