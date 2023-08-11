@@ -1,5 +1,6 @@
 package org.matilda.commands.python.writer;
 
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PythonFile extends PythonCodeBlock {
@@ -31,5 +32,9 @@ public class PythonFile extends PythonCodeBlock {
         }
 
         return Stream.concat(importLines.stream(), mainLines.stream());
+    }
+
+    public String getContent() {
+        return getLines().collect(Collectors.joining("\n")) + "\n";
     }
 }

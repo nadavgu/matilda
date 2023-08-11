@@ -19,13 +19,17 @@ public class ProcessorFactory {
     ServicesModuleClassGenerator mServicesModuleClassGenerator;
 
     @Inject
+    PythonServiceClassGenerator mPythonServiceClassGenerator;
+
+    @Inject
     boolean mWasRun;
 
     public Processor<ProjectServices> createProcessor() {
         return new CompoundProcessor<>(List.of(
                 new ProjectCommandsProcessor(mRawCommandClassGenerator),
                 new OnlyRunOnceProcessor<>(mWasRun, mCommandsModuleClassGenerator),
-                new OnlyRunOnceProcessor<>(mWasRun, mServicesModuleClassGenerator)
+                new OnlyRunOnceProcessor<>(mWasRun, mServicesModuleClassGenerator),
+                new ProjectServicesProcessor(mPythonServiceClassGenerator)
         ));
     }
 }

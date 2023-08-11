@@ -27,7 +27,7 @@ public record PythonFunctionSpec(String name, List<PythonVariable> parameters, L
         return new Builder(name).addParameters(parameters).addAnnotations(annotations);
     }
 
-    static class Builder {
+    public static class Builder {
         private final String mName;
         private final List<PythonVariable> mParameters;
         private final List<String> mAnnotations;
@@ -45,6 +45,11 @@ public record PythonFunctionSpec(String name, List<PythonVariable> parameters, L
 
         public Builder addParameter(String parameter) {
             mParameters.add(new PythonVariable(parameter));
+            return this;
+        }
+
+        public Builder addParameter(String parameter, String typeHint) {
+            mParameters.add(new PythonVariable(parameter, typeHint));
             return this;
         }
 
