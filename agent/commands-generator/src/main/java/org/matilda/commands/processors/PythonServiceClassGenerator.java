@@ -60,8 +60,7 @@ public class PythonServiceClassGenerator implements Processor<ServiceInfo> {
     private void addDICreator(PythonClass pythonClass, ServiceInfo service) {
         pythonClass.addStaticMethod(PythonFunctionSpec.functionBuilder("create")
                         .addParameter(DEPENDENCY_CONTAINER_PARAMETER_NAME, DEPENDENCY_CONTAINER_CLASS)
-                        .returnTypeHint("'" + getClassName(service) + "'")
-                .build())
+                        .returnTypeHint("'" + getClassName(service) + "'").build())
                 .addStatement("return %s(%s.get(%s))", getClassName(service),
                         DEPENDENCY_CONTAINER_PARAMETER_NAME, COMMAND_RUNNER_CLASS);
     }

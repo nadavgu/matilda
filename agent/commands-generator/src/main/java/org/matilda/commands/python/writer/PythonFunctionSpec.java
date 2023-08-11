@@ -34,7 +34,7 @@ public record PythonFunctionSpec(String name, List<PythonVariable> parameters, L
     }
 
     public Builder copyBuilder() {
-        return new Builder(name).addParameters(parameters).addAnnotations(annotations);
+        return new Builder(name).addParameters(parameters).addAnnotations(annotations).returnTypeHint(returnTypeHint);
     }
 
     public static class Builder {
