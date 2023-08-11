@@ -3,6 +3,7 @@ package org.matilda.commands.di;
 import dagger.Module;
 import dagger.Provides;
 import org.matilda.commands.python.PythonProperties;
+import org.matilda.commands.python.writer.PythonFileWriter;
 import org.matilda.commands.utils.Package;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -23,5 +24,10 @@ public class PythonModule {
                 Package.fromString(processingEnvironment.getOptions().get(PYTHON_GENERATED_PACKAGE_OPTION));
 
         return new PythonProperties(pythonRootDir, pythonGeneratedPackage);
+    }
+
+    @Provides
+    PythonFileWriter pythonFileWriter(PythonProperties pythonProperties) {
+        return new PythonFileWriter(pythonProperties.pythonRootDir());
     }
 }

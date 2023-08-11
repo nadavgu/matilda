@@ -2,12 +2,11 @@ package org.matilda.commands.processors;
 
 import org.matilda.commands.info.ServiceInfo;
 import org.matilda.commands.names.NameGenerator;
-import org.matilda.commands.python.writer.PythonClass;
-import org.matilda.commands.python.writer.PythonClassSpec;
-import org.matilda.commands.python.writer.PythonFile;
-import org.matilda.commands.python.writer.PythonFunctionSpec;
+import org.matilda.commands.python.writer.*;
 
 import javax.inject.Inject;
+
+import java.io.IOException;
 
 import static org.matilda.commands.python.PythonClasses.*;
 
@@ -16,16 +15,23 @@ public class PythonServiceClassGenerator implements Processor<ServiceInfo> {
     NameGenerator mNameGenerator;
 
     @Inject
+    PythonFileWriter mPythonFileWriter;
+
+    @Inject
     PythonServiceClassGenerator() {}
 
     private static final String COMMAND_RUNNER_FIELD_NAME = "__command_runner";
 
     @Override
     public void process(ServiceInfo service) {
-        PythonFile pythonFile = new PythonFile(mNameGenerator.getPythonGeneratedCommandsPackage());
-        addImports(pythonFile);
-        addClass(pythonFile, service);
-        System.out.println(pythonFile.getContent());
+        try {
+            PythonFile pythonFile = new PythonFile(mNameGenerator.getPythonGeneratedCommandsPackage());
+            addImports(pythonFile);
+            addClass(pythonFile, service);
+            mPythonFileWriter.write(pythonFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void addImports(PythonFile pythonFile) {
