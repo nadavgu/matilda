@@ -1,7 +1,10 @@
-package org.matilda.commands.info;
+package org.matilda.commands.info
 
-import javax.lang.model.type.TypeMirror;
-import java.util.List;
+import javax.lang.model.type.TypeMirror
 
-public record ServiceInfo(String fullName, TypeMirror type, List<CommandInfo> commands, boolean hasInjectConstructor) {
-}
+data class ServiceInfo(
+    val fullName: String,
+    val type: TypeMirror,
+    val commands: List<CommandInfo>,
+    val hasInjectConstructor: Boolean
+)

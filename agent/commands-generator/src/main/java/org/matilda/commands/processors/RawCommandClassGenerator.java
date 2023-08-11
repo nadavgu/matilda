@@ -46,7 +46,7 @@ public class RawCommandClassGenerator implements Processor<CommandInfo> {
     }
 
     private FieldSpec createServiceField(CommandInfo command) {
-        return FieldSpec.builder(TypeName.get(command.service().type()), SERVICE_FIELD_NAME)
+        return FieldSpec.builder(TypeName.get(command.getService().getType()), SERVICE_FIELD_NAME)
                 .addAnnotation(Inject.class)
                 .build();
     }
@@ -68,10 +68,10 @@ public class RawCommandClassGenerator implements Processor<CommandInfo> {
                 .addParameter(ParameterSpec.builder(BYTE_ARRAY_TYPE_NAME, RAW_PARAMETER_NAME).build())
                 .returns(ArrayTypeName.of(TypeName.BYTE))
                 .beginControlFlow("try")
-                .addStatement("$T $L = $T.parseFrom($L)", command.parameterType(), PARSED_PARAMETER_NAME,
-                        command.parameterType(), RAW_PARAMETER_NAME)
-                .addStatement("$T $L = $L.$L($L)", command.returnType(), RETURN_VALUE_NAME,
-                        SERVICE_FIELD_NAME, command.name(), PARSED_PARAMETER_NAME)
+                .addStatement("$T $L = $T.parseFrom($L)", command.getReturnType(), PARSED_PARAMETER_NAME,
+                        command.getParameterType(), RAW_PARAMETER_NAME)
+                .addStatement("$T $L = $L.$L($L)", command.getReturnType(), RETURN_VALUE_NAME,
+                        SERVICE_FIELD_NAME, command.getName(), PARSED_PARAMETER_NAME)
                 .addStatement("return $L.toByteArray()", RETURN_VALUE_NAME)
                 .nextControlFlow("catch ($T $L)", IOException.class, EXCEPTION_NAME)
                 .addStatement("throw new $T($L)", RuntimeException.class, EXCEPTION_NAME)

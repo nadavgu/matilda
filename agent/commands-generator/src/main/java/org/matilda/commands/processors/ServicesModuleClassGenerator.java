@@ -45,7 +45,7 @@ public class ServicesModuleClassGenerator implements Processor<ProjectServices> 
                 .addModifiers(Modifier.PUBLIC);
 
         services.processEachService(service -> {
-            if (!service.hasInjectConstructor()) {
+            if (!service.getHasInjectConstructor()) {
                 builder.addMethod(createServiceProvideMethod(service));
             }
         });
@@ -57,8 +57,8 @@ public class ServicesModuleClassGenerator implements Processor<ProjectServices> 
         return MethodSpec.methodBuilder(getProvideMethodName(service))
                 .addAnnotation(Provides.class)
                 .addModifiers(Modifier.STATIC)
-                .returns(TypeName.get(service.type()))
-                .addStatement("return new $T()", service.type())
+                .returns(TypeName.get(service.getType()))
+                .addStatement("return new $T()", service.getType())
                 .build();
     }
 

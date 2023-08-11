@@ -41,7 +41,7 @@ public class NameGenerator {
         }
 
         private Package getFullNamePackage() {
-            return Package.fromString(mServiceInfo.fullName());
+            return Package.fromString(mServiceInfo.getFullName());
         }
 
         public String getServiceClassName() {
@@ -82,7 +82,7 @@ public class NameGenerator {
             }
 
             public String getRawCommandClassName() {
-                return getServiceClassName() + StringUtils.capitalize(mCommandInfo.name()) + "Command";
+                return getServiceClassName() + StringUtils.capitalize(mCommandInfo.getName()) + "Command";
             }
 
             public String getRawCommandPackageName() {
@@ -106,6 +106,6 @@ public class NameGenerator {
     }
 
     public ServiceNameGenerator.CommandNameGenerator forCommand(CommandInfo commandInfo) {
-        return forService(commandInfo.service()).new CommandNameGenerator(commandInfo);
+        return forService(commandInfo.getService()).new CommandNameGenerator(commandInfo);
     }
 }

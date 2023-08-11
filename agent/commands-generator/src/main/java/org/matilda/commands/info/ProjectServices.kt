@@ -1,21 +1,13 @@
-package org.matilda.commands.info;
+package org.matilda.commands.info
 
-import org.matilda.commands.processors.Processor;
+import org.matilda.commands.processors.Processor
 
-import java.util.List;
-
-public class ProjectServices {
-    private final List<ServiceInfo> mServices;
-
-    public ProjectServices(List<ServiceInfo> services) {
-        mServices = services;
+class ProjectServices(private val mServices: List<ServiceInfo>) {
+    fun processEachService(processor: Processor<ServiceInfo>) {
+        mServices.forEach(processor::process)
     }
 
-    public void processEachService(Processor<ServiceInfo> processor) {
-        mServices.forEach(processor::process);
-    }
-
-    public void processEachCommand(Processor<CommandInfo> processor) {
-        mServices.forEach(serviceInfo -> serviceInfo.commands().forEach(processor::process));
+    fun processEachCommand(processor: Processor<CommandInfo>) {
+        mServices.forEach { it.commands.forEach(processor::process) }
     }
 }

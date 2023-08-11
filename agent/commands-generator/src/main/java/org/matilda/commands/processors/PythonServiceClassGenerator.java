@@ -54,7 +54,7 @@ public class PythonServiceClassGenerator implements Processor<ServiceInfo> {
                 DEPENDENCY_CLASS.className()));
         addConstructor(pythonClass);
         addDICreator(pythonClass, service);
-        service.commands().forEach(command -> addCommandMethod(pythonClass, command));
+        service.getCommands().forEach(command -> addCommandMethod(pythonClass, command));
     }
 
     private static final String COMMAND_RUNNER_PARAMETER_NAME = "command_runner";
@@ -82,9 +82,9 @@ public class PythonServiceClassGenerator implements Processor<ServiceInfo> {
     private static final String RETURN_VALUE_VARIABLE_NAME = "return_value";
 
     private void addCommandMethod(PythonClass pythonClass, CommandInfo command) {
-        String parameterType = getPythonType(command.parameterType());
-        String returnType = getPythonType(command.returnType());
-        pythonClass.addInstanceMethod(PythonFunctionSpec.functionBuilder(command.name())
+        String parameterType = getPythonType(command.getParameterType());
+        String returnType = getPythonType(command.getReturnType());
+        pythonClass.addInstanceMethod(PythonFunctionSpec.functionBuilder(command.getName())
                         .addParameter(PARAMETER_VARIABLE_NAME, parameterType)
                         .returnTypeHint(returnType)
                         .build())
