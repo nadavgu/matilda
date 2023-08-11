@@ -24,7 +24,7 @@ public class PythonCodeBlock {
     }
 
     public PythonCodeBlock newFunction(PythonFunctionSpec function) {
-        addEmptyLinesBeforeBlock();
+        addSeparatorBeforeBlock();
         addAnnotations(function.annotations());
         mCodeBlock.addStatement("%s:", function.getDeclaration());
         return new PythonCodeBlock(createNewCodeBlockWithIndentation());
@@ -35,7 +35,7 @@ public class PythonCodeBlock {
     }
 
     public PythonClass newClass(PythonClassSpec classSpec) {
-        addEmptyLinesBeforeBlock();
+        addSeparatorBeforeBlock();
         mCodeBlock.addStatement("%s:", classSpec.getDeclaration());
         return new PythonClass(createNewCodeBlockWithIndentation());
     }
@@ -45,7 +45,7 @@ public class PythonCodeBlock {
     }
 
     public PythonCodeBlock addStatement(String statement) {
-        addEmptyLinesBeforeStatement();
+        addSeparatorBeforeStatement();
         mLastElementKind = ElementKind.STATEMENT;
         mCodeBlock.addStatement(statement);
         return this;
@@ -56,19 +56,19 @@ public class PythonCodeBlock {
         return this;
     }
 
-    private void addEmptyLinesBeforeStatement() {
+    private void addSeparatorBeforeStatement() {
         if (mLastElementKind == ElementKind.BLOCK) {
-            addEmptyLines();
+            addSeparator();
         }
     }
 
-    private void addEmptyLinesBeforeBlock() {
+    private void addSeparatorBeforeBlock() {
         if (mLastElementKind != ElementKind.NONE) {
-            addEmptyLines();
+            addSeparator();
         }
     }
 
-    private void addEmptyLines() {
+    public void addSeparator() {
         for (int i = 0; i < mEmptyLinesBetweenStuff; i++) {
             mCodeBlock.addEmptyLine();
         }
