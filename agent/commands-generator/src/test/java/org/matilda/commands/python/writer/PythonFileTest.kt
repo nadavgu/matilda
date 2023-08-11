@@ -2,9 +2,10 @@ package org.matilda.commands.python.writer
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.matilda.commands.utils.Package
 
 internal class PythonFileTest  {
-    private val pythonFile = PythonFile()
+    private val pythonFile = PythonFile(Package())
 
     @Test
     fun `test import statement works well`() {

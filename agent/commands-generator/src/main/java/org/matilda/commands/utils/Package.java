@@ -1,5 +1,6 @@
 package org.matilda.commands.utils;
 
+import java.nio.file.FileSystems;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,7 +9,9 @@ public class Package {
     private final List<String> mParts;
 
     public Package(List<String> parts) {
-        mParts = parts;
+        mParts = parts.stream()
+                .filter(part -> !part.isEmpty())
+                .collect(Collectors.toList());
     }
 
     public Package(String... parts) {
@@ -34,9 +37,7 @@ public class Package {
     }
 
     public String getPackageName() {
-        return mParts.stream()
-                .filter(part -> !part.isEmpty())
-                .collect(Collectors.joining("."));
+        return String.join(".", mParts);
     }
 
     public String getLastPart() {
@@ -60,5 +61,9 @@ public class Package {
 
     public List<String> getParts() {
         return mParts;
+    }
+
+    public String toPath() {
+        return String.join(FileSystems.getDefault().getSeparator(), mParts);
     }
 }

@@ -1,13 +1,16 @@
 package org.matilda.commands.python.writer;
 
+import org.matilda.commands.utils.Package;
+
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PythonFile extends PythonCodeBlock {
     private final CodeBlock mImportsCodeBlock;
+    private final Package mPackage;
 
-
-    public PythonFile() {
+    public PythonFile(Package filePackage) {
+        mPackage = filePackage;
         mImportsCodeBlock = new CodeBlock();
     }
 
@@ -36,5 +39,9 @@ public class PythonFile extends PythonCodeBlock {
 
     public String getContent() {
         return getLines().collect(Collectors.joining("\n")) + "\n";
+    }
+
+    public Package getPackage() {
+        return mPackage;
     }
 }

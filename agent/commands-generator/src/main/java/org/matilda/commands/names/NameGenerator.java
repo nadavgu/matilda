@@ -5,6 +5,7 @@ import com.squareup.javapoet.TypeName;
 import org.apache.commons.lang3.StringUtils;
 import org.matilda.commands.info.CommandInfo;
 import org.matilda.commands.info.ServiceInfo;
+import org.matilda.commands.python.PythonProperties;
 import org.matilda.commands.utils.Package;
 
 import javax.inject.Inject;
@@ -13,6 +14,9 @@ import java.util.stream.Collectors;
 public class NameGenerator {
     @Inject
     NameGenerator() {}
+
+    @Inject
+    PythonProperties mPythonProperties;
 
     public static final Package MAIN_GENERATED_PACKAGE = Package.fromString("org.matilda.generated");
     public static final Package COMMANDS_GENERATED_PACKAGE = MAIN_GENERATED_PACKAGE.subpackage( "commands");
@@ -24,6 +28,10 @@ public class NameGenerator {
     public static final TypeName SERVICES_MODULE_TYPE_NAME = ClassName.get(COMMANDS_GENERATED_PACKAGE.getPackageName(),
             SERVICES_MODULE_CLASS_NAME);
     public static final Package ORIGINAL_PACKAGE = new Package("org", "matilda", "commands");
+
+    public Package getPythonGeneratedCommandsPackage() {
+        return mPythonProperties.pythonGeneratedPackage().subpackage("commands");
+    }
 
     public static class ServiceNameGenerator {
         private final ServiceInfo mServiceInfo;
