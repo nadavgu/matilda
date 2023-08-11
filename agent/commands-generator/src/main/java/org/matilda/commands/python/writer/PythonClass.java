@@ -6,4 +6,9 @@ public class PythonClass extends PythonCodeBlock {
     PythonClass(CodeBlock codeBlock) {
         super(codeBlock, CLASS_EMPTY_LINES);
     }
+
+    public PythonCodeBlock addInstanceMethod(PythonFunctionSpec functionSpec) {
+        PythonFunctionSpec methodSpec = functionSpec.copyBuilder().addParameterAtStart("self").build();
+        return newFunction(methodSpec);
+    }
 }

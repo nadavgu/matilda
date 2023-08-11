@@ -54,6 +54,29 @@ internal class PythonCodeBlockTest  {
     }
 
     @Test
+    fun `test that class instance method is written well`() {
+        pythonCodeBlock.newClass(PythonClassSpec("clazz"))
+            .addInstanceMethod(PythonFunctionSpec.functionBuilder("func").addParameter("param").build())
+            .addStatement("statement")
+        assertEquals(codeBlock.lines.toList(), listOf(
+            "class clazz:",
+            "\tdef func(self, param):",
+            "\t\tstatement"
+        ))
+    }
+    @Test
+    fun `test that constructor is written well`() {
+        pythonCodeBlock.newClass(PythonClassSpec("clazz"))
+            .addInstanceMethod(PythonFunctionSpec.constructorBuilder().addParameter("param").build())
+            .addStatement("statement")
+        assertEquals(codeBlock.lines.toList(), listOf(
+            "class clazz:",
+            "\tdef __init__(self, param):",
+            "\t\tstatement"
+        ))
+    }
+
+    @Test
     fun `test that newlines are added before stuff`() {
         pythonCodeBlock.addStatement("beforeFunction")
         pythonCodeBlock.newFunction(PythonFunctionSpec("func"))
