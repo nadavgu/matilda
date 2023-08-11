@@ -87,9 +87,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
         } else typeName.toString()
     }
 
-    private fun getClassName(service: ServiceInfo): String {
-        return mNameGenerator.forService(service).serviceClassName
-    }
+    private fun getClassName(service: ServiceInfo) = mNameGenerator.forService(service).serviceClassName
 
     companion object {
         private const val COMMAND_RUNNER_FIELD_NAME = "__command_runner"

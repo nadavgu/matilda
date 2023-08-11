@@ -10,9 +10,7 @@ class PythonFileWriter(private val mBaseFile: File) {
         file.writeText(pythonFile.content)
     }
 
-    private fun getFile(pythonFile: PythonFile): File {
-        return File(mBaseFile, pythonFile.packageName.toPath() + ".py")
-    }
+    private fun getFile(pythonFile: PythonFile) = File(mBaseFile, pythonFile.packageName.toPath() + ".py")
 
     private fun ensureParentDirectoriesExist(file: File) {
         val parentFile = file.parentFile

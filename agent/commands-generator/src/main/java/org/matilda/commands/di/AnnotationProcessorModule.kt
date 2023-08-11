@@ -15,37 +15,23 @@ class AnnotationProcessorModule(
     private val mProcessingEnvironment: ProcessingEnvironment, private val mWasRun: Boolean
 ) {
     @Provides
-    fun annotations(): Set<TypeElement> {
-        return mAnnotations
-    }
+    fun annotations() = mAnnotations
 
     @Provides
-    fun roundEnvironment(): RoundEnvironment {
-        return mRoundEnvironment
-    }
+    fun roundEnvironment() = mRoundEnvironment
 
     @Provides
-    fun processingEnvironment(): ProcessingEnvironment {
-        return mProcessingEnvironment
-    }
+    fun processingEnvironment() = mProcessingEnvironment
 
     @Provides
-    fun filer(): Filer {
-        return mProcessingEnvironment.filer
-    }
+    fun filer(): Filer = mProcessingEnvironment.filer
 
     @Provides
-    fun types(): Types {
-        return mProcessingEnvironment.typeUtils
-    }
+    fun types(): Types = mProcessingEnvironment.typeUtils
 
     @Provides
-    fun elements(): Elements {
-        return mProcessingEnvironment.elementUtils
-    }
+    fun elements(): Elements = mProcessingEnvironment.elementUtils
 
     @Provides
-    fun wasRun(): Boolean {
-        return mWasRun
-    }
+    fun wasRun() = mWasRun
 }

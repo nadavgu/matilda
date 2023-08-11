@@ -22,7 +22,5 @@ class PythonModule {
     }
 
     @Provides
-    fun pythonFileWriter(pythonProperties: PythonProperties): PythonFileWriter {
-        return PythonFileWriter(pythonProperties.pythonRootDir)
-    }
+    fun pythonFileWriter(pythonProperties: PythonProperties) = PythonFileWriter(pythonProperties.pythonRootDir)
 }

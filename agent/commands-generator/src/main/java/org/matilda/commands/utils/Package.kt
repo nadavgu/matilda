@@ -11,13 +11,9 @@ class Package(parts: List<String>) {
 
     constructor(vararg parts: String) : this(listOf(*parts))
 
-    fun subpackage(child: String): Package {
-        return subpackage(fromString(child))
-    }
+    fun subpackage(child: String) = subpackage(fromString(child))
 
-    private fun subpackage(child: Package): Package {
-        return joinPackages(this, child)
-    }
+    private fun subpackage(child: Package) = joinPackages(this, child)
 
     val packageName: String
         get() = parts.joinToString(".")

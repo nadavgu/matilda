@@ -1,6 +1,5 @@
 package org.matilda.commands.processors
 
-import org.matilda.commands.info.ProjectServices
 import javax.inject.Inject
 
 class ProcessorFactory @Inject constructor() {
@@ -19,14 +18,12 @@ class ProcessorFactory @Inject constructor() {
     @set: Inject
     var mWasRun: Boolean = false
 
-    fun createProcessor(): Processor<ProjectServices> {
-        return CompoundProcessor(
-            listOf(
-                ProjectCommandsProcessor(mRawCommandClassGenerator),
-                OnlyRunOnceProcessor(mWasRun, mCommandsModuleClassGenerator),
-                OnlyRunOnceProcessor(mWasRun, mServicesModuleClassGenerator),
-                ProjectServicesProcessor(mPythonServiceClassGenerator)
-            )
+    fun createProcessor() = CompoundProcessor(
+        listOf(
+            ProjectCommandsProcessor(mRawCommandClassGenerator),
+            OnlyRunOnceProcessor(mWasRun, mCommandsModuleClassGenerator),
+            OnlyRunOnceProcessor(mWasRun, mServicesModuleClassGenerator),
+            ProjectServicesProcessor(mPythonServiceClassGenerator)
         )
-    }
+    )
 }

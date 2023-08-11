@@ -5,7 +5,6 @@ import com.squareup.javapoet.TypeName
 import org.apache.commons.lang3.StringUtils
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ServiceInfo
-import org.matilda.commands.names.NameGenerator.ServiceNameGenerator.CommandNameGenerator
 import org.matilda.commands.python.PythonProperties
 import org.matilda.commands.utils.Package
 import org.matilda.commands.utils.Package.Companion.fromString
@@ -55,13 +54,9 @@ class NameGenerator @Inject internal constructor() {
         }
     }
 
-    fun forService(serviceInfo: ServiceInfo): ServiceNameGenerator {
-        return ServiceNameGenerator(serviceInfo)
-    }
+    fun forService(serviceInfo: ServiceInfo) = ServiceNameGenerator(serviceInfo)
 
-    fun forCommand(commandInfo: CommandInfo): CommandNameGenerator {
-        return forService(commandInfo.service).CommandNameGenerator(commandInfo)
-    }
+    fun forCommand(commandInfo: CommandInfo) = forService(commandInfo.service).CommandNameGenerator(commandInfo)
 
     companion object {
         private val MAIN_GENERATED_PACKAGE = fromString("org.matilda.generated")

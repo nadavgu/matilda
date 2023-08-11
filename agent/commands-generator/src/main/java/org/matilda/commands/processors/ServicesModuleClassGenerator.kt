@@ -43,16 +43,14 @@ class ServicesModuleClassGenerator @Inject constructor() : Processor<ProjectServ
         return builder.build()
     }
 
-    private fun createServiceProvideMethod(service: ServiceInfo): MethodSpec {
-        return MethodSpec.methodBuilder(getProvideMethodName(service))
+    private fun createServiceProvideMethod(service: ServiceInfo) =
+        MethodSpec.methodBuilder(getProvideMethodName(service))
             .addAnnotation(Provides::class.java)
             .addModifiers(Modifier.STATIC)
             .returns(TypeName.get(service.type))
             .addStatement("return new \$T()", service.type)
             .build()
-    }
 
-    private fun getProvideMethodName(service: ServiceInfo): String {
-        return StringUtils.uncapitalize(mNameGenerator.forService(service).serviceClassName)
-    }
+    private fun getProvideMethodName(service: ServiceInfo) =
+        StringUtils.uncapitalize(mNameGenerator.forService(service).serviceClassName)
 }

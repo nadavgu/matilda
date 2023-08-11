@@ -39,17 +39,15 @@ class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServ
             .build()
     }
 
-    private fun createModuleAnnotation(): AnnotationSpec {
-        return AnnotationSpec.builder(Module::class.java)
+    private fun createModuleAnnotation() =
+        AnnotationSpec.builder(Module::class.java)
             .addMember("includes", "\$T.class", NameGenerator.SERVICES_MODULE_TYPE_NAME)
             .build()
-    }
 
-    private fun createCommandField(command: CommandInfo): FieldSpec {
-        return FieldSpec.builder(getCommandTypeName(command), getCommandFieldName(command))
+    private fun createCommandField(command: CommandInfo) =
+        FieldSpec.builder(getCommandTypeName(command), getCommandFieldName(command))
             .addAnnotation(Inject::class.java)
             .build()
-    }
 
     private fun createRegisterCommandsMethod(services: ProjectServices): MethodSpec {
         val commandRegistryParameter =
@@ -64,18 +62,15 @@ class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServ
         return builder.build()
     }
 
-    private fun getCommandFieldName(command: CommandInfo): String {
-        return "m" + mNameGenerator.forCommand(command).fullCommandName
-    }
+    private fun getCommandFieldName(command: CommandInfo) = "m" + mNameGenerator.forCommand(command).fullCommandName
 
-    private fun createInjectConstructor(): MethodSpec {
-        return MethodSpec.constructorBuilder()
+    private fun createInjectConstructor() =
+        MethodSpec.constructorBuilder()
             .addAnnotation(Inject::class.java)
             .build()
-    }
 
-    private fun createCommandRegistryProviderMethod(): MethodSpec {
-        return MethodSpec.methodBuilder("commandRegistry")
+    private fun createCommandRegistryProviderMethod() =
+        MethodSpec.methodBuilder("commandRegistry")
             .addModifiers(Modifier.STATIC)
             .addAnnotation(Provides::class.java)
             .addParameter(ParameterSpec.builder(NameGenerator.COMMANDS_MODULE_TYPE_NAME,
@@ -87,11 +82,8 @@ class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServ
             .addStatement("return \$L", COMMAND_REGISTRY_VARIABLE_NAME)
             .returns(CommandRegistry::class.java)
             .build()
-    }
 
-    private fun getCommandTypeName(command: CommandInfo): TypeName {
-        return mNameGenerator.forCommand(command).rawCommandTypeName
-    }
+    private fun getCommandTypeName(command: CommandInfo) = mNameGenerator.forCommand(command).rawCommandTypeName
 
     companion object {
         private const val REGISTER_COMMANDS_METHOD_NAME = "registerCommands"

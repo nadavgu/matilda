@@ -19,13 +19,9 @@ class CodeBlock private constructor(private val mPrefix: String) : Token {
         mTokens.add(Statement(""))
     }
 
-    fun newCodeBlock(): CodeBlock {
-        return newCodeBlock(mPrefix)
-    }
+    fun newCodeBlock() = newCodeBlock(mPrefix)
 
-    fun newCodeBlockWithIndentation(): CodeBlock {
-        return newCodeBlock(mPrefix + "\t")
-    }
+    fun newCodeBlockWithIndentation() = newCodeBlock(mPrefix + "\t")
 
     private fun newCodeBlock(prefix: String): CodeBlock {
         val codeBlock = CodeBlock(prefix)

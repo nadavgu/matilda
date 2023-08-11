@@ -22,30 +22,27 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .writeTo(mFiler)
     }
 
-    private fun createClassSpec(command: CommandInfo): TypeSpec {
-        return TypeSpec.classBuilder(mNameGenerator.forCommand(command).rawCommandClassName)
+    private fun createClassSpec(command: CommandInfo) =
+        TypeSpec.classBuilder(mNameGenerator.forCommand(command).rawCommandClassName)
             .addModifiers(Modifier.PUBLIC)
             .addSuperinterface(Command::class.java)
             .addField(createServiceField(command))
             .addMethod(createInjectConstructor())
             .addMethod(createRunMethod(command))
             .build()
-    }
 
-    private fun createServiceField(command: CommandInfo): FieldSpec {
-        return FieldSpec.builder(TypeName.get(command.service.type), SERVICE_FIELD_NAME)
+    private fun createServiceField(command: CommandInfo) =
+        FieldSpec.builder(TypeName.get(command.service.type), SERVICE_FIELD_NAME)
             .addAnnotation(Inject::class.java)
             .build()
-    }
 
-    private fun createInjectConstructor(): MethodSpec {
-        return MethodSpec.constructorBuilder()
+    private fun createInjectConstructor() =
+        MethodSpec.constructorBuilder()
             .addAnnotation(Inject::class.java)
             .build()
-    }
 
-    private fun createRunMethod(command: CommandInfo): MethodSpec {
-        return MethodSpec.methodBuilder("run")
+    private fun createRunMethod(command: CommandInfo) =
+        MethodSpec.methodBuilder("run")
             .addModifiers(Modifier.PUBLIC)
             .addParameter(ParameterSpec.builder(BYTE_ARRAY_TYPE_NAME, RAW_PARAMETER_NAME).build())
             .returns(ArrayTypeName.of(TypeName.BYTE))
@@ -59,7 +56,6 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .addStatement("throw new \$T(\$L)", RuntimeException::class.java, EXCEPTION_NAME)
             .endControlFlow()
             .build()
-    }
 
     companion object {
         private val BYTE_ARRAY_TYPE_NAME = ArrayTypeName.of(TypeName.BYTE)

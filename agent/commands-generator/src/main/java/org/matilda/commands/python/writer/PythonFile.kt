@@ -21,9 +21,8 @@ class PythonFile(val packageName: Package) : PythonCodeBlock() {
         return this
     }
 
-    fun addFromImport(pythonClassName: PythonClassName): PythonFile {
-        return addFromImport(pythonClassName.packageName, pythonClassName.className)
-    }
+    fun addFromImport(pythonClassName: PythonClassName) =
+        addFromImport(pythonClassName.packageName, pythonClassName.className)
 
     override val lines: Stream<String>
         get() {
