@@ -1,17 +1,10 @@
-package org.matilda.commands.processors;
+package org.matilda.commands.processors
 
-import org.matilda.commands.info.CommandInfo;
-import org.matilda.commands.info.ProjectServices;
+import org.matilda.commands.info.CommandInfo
+import org.matilda.commands.info.ProjectServices
 
-public class ProjectCommandsProcessor implements Processor<ProjectServices> {
-    private final Processor<CommandInfo> mCommandProcessor;
-
-    public ProjectCommandsProcessor(Processor<CommandInfo> commandProcessor) {
-        mCommandProcessor = commandProcessor;
-    }
-
-    @Override
-    public void process(ProjectServices projectServices) {
-        projectServices.processEachCommand(mCommandProcessor);
+class ProjectCommandsProcessor(private val mCommandProcessor: Processor<CommandInfo>) : Processor<ProjectServices> {
+    override fun process(instance: ProjectServices) {
+        instance.forEachCommand(mCommandProcessor::process)
     }
 }

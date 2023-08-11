@@ -1,81 +1,72 @@
-package org.matilda.commands.processors;
+package org.matilda.commands.processors
 
-import com.squareup.javapoet.*;
-import org.matilda.commands.Command;
-import org.matilda.commands.info.CommandInfo;
-import org.matilda.commands.names.NameGenerator;
+import com.squareup.javapoet.*
+import org.matilda.commands.Command
+import org.matilda.commands.info.CommandInfo
+import org.matilda.commands.names.NameGenerator
+import java.io.IOException
+import javax.annotation.processing.Filer
+import javax.inject.Inject
+import javax.lang.model.element.Modifier
 
-import javax.annotation.processing.Filer;
-import javax.inject.Inject;
-import javax.lang.model.element.Modifier;
-import java.io.IOException;
-
-public class RawCommandClassGenerator implements Processor<CommandInfo> {
+class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
     @Inject
-    Filer mFiler;
-
-    @Inject
-    NameGenerator mNameGenerator;
+    lateinit var mFiler: Filer
 
     @Inject
-    public RawCommandClassGenerator() {}
+    lateinit var mNameGenerator: NameGenerator
 
-    private static final ArrayTypeName BYTE_ARRAY_TYPE_NAME = ArrayTypeName.of(TypeName.BYTE);
-    private static final String SERVICE_FIELD_NAME = "mService";
-
-    @Override
-    public void process(CommandInfo command) {
-        try {
-            JavaFile.builder(mNameGenerator.forCommand(command).getRawCommandPackageName(),
-                            createClassSpec(command))
-                    .build()
-                    .writeTo(mFiler);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    override fun process(instance: CommandInfo) {
+        JavaFile.builder(mNameGenerator.forCommand(instance).rawCommandPackageName, createClassSpec(instance))
+            .build()
+            .writeTo(mFiler)
     }
 
-    private TypeSpec createClassSpec(CommandInfo command) {
-        return TypeSpec.classBuilder(mNameGenerator.forCommand(command).getRawCommandClassName())
-                .addModifiers(Modifier.PUBLIC)
-                .addSuperinterface(Command.class)
-                .addField(createServiceField(command))
-                .addMethod(createInjectConstructor())
-                .addMethod(createRunMethod(command))
-                .build();
+    private fun createClassSpec(command: CommandInfo): TypeSpec {
+        return TypeSpec.classBuilder(mNameGenerator.forCommand(command).rawCommandClassName)
+            .addModifiers(Modifier.PUBLIC)
+            .addSuperinterface(Command::class.java)
+            .addField(createServiceField(command))
+            .addMethod(createInjectConstructor())
+            .addMethod(createRunMethod(command))
+            .build()
     }
 
-    private FieldSpec createServiceField(CommandInfo command) {
-        return FieldSpec.builder(TypeName.get(command.getService().getType()), SERVICE_FIELD_NAME)
-                .addAnnotation(Inject.class)
-                .build();
+    private fun createServiceField(command: CommandInfo): FieldSpec {
+        return FieldSpec.builder(TypeName.get(command.service.type), SERVICE_FIELD_NAME)
+            .addAnnotation(Inject::class.java)
+            .build()
     }
 
-    private MethodSpec createInjectConstructor() {
+    private fun createInjectConstructor(): MethodSpec {
         return MethodSpec.constructorBuilder()
-                .addAnnotation(Inject.class)
-                .build();
+            .addAnnotation(Inject::class.java)
+            .build()
     }
 
-    private final static String RAW_PARAMETER_NAME = "rawParameter";
-    private final static String PARSED_PARAMETER_NAME = "parameter";
-    private final static String RETURN_VALUE_NAME = "returnValue";
-    private final static String EXCEPTION_NAME = "exception";
-
-    private MethodSpec createRunMethod(CommandInfo command) {
+    private fun createRunMethod(command: CommandInfo): MethodSpec {
         return MethodSpec.methodBuilder("run")
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(ParameterSpec.builder(BYTE_ARRAY_TYPE_NAME, RAW_PARAMETER_NAME).build())
-                .returns(ArrayTypeName.of(TypeName.BYTE))
-                .beginControlFlow("try")
-                .addStatement("$T $L = $T.parseFrom($L)", command.getReturnType(), PARSED_PARAMETER_NAME,
-                        command.getParameterType(), RAW_PARAMETER_NAME)
-                .addStatement("$T $L = $L.$L($L)", command.getReturnType(), RETURN_VALUE_NAME,
-                        SERVICE_FIELD_NAME, command.getName(), PARSED_PARAMETER_NAME)
-                .addStatement("return $L.toByteArray()", RETURN_VALUE_NAME)
-                .nextControlFlow("catch ($T $L)", IOException.class, EXCEPTION_NAME)
-                .addStatement("throw new $T($L)", RuntimeException.class, EXCEPTION_NAME)
-                .endControlFlow()
-                .build();
+            .addModifiers(Modifier.PUBLIC)
+            .addParameter(ParameterSpec.builder(BYTE_ARRAY_TYPE_NAME, RAW_PARAMETER_NAME).build())
+            .returns(ArrayTypeName.of(TypeName.BYTE))
+            .beginControlFlow("try")
+            .addStatement("\$T \$L = \$T.parseFrom(\$L)",
+                command.returnType, PARSED_PARAMETER_NAME, command.parameterType, RAW_PARAMETER_NAME)
+            .addStatement("\$T \$L = \$L.\$L(\$L)",
+                command.returnType, RETURN_VALUE_NAME, SERVICE_FIELD_NAME, command.name, PARSED_PARAMETER_NAME)
+            .addStatement("return \$L.toByteArray()", RETURN_VALUE_NAME)
+            .nextControlFlow("catch (\$T \$L)", IOException::class.java, EXCEPTION_NAME)
+            .addStatement("throw new \$T(\$L)", RuntimeException::class.java, EXCEPTION_NAME)
+            .endControlFlow()
+            .build()
+    }
+
+    companion object {
+        private val BYTE_ARRAY_TYPE_NAME = ArrayTypeName.of(TypeName.BYTE)
+        private const val SERVICE_FIELD_NAME = "mService"
+        private const val RAW_PARAMETER_NAME = "rawParameter"
+        private const val PARSED_PARAMETER_NAME = "parameter"
+        private const val RETURN_VALUE_NAME = "returnValue"
+        private const val EXCEPTION_NAME = "exception"
     }
 }

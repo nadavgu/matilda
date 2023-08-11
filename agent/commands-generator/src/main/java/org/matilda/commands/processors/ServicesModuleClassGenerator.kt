@@ -1,68 +1,58 @@
-package org.matilda.commands.processors;
+package org.matilda.commands.processors
 
-import com.squareup.javapoet.*;
-import dagger.Module;
-import dagger.Provides;
-import org.apache.commons.lang3.StringUtils;
-import org.matilda.commands.info.ProjectServices;
-import org.matilda.commands.info.ServiceInfo;
-import org.matilda.commands.names.CommandIdGenerator;
-import org.matilda.commands.names.NameGenerator;
+import com.squareup.javapoet.JavaFile
+import com.squareup.javapoet.MethodSpec
+import com.squareup.javapoet.TypeName
+import com.squareup.javapoet.TypeSpec
+import dagger.Module
+import dagger.Provides
+import org.apache.commons.lang3.StringUtils
+import org.matilda.commands.info.ProjectServices
+import org.matilda.commands.info.ServiceInfo
+import org.matilda.commands.names.CommandIdGenerator
+import org.matilda.commands.names.NameGenerator
+import javax.annotation.processing.Filer
+import javax.inject.Inject
+import javax.lang.model.element.Modifier
 
-import javax.annotation.processing.Filer;
-import javax.inject.Inject;
-import javax.lang.model.element.Modifier;
-import java.io.IOException;
-
-public class ServicesModuleClassGenerator implements Processor<ProjectServices> {
+class ServicesModuleClassGenerator @Inject constructor() : Processor<ProjectServices> {
     @Inject
-    Filer mFiler;
-
-    @Inject
-    NameGenerator mNameGenerator;
+    lateinit var mFiler: Filer
 
     @Inject
-    CommandIdGenerator mCommandIdGenerator;
+    lateinit var mNameGenerator: NameGenerator
 
     @Inject
-    public ServicesModuleClassGenerator() {}
+    lateinit var mCommandIdGenerator: CommandIdGenerator
 
-    @Override
-    public void process(ProjectServices services) {
-        try {
-            JavaFile.builder(NameGenerator.COMMANDS_GENERATED_PACKAGE.getPackageName(),
-                            createClassSpec(services))
-                    .build()
-                    .writeTo(mFiler);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    override fun process(instance: ProjectServices) {
+        JavaFile.builder(NameGenerator.COMMANDS_GENERATED_PACKAGE.packageName, createClassSpec(instance))
+            .build()
+            .writeTo(mFiler)
     }
 
-    private TypeSpec createClassSpec(ProjectServices services) {
-        var builder = TypeSpec.classBuilder(NameGenerator.SERVICES_MODULE_CLASS_NAME)
-                .addAnnotation(Module.class)
-                .addModifiers(Modifier.PUBLIC);
-
-        services.processEachService(service -> {
-            if (!service.getHasInjectConstructor()) {
-                builder.addMethod(createServiceProvideMethod(service));
+    private fun createClassSpec(services: ProjectServices): TypeSpec {
+        val builder = TypeSpec.classBuilder(NameGenerator.SERVICES_MODULE_CLASS_NAME)
+            .addAnnotation(Module::class.java)
+            .addModifiers(Modifier.PUBLIC)
+        services.forEachService { service ->
+            if (!service.hasInjectConstructor) {
+                builder.addMethod(createServiceProvideMethod(service))
             }
-        });
-
-        return builder.build();
+        }
+        return builder.build()
     }
 
-    private MethodSpec createServiceProvideMethod(ServiceInfo service) {
+    private fun createServiceProvideMethod(service: ServiceInfo): MethodSpec {
         return MethodSpec.methodBuilder(getProvideMethodName(service))
-                .addAnnotation(Provides.class)
-                .addModifiers(Modifier.STATIC)
-                .returns(TypeName.get(service.getType()))
-                .addStatement("return new $T()", service.getType())
-                .build();
+            .addAnnotation(Provides::class.java)
+            .addModifiers(Modifier.STATIC)
+            .returns(TypeName.get(service.type))
+            .addStatement("return new \$T()", service.type)
+            .build()
     }
 
-    private String getProvideMethodName(ServiceInfo service) {
-        return StringUtils.uncapitalize(mNameGenerator.forService(service).getServiceClassName());
+    private fun getProvideMethodName(service: ServiceInfo): String {
+        return StringUtils.uncapitalize(mNameGenerator.forService(service).serviceClassName)
     }
 }

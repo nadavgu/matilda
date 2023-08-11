@@ -1,35 +1,32 @@
-package org.matilda.commands.processors;
+package org.matilda.commands.processors
 
-import org.matilda.commands.info.ProjectServices;
+import org.matilda.commands.info.ProjectServices
+import javax.inject.Inject
 
-import javax.inject.Inject;
-import java.util.List;
-
-public class ProcessorFactory {
+class ProcessorFactory @Inject constructor() {
     @Inject
-    public ProcessorFactory() {}
+    lateinit var mRawCommandClassGenerator: RawCommandClassGenerator
 
     @Inject
-    RawCommandClassGenerator mRawCommandClassGenerator;
+    lateinit var mCommandsModuleClassGenerator: CommandsModuleClassGenerator
 
     @Inject
-    CommandsModuleClassGenerator mCommandsModuleClassGenerator;
+    lateinit var mServicesModuleClassGenerator: ServicesModuleClassGenerator
 
     @Inject
-    ServicesModuleClassGenerator mServicesModuleClassGenerator;
+    lateinit var mPythonServiceClassGenerator: PythonServiceClassGenerator
 
-    @Inject
-    PythonServiceClassGenerator mPythonServiceClassGenerator;
+    @set: Inject
+    var mWasRun: Boolean = false
 
-    @Inject
-    boolean mWasRun;
-
-    public Processor<ProjectServices> createProcessor() {
-        return new CompoundProcessor<>(List.of(
-                new ProjectCommandsProcessor(mRawCommandClassGenerator),
-                new OnlyRunOnceProcessor<>(mWasRun, mCommandsModuleClassGenerator),
-                new OnlyRunOnceProcessor<>(mWasRun, mServicesModuleClassGenerator),
-                new ProjectServicesProcessor(mPythonServiceClassGenerator)
-        ));
+    fun createProcessor(): Processor<ProjectServices> {
+        return CompoundProcessor(
+            listOf(
+                ProjectCommandsProcessor(mRawCommandClassGenerator),
+                OnlyRunOnceProcessor(mWasRun, mCommandsModuleClassGenerator),
+                OnlyRunOnceProcessor(mWasRun, mServicesModuleClassGenerator),
+                ProjectServicesProcessor(mPythonServiceClassGenerator)
+            )
+        )
     }
 }

@@ -1,18 +1,9 @@
-package org.matilda.commands.processors;
+package org.matilda.commands.processors
 
-public class OnlyRunOnceProcessor<T> implements Processor<T> {
-    private final boolean mWasRun;
-    private final Processor<T> mProcessor;
-
-    public OnlyRunOnceProcessor(boolean wasRun, Processor<T> processor) {
-        mWasRun = wasRun;
-        mProcessor = processor;
-    }
-
-    @Override
-    public void process(T instance) {
+class OnlyRunOnceProcessor<T>(private val mWasRun: Boolean, private val mProcessor: Processor<T>) : Processor<T> {
+    override fun process(instance: T) {
         if (!mWasRun) {
-            mProcessor.process(instance);
+            mProcessor.process(instance)
         }
     }
 }
