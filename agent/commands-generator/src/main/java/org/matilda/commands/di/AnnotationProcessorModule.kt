@@ -1,64 +1,51 @@
-package org.matilda.commands.di;
+package org.matilda.commands.di
 
-import dagger.Module;
-import dagger.Provides;
-
-import javax.annotation.processing.Filer;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
-import java.util.Set;
+import dagger.Module
+import dagger.Provides
+import javax.annotation.processing.Filer
+import javax.annotation.processing.ProcessingEnvironment
+import javax.annotation.processing.RoundEnvironment
+import javax.lang.model.element.TypeElement
+import javax.lang.model.util.Elements
+import javax.lang.model.util.Types
 
 @Module
-public class AnnotationProcessorModule {
-    private final Set<? extends TypeElement> mAnnotations;
-    private final RoundEnvironment mRoundEnvironment;
-
-    private final ProcessingEnvironment mProcessingEnvironment;
-    private final boolean mWasRun;
-
-    public AnnotationProcessorModule(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv,
-                                     ProcessingEnvironment processingEnvironment, boolean wasRun) {
-        mAnnotations = annotations;
-        mRoundEnvironment = roundEnv;
-        mProcessingEnvironment = processingEnvironment;
-        mWasRun = wasRun;
+class AnnotationProcessorModule(
+    private val mAnnotations: Set<TypeElement>, private val mRoundEnvironment: RoundEnvironment,
+    private val mProcessingEnvironment: ProcessingEnvironment, private val mWasRun: Boolean
+) {
+    @Provides
+    fun annotations(): Set<TypeElement> {
+        return mAnnotations
     }
 
     @Provides
-    Set<? extends TypeElement> annotations() {
-        return mAnnotations;
+    fun roundEnvironment(): RoundEnvironment {
+        return mRoundEnvironment
     }
 
     @Provides
-    RoundEnvironment roundEnvironment() {
-        return mRoundEnvironment;
+    fun processingEnvironment(): ProcessingEnvironment {
+        return mProcessingEnvironment
     }
 
     @Provides
-    ProcessingEnvironment processingEnvironment() {
-        return mProcessingEnvironment;
+    fun filer(): Filer {
+        return mProcessingEnvironment.filer
     }
 
     @Provides
-    Filer filer() {
-        return mProcessingEnvironment.getFiler();
+    fun types(): Types {
+        return mProcessingEnvironment.typeUtils
     }
 
     @Provides
-    Types types() {
-        return mProcessingEnvironment.getTypeUtils();
+    fun elements(): Elements {
+        return mProcessingEnvironment.elementUtils
     }
 
     @Provides
-    Elements elements() {
-        return mProcessingEnvironment.getElementUtils();
-    }
-
-    @Provides
-    boolean wasRun() {
-        return mWasRun;
+    fun wasRun(): Boolean {
+        return mWasRun
     }
 }
