@@ -9,9 +9,13 @@ internal class PythonCodeBlockTest  {
 
     @Test
     fun `test that function is written well`() {
-        pythonCodeBlock.newFunction(PythonFunction("func",
-            PythonVariable("var1"),
-            PythonVariable("var2", "type2")))
+        pythonCodeBlock.newFunction(
+            PythonFunctionSpec(
+                "func",
+                PythonVariable("var1"),
+                PythonVariable("var2", "type2")
+            )
+        )
             .addStatement("statement")
         assertEquals(codeBlock.lines.toList(), listOf(
             "def func(var1, var2: type2):",
@@ -22,7 +26,7 @@ internal class PythonCodeBlockTest  {
     @Test
     fun `test that newlines are added before stuff`() {
         pythonCodeBlock.addStatement("beforeFunction")
-        pythonCodeBlock.newFunction(PythonFunction("func"))
+        pythonCodeBlock.newFunction(PythonFunctionSpec("func"))
             .addStatement("inFunction")
         assertEquals(codeBlock.lines.toList(), listOf(
             "beforeFunction",
@@ -35,7 +39,7 @@ internal class PythonCodeBlockTest  {
 
     @Test
     fun `test that newlines are added after stuff`() {
-        pythonCodeBlock.newFunction(PythonFunction("func"))
+        pythonCodeBlock.newFunction(PythonFunctionSpec("func"))
             .addStatement("inFunction")
         pythonCodeBlock.addStatement("afterFunction")
         assertEquals(codeBlock.lines.toList(), listOf(
@@ -60,9 +64,9 @@ internal class PythonCodeBlockTest  {
 
     @Test
     fun `test that newlines are added between stuff`() {
-        pythonCodeBlock.newFunction(PythonFunction("func1"))
+        pythonCodeBlock.newFunction(PythonFunctionSpec("func1"))
             .addStatement("inFunction1")
-        pythonCodeBlock.newFunction(PythonFunction("func2"))
+        pythonCodeBlock.newFunction(PythonFunctionSpec("func2"))
             .addStatement("inFunction2")
         assertEquals(codeBlock.lines.toList(), listOf(
             "def func1():",

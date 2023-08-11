@@ -22,7 +22,7 @@ public class PythonCodeBlock {
         mLastElementKind = ElementKind.NONE;
     }
 
-    public PythonCodeBlock newFunction(PythonFunction function) {
+    public PythonCodeBlock newFunction(PythonFunctionSpec function) {
         addEmptyLinesBeforeBlock();
         mCodeBlock.addStatement("%s:", function.getDeclaration());
         return createNewCodeBlockWithIndentation();
