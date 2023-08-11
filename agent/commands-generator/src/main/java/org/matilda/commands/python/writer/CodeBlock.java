@@ -25,6 +25,10 @@ public class CodeBlock implements Token {
         addStatement(String.format(format, args));
     }
 
+    public void addEmptyLine() {
+        mTokens.add(new Statement(""));
+    }
+
     public CodeBlock newCodeBlock() {
         return newCodeBlock(mPrefix);
     }
