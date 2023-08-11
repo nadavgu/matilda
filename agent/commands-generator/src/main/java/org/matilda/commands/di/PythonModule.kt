@@ -17,7 +17,7 @@ class PythonModule {
             throw RuntimeException("Specified python directory doesn't exist: $pythonRootDir")
         }
         val pythonGeneratedPackage =
-            Package.fromString(processingEnvironment.options[PythonProperties.PYTHON_GENERATED_PACKAGE_OPTION])
+            Package.fromString(processingEnvironment.options[PythonProperties.PYTHON_GENERATED_PACKAGE_OPTION]!!)
         return PythonProperties(pythonRootDir, pythonGeneratedPackage)
     }
 
