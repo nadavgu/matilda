@@ -3,24 +3,16 @@ from typing import IO
 from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 
-from matilda.commands.command_response_listener import CommandResponseListener
-from matilda.commands.command_runner import CommandRunner
-from matilda.commands.command_sender import CommandSender
 from matilda.di.dependency_tags import DependencyTags
 from matilda.di.destructors.destruction_manager import DestructionManager
+from matilda.generated.commands.math_service import MathService
 from google.protobuf.wrappers_pb2 import Int32Value
 
 
-def parse_int(data: bytes) -> int:
-    protobuf_int = Int32Value()
-    protobuf_int.ParseFromString(data)
-    return protobuf_int.value
-
-
-def build_int(value: int) -> bytes:
+def build_int(value: int) -> Int32Value:
     protobuf_int = Int32Value()
     protobuf_int.value = value
-    return protobuf_int.SerializeToString()
+    return protobuf_int
 
 
 class MatildaProcess(Dependency):
@@ -38,8 +30,8 @@ class MatildaProcess(Dependency):
 
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'MatildaProcess':
-        print(parse_int(dependency_container.get(CommandRunner).run(-514589277, build_int(3))))
-        print(parse_int(dependency_container.get(CommandRunner).run(-514589277, build_int(4))))
+        print(dependency_container.get(MathService).square(build_int(3)).value)
+        print(dependency_container.get(MathService).square(build_int(4)).value)
 
         dependency_container.get(IO, DependencyTags.AGENT_INPUT).close()
         destruction_manager = dependency_container.get(DestructionManager)

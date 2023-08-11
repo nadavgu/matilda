@@ -11,4 +11,6 @@ public class PythonClasses {
 
     public static PythonClassName COMMAND_RUNNER_CLASS =
             new PythonClassName(new Package("matilda", "commands", "command_runner"), "CommandRunner");
+
+    public static Package PROTO_WRAPPERS_PACKAGE = new Package("google", "protobuf", "wrappers_pb2");
 }
