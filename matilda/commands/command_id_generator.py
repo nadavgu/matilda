@@ -1,4 +1,4 @@
-from maddie.dependency import Dependency, T
+from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 
 
@@ -11,5 +11,5 @@ class CommandIdGenerator(Dependency):
         return self.__last_id
 
     @staticmethod
-    def create(dependency_container: DependencyContainer) -> T:
+    def create(dependency_container: DependencyContainer) -> 'CommandIdGenerator':
         return CommandIdGenerator()
