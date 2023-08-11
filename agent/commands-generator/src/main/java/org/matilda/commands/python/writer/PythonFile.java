@@ -1,5 +1,6 @@
 package org.matilda.commands.python.writer;
 
+import org.matilda.commands.python.PythonClassName;
 import org.matilda.commands.utils.Package;
 
 import java.util.stream.Collectors;
@@ -19,10 +20,14 @@ public class PythonFile extends PythonCodeBlock {
         return this;
     }
 
-    public PythonFile addFromImport(String packageToImportFrom, String... stuffToImport) {
-        mImportsCodeBlock.addStatement("from %s import %s", packageToImportFrom,
+    public PythonFile addFromImport(Package packageToImportFrom, String... stuffToImport) {
+        mImportsCodeBlock.addStatement("from %s import %s", packageToImportFrom.getPackageName(),
                 String.join(", ", stuffToImport));
         return this;
+    }
+
+    public PythonFile addFromImport(PythonClassName pythonClassName) {
+        return addFromImport(pythonClassName.packageName(), pythonClassName.className());
     }
 
     public Stream<String> getLines() {

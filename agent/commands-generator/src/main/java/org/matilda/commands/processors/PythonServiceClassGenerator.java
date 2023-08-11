@@ -35,13 +35,14 @@ public class PythonServiceClassGenerator implements Processor<ServiceInfo> {
     }
 
     private static void addImports(PythonFile pythonFile) {
-        pythonFile.addFromImport(DEPENDENCY_PACKAGE, DEPENDENCY_CLASS)
-                .addFromImport(DEPENDENCY_CONTAINER_PACKAGE, DEPENDENCY_CONTAINER_CLASS)
-                .addFromImport(COMMAND_RUNNER_PACKAGE, COMMAND_RUNNER_CLASS);
+        pythonFile.addFromImport(DEPENDENCY_CLASS)
+                .addFromImport(DEPENDENCY_CONTAINER_CLASS)
+                .addFromImport(COMMAND_RUNNER_CLASS);
     }
 
     private void addClass(PythonFile pythonFile, ServiceInfo service) {
-        PythonClass pythonClass = pythonFile.newClass(new PythonClassSpec(getClassName(service), DEPENDENCY_CLASS));
+        PythonClass pythonClass = pythonFile.newClass(new PythonClassSpec(getClassName(service),
+                DEPENDENCY_CLASS.className()));
         addConstructor(pythonClass);
         addDICreator(pythonClass, service);
 //        service.commands().forEach(command -> addCommandMethod(pythonClass, command));
@@ -51,18 +52,19 @@ public class PythonServiceClassGenerator implements Processor<ServiceInfo> {
 
     private void addConstructor(PythonClass pythonClass) {
         pythonClass.addInstanceMethod(PythonFunctionSpec.constructorBuilder()
-                .addParameter(COMMAND_RUNNER_PARAMETER_NAME, COMMAND_RUNNER_CLASS)
-                .build())
+                        .addParameter(COMMAND_RUNNER_PARAMETER_NAME, COMMAND_RUNNER_CLASS.className())
+                        .build())
                 .addStatement("self.%s = %s", COMMAND_RUNNER_FIELD_NAME, COMMAND_RUNNER_PARAMETER_NAME);
     }
 
     private static final String DEPENDENCY_CONTAINER_PARAMETER_NAME = "dependency_container";
+
     private void addDICreator(PythonClass pythonClass, ServiceInfo service) {
         pythonClass.addStaticMethod(PythonFunctionSpec.functionBuilder("create")
-                        .addParameter(DEPENDENCY_CONTAINER_PARAMETER_NAME, DEPENDENCY_CONTAINER_CLASS)
+                        .addParameter(DEPENDENCY_CONTAINER_PARAMETER_NAME, DEPENDENCY_CONTAINER_CLASS.className())
                         .returnTypeHint("'" + getClassName(service) + "'").build())
                 .addStatement("return %s(%s.get(%s))", getClassName(service),
-                        DEPENDENCY_CONTAINER_PARAMETER_NAME, COMMAND_RUNNER_CLASS);
+                        DEPENDENCY_CONTAINER_PARAMETER_NAME, COMMAND_RUNNER_CLASS.className());
     }
 
     private String getClassName(ServiceInfo service) {

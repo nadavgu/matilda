@@ -15,7 +15,7 @@ internal class PythonFileTest  {
 
     @Test
     fun `test from import statement works well`() {
-        pythonFile.addFromImport("package", "a", "b", "c")
+        pythonFile.addFromImport(Package("package"), "a", "b", "c")
         assertEquals(listOf("from package import a, b, c"), pythonFile.lines.toList())
     }
 
