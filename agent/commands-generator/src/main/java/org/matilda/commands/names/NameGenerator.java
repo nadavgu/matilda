@@ -33,7 +33,7 @@ public class NameGenerator {
         return mPythonProperties.pythonGeneratedPackage().subpackage("commands");
     }
 
-    public static class ServiceNameGenerator {
+    public class ServiceNameGenerator {
         private final ServiceInfo mServiceInfo;
 
         public ServiceNameGenerator(ServiceInfo serviceInfo) {
@@ -46,6 +46,24 @@ public class NameGenerator {
 
         public String getServiceClassName() {
             return getFullNamePackage().getLastPart();
+        }
+
+        public String getServiceSnakeCaseName() {
+            String regex = "([a-z])([A-Z]+)";
+
+            // Replacement string
+            String replacement = "$1_$2";
+
+            // Replace the given regex
+            // with replacement string
+            // and convert it to lower case.
+            return getServiceClassName()
+                    .replaceAll(regex, replacement)
+                    .toLowerCase();
+        }
+
+        public Package getPythonGeneratedServicePackage() {
+            return getPythonGeneratedCommandsPackage().subpackage(getServiceSnakeCaseName());
         }
 
         public Package getPackage() {

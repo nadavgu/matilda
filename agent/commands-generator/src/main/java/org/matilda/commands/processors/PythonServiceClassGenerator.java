@@ -25,7 +25,7 @@ public class PythonServiceClassGenerator implements Processor<ServiceInfo> {
     @Override
     public void process(ServiceInfo service) {
         try {
-            PythonFile pythonFile = new PythonFile(mNameGenerator.getPythonGeneratedCommandsPackage());
+            PythonFile pythonFile = new PythonFile(mNameGenerator.forService(service).getPythonGeneratedServicePackage());
             addImports(pythonFile);
             addClass(pythonFile, service);
             mPythonFileWriter.write(pythonFile);
