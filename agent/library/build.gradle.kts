@@ -15,6 +15,14 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+val pythonRootDir = rootProject.layout.projectDirectory.dir(providers.gradleProperty("PYTHON_ROOT_DIR_PATH")).get()
+
+tasks.compileJava {
+    options.compilerArgs.add("-ApythonRootDir=${pythonRootDir.asFile.absolutePath}")
+    options.compilerArgs.add("-ApythonGeneratedPackage=" +
+            providers.gradleProperty("PYTHON_GENERATED_PACKAGE").get())
+}
+
 dependencies {
     implementation("com.google.protobuf:protobuf-java:3.23.0")
     implementation("com.google.dagger:dagger:2.47")
@@ -42,7 +50,7 @@ protobuf {
                     doLast {
                         copy {
                             from(getOutputDir(this@create))
-                            into(rootProject.layout.projectDirectory.dir(providers.gradleProperty("GENERATED_PROTO_DIR_PATH")))
+                            into(pythonRootDir.dir(providers.gradleProperty("GENERATED_PROTO_SUBDIR")))
                         }
                     }
                 }

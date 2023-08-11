@@ -13,6 +13,7 @@ import java.util.Set;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes({"org.matilda.commands.MatildaService", "org.matilda.commands.MatildaCommand"})
+@SupportedOptions({"pythonRootDir", "pythonGeneratedPackage"})
 public class CommandsGeneratingAnnotationProcessor extends AbstractProcessor {
     private ProcessingEnvironment mProcessingEnvironment;
     private boolean mWasRun = false;

@@ -16,6 +16,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
+val pythonRootDir = rootProject.layout.projectDirectory.dir(providers.gradleProperty("PYTHON_ROOT_DIR_PATH")).get()
 
 tasks.jar {
     dependsOn(configurations.runtimeClasspath)
@@ -27,7 +28,7 @@ tasks.jar {
         outputs.files.forEach { outputFile ->
             copy {
                 from(outputFile)
-                into(rootProject.layout.projectDirectory.dir(providers.gradleProperty("RESOURCES_DIR_PATH")))
+                into(pythonRootDir.dir(providers.gradleProperty("RESOURCES_SUBDIR")))
                 rename {"agent.jar"}
             }
         }
