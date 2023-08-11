@@ -1,12 +1,5 @@
-package org.matilda.commands.exceptions;
+package org.matilda.commands.exceptions
 
-import javax.lang.model.element.Element;
+import javax.lang.model.element.Element
 
-public class AnnotationProcessingException extends RuntimeException {
-    public final Element element;
-
-    public AnnotationProcessingException(String message, Element element) {
-        super(message);
-        this.element = element;
-    }
-}
+class AnnotationProcessingException(message: String, val element: Element) : RuntimeException(message)

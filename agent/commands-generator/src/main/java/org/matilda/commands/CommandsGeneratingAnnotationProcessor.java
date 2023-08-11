@@ -37,7 +37,7 @@ public class CommandsGeneratingAnnotationProcessor extends AbstractProcessor {
             mWasRun = true;
         } catch (AnnotationProcessingException e) {
             e.printStackTrace();
-            mProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage(), e.element);
+            mProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage(), e.getElement());
         } catch (Throwable e) {
             e.printStackTrace();
             mProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
