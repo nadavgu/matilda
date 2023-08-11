@@ -7,7 +7,6 @@ public class PythonCodeBlock {
         BLOCK,
     }
     private static final int NORMAL_EMPTY_LINES = 2;
-    private static final int CLASS_EMPTY_LINES = 1;
 
     private final CodeBlock mCodeBlock;
     private final int mEmptyLinesBetweenStuff;
@@ -16,7 +15,7 @@ public class PythonCodeBlock {
     public PythonCodeBlock(CodeBlock codeBlock) {
         this(codeBlock, NORMAL_EMPTY_LINES);
     }
-    private PythonCodeBlock(CodeBlock codeBlock, int emptyLines) {
+    protected PythonCodeBlock(CodeBlock codeBlock, int emptyLines) {
         mCodeBlock = codeBlock;
         mEmptyLinesBetweenStuff = emptyLines;
         mLastElementKind = ElementKind.NONE;
@@ -25,12 +24,17 @@ public class PythonCodeBlock {
     public PythonCodeBlock newFunction(PythonFunctionSpec function) {
         addEmptyLinesBeforeBlock();
         mCodeBlock.addStatement("%s:", function.getDeclaration());
-        return createNewCodeBlockWithIndentation();
+        return new PythonCodeBlock(createNewCodeBlockWithIndentation());
     }
 
-    private PythonCodeBlock createNewCodeBlockWithIndentation() {
+    public PythonClass newClass(PythonClassSpec classSpec) {
+        addEmptyLinesBeforeBlock();
+        mCodeBlock.addStatement("%s:", classSpec.getDeclaration());
+        return new PythonClass(createNewCodeBlockWithIndentation());
+    }
+    private CodeBlock createNewCodeBlockWithIndentation() {
         mLastElementKind = ElementKind.BLOCK;
-        return new PythonCodeBlock(mCodeBlock.newCodeBlockWithIndentation());
+        return mCodeBlock.newCodeBlockWithIndentation();
     }
 
     public PythonCodeBlock addStatement(String statement) {

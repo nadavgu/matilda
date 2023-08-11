@@ -24,6 +24,36 @@ internal class PythonCodeBlockTest  {
     }
 
     @Test
+    fun `test that class is written well with superclasses`() {
+        pythonCodeBlock.newClass(
+            PythonClassSpec(
+                "clazz",
+                "super1",
+                "super2"
+            )
+        )
+            .addStatement("statement")
+        assertEquals(codeBlock.lines.toList(), listOf(
+            "class clazz(super1, super2):",
+            "\tstatement"
+        ))
+    }
+
+    @Test
+    fun `test that class is written well without superclasses`() {
+        pythonCodeBlock.newClass(
+            PythonClassSpec(
+                "clazz"
+            )
+        )
+            .addStatement("statement")
+        assertEquals(codeBlock.lines.toList(), listOf(
+            "class clazz:",
+            "\tstatement"
+        ))
+    }
+
+    @Test
     fun `test that newlines are added before stuff`() {
         pythonCodeBlock.addStatement("beforeFunction")
         pythonCodeBlock.newFunction(PythonFunctionSpec("func"))
