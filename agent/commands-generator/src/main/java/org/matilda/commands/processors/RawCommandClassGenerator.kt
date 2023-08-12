@@ -48,7 +48,7 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .returns(ArrayTypeName.of(TypeName.BYTE))
             .beginControlFlow("try")
             .addStatement("\$T \$L = \$T.parseFrom(\$L)",
-                command.returnType, PARSED_PARAMETER_NAME, command.parameterType, RAW_PARAMETER_NAME)
+                command.parameterType, PARSED_PARAMETER_NAME, command.parameterType, RAW_PARAMETER_NAME)
             .addStatement("\$T \$L = \$L.\$L(\$L)",
                 command.returnType, RETURN_VALUE_NAME, SERVICE_FIELD_NAME, command.name, PARSED_PARAMETER_NAME)
             .addStatement("return \$L.toByteArray()", RETURN_VALUE_NAME)
