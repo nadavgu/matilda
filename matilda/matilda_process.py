@@ -1,12 +1,8 @@
-from typing import IO
-
 from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 
-from matilda.di.dependency_tags import DependencyTags
 from matilda.di.destructors.destruction_manager import DestructionManager
-from matilda.generated.commands.math_service import MathService
-from google.protobuf.wrappers_pb2 import Int32Value
+from matilda.generated.commands.math_service import MathService, Int32Value
 
 
 class MatildaProcess(Dependency):
