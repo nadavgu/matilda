@@ -1,10 +1,10 @@
 package org.matilda.commands.processors
 
-import com.google.protobuf.Any
 import com.squareup.javapoet.*
 import org.matilda.commands.Command
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.names.NameGenerator
+import org.matilda.commands.protobuf.Some
 import java.io.IOException
 import javax.annotation.processing.Filer
 import javax.inject.Inject
@@ -48,9 +48,10 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .addParameter(ParameterSpec.builder(BYTE_ARRAY_TYPE_NAME, RAW_PARAMETER_NAME).build())
             .returns(ArrayTypeName.of(TypeName.BYTE))
             .beginControlFlow("try")
-            .addStatement("\$T \$L = \$T.parseFrom(\$L).unpack(\$T.class)",
-                command.parameterType, PARSED_PARAMETER_NAME, Any::class.java, RAW_PARAMETER_NAME,
-                command.parameterType)
+            .addStatement("\$T \$L = \$T.parseFrom(\$L)",
+                Some::class.java, SOME_PARAMETER_VARIABLE_NAME, Some::class.java, RAW_PARAMETER_NAME)
+            .addStatement("\$T \$L = \$L.getAny(0).unpack(\$T.class)",
+                command.parameterType, PARSED_PARAMETER_NAME, SOME_PARAMETER_VARIABLE_NAME, command.parameterType)
             .addStatement("\$T \$L = \$L.\$L(\$L)",
                 command.returnType, RETURN_VALUE_NAME, SERVICE_FIELD_NAME, command.name, PARSED_PARAMETER_NAME)
             .addStatement("return \$L.toByteArray()", RETURN_VALUE_NAME)
@@ -66,5 +67,6 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
         private const val PARSED_PARAMETER_NAME = "parameter"
         private const val RETURN_VALUE_NAME = "returnValue"
         private const val EXCEPTION_NAME = "exception"
+        private const val SOME_PARAMETER_VARIABLE_NAME = "someParameter"
     }
 }

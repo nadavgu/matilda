@@ -6,6 +6,7 @@ import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
+import org.matilda.commands.protobuf.Some
 import org.matilda.commands.python.*
 import org.matilda.commands.python.writer.*
 import javax.inject.Inject
@@ -72,7 +73,8 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
         )
             .addStatement("%s = Any()", ANY_PARAMETER_VARIABLE_NAME)
             .addStatement("%s.Pack(msg=%s)", ANY_PARAMETER_VARIABLE_NAME, PARAMETER_VARIABLE_NAME)
-            .addStatement("%s = %s.SerializeToString()", RAW_PARAMETER_VARIABLE_NAME, ANY_PARAMETER_VARIABLE_NAME)
+            .addStatement("%s = Some(any=[%s])", SOME_PARAMETER_VARIABLE_NAME, ANY_PARAMETER_VARIABLE_NAME)
+            .addStatement("%s = %s.SerializeToString()", RAW_PARAMETER_VARIABLE_NAME, SOME_PARAMETER_VARIABLE_NAME)
             .addStatement(
                 "%s = self.%s.run(%d, %s)", RAW_RETURN_VALUE_VARIABLE_NAME, COMMAND_RUNNER_FIELD_NAME,
                 mCommandIdGenerator.generate(command), RAW_PARAMETER_VARIABLE_NAME
@@ -92,20 +94,22 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
 
     private fun getClassName(service: ServiceInfo) = mNameGenerator.forService(service).serviceClassName
 
+    private fun addImports(pythonFile: PythonFile) {
+        pythonFile.addFromImport(DEPENDENCY_CLASS)
+            .addFromImport(DEPENDENCY_CONTAINER_CLASS)
+            .addFromImport(COMMAND_RUNNER_CLASS)
+            .addFromImport(ANY_CLASS)
+            .addFromImport(mTypeTranslator.toPythonType(ClassName.get(Some::class.java)))
+    }
+
     companion object {
         private const val COMMAND_RUNNER_FIELD_NAME = "__command_runner"
-        private fun addImports(pythonFile: PythonFile) {
-            pythonFile.addFromImport(DEPENDENCY_CLASS)
-                .addFromImport(DEPENDENCY_CONTAINER_CLASS)
-                .addFromImport(COMMAND_RUNNER_CLASS)
-                .addFromImport(ANY_CLASS)
-        }
-
         private const val COMMAND_RUNNER_PARAMETER_NAME = "command_runner"
         private const val DEPENDENCY_CONTAINER_PARAMETER_NAME = "dependency_container"
         private const val PARAMETER_VARIABLE_NAME = "parameter"
         private const val RAW_PARAMETER_VARIABLE_NAME = "raw_parameter"
         private const val ANY_PARAMETER_VARIABLE_NAME = "any_parameter"
+        private const val SOME_PARAMETER_VARIABLE_NAME = "some_parameter"
         private const val RAW_RETURN_VALUE_VARIABLE_NAME = "raw_return_value"
         private const val RETURN_VALUE_VARIABLE_NAME = "return_value"
     }
