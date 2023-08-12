@@ -49,8 +49,9 @@ class NameGenerator @Inject internal constructor() {
             val rawCommandTypeName: TypeName
                 get() = ClassName.get(rawCommandPackageName, rawCommandClassName)
             val fullCommandName: String
-                get() = serviceRelativePackage.parts.joinToString { str -> StringUtils.capitalize(str) } +
-                        rawCommandClassName
+                get() = serviceRelativePackage.parts.joinToString(separator = "") {
+                    str -> StringUtils.capitalize(str)
+                } + rawCommandClassName
         }
     }
 
