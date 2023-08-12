@@ -3,6 +3,7 @@ package org.matilda.commands.processors
 import com.squareup.javapoet.*
 import org.matilda.commands.Command
 import org.matilda.commands.info.CommandInfo
+import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
 import java.io.IOException
@@ -50,21 +51,28 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .beginControlFlow("try")
             .addStatement("\$T \$L = \$T.parseFrom(\$L)",
                 Some::class.java, SOME_PARAMETER_VARIABLE_NAME, Some::class.java, RAW_PARAMETER_NAME)
-            .addStatement("\$T \$L = \$L.getAny(0).unpack(\$T.class)",
-                command.parameterType, PARSED_PARAMETER_NAME, SOME_PARAMETER_VARIABLE_NAME, command.parameterType)
+            .apply {
+                command.parameters.forEachIndexed { index, parameter ->
+                    addParameterConversion(index, parameter)
+                }
+            }
             .addStatement("\$T \$L = \$L.\$L(\$L)",
-                command.returnType, RETURN_VALUE_NAME, SERVICE_FIELD_NAME, command.name, PARSED_PARAMETER_NAME)
+                command.returnType, RETURN_VALUE_NAME, SERVICE_FIELD_NAME, command.name,
+                command.parameters.joinToString { it.name })
             .addStatement("return \$L.toByteArray()", RETURN_VALUE_NAME)
             .nextControlFlow("catch (\$T \$L)", IOException::class.java, EXCEPTION_NAME)
             .addStatement("throw new \$T(\$L)", RuntimeException::class.java, EXCEPTION_NAME)
             .endControlFlow()
             .build()
 
+    private fun MethodSpec.Builder.addParameterConversion(index: Int, parameterInfo: ParameterInfo) =
+        addStatement("\$T \$L = \$L.getAny(\$L).unpack(\$T.class)",
+            parameterInfo.type, parameterInfo.name, SOME_PARAMETER_VARIABLE_NAME, index, parameterInfo.type)
+
     companion object {
         private val BYTE_ARRAY_TYPE_NAME = ArrayTypeName.of(TypeName.BYTE)
         private const val SERVICE_FIELD_NAME = "mService"
         private const val RAW_PARAMETER_NAME = "rawParameter"
-        private const val PARSED_PARAMETER_NAME = "parameter"
         private const val RETURN_VALUE_NAME = "returnValue"
         private const val EXCEPTION_NAME = "exception"
         private const val SOME_PARAMETER_VARIABLE_NAME = "someParameter"

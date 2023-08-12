@@ -2,7 +2,8 @@ from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 
 from matilda.di.destructors.destruction_manager import DestructionManager
-from matilda.generated.commands.math_service import MathService, Int32Value
+from matilda.generated.commands.math_service import MathService, Int32Value, Some
+from google.protobuf.any_pb2 import Any
 
 
 class MatildaProcess(Dependency):
@@ -22,6 +23,7 @@ class MatildaProcess(Dependency):
     def create(dependency_container: DependencyContainer) -> 'MatildaProcess':
         print(dependency_container.get(MathService).square(Int32Value(value=3)).value)
         print(dependency_container.get(MathService).square(Int32Value(value=4)).value)
+        print(dependency_container.get(MathService).sum(Int32Value(value=3), Int32Value(value=4)).value)
 
         destruction_manager = dependency_container.get(DestructionManager)
         return MatildaProcess(destruction_manager)

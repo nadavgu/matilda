@@ -4,11 +4,13 @@ import com.google.protobuf.Message
 import org.matilda.commands.MatildaCommand
 import org.matilda.commands.exceptions.AnnotationProcessingException
 import org.matilda.commands.info.CommandInfo
+import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.info.ServiceInfo
 import javax.inject.Inject
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
+import javax.lang.model.element.VariableElement
 import javax.lang.model.type.TypeMirror
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
@@ -27,22 +29,19 @@ class CommandsCollector @Inject constructor() {
             .map { collectCommand(it, serviceInfo) }
 
     private fun collectCommand(element: ExecutableElement, serviceInfo: ServiceInfo) =
-        CommandInfo(element.simpleName.toString(), serviceInfo, getParameterType(element), getReturnType(element))
+        CommandInfo(element.simpleName.toString(), serviceInfo, getParameters(element), getReturnType(element))
 
-    private fun getParameterType(element: ExecutableElement): TypeMirror {
-        val params = element.parameters
-        if (params.size != 1) {
-            throw AnnotationProcessingException("Can only handle commands with one parameter", element)
-        }
-        val type = params[0].asType()
-        verifyType(type, element)
-        return type
+    private fun getParameters(element: ExecutableElement) = element.parameters.map {
+        getParameter(it)
     }
 
-    private fun getReturnType(element: ExecutableElement): TypeMirror {
-        val type = element.returnType
-        verifyType(type, element)
-        return type
+    private fun getParameter(element: VariableElement) =
+        ParameterInfo(element.simpleName.toString(), element.asType()).also {
+            verifyType(it.type, element)
+        }
+
+    private fun getReturnType(element: ExecutableElement) = element.returnType.also {
+        verifyType(it, element)
     }
 
     private fun verifyType(type: TypeMirror, element: Element) {

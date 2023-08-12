@@ -3,6 +3,7 @@ package org.matilda.commands.processors
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import org.matilda.commands.info.CommandInfo
+import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
@@ -38,7 +39,10 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
         )
         addConstructor(pythonClass)
         addDICreator(pythonClass, service)
-        service.commands.forEach { command -> addCommandMethod(pythonFile, pythonClass, command) }
+        service.commands.forEach { command ->
+            addCommandImports(pythonFile, command)
+            addCommandMethod(pythonClass, command)
+        }
     }
 
     private fun addConstructor(pythonClass: PythonClass) {
@@ -62,36 +66,58 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
             )
     }
 
-    private fun addCommandMethod(pythonFile: PythonFile, pythonClass: PythonClass, command: CommandInfo) {
-        val parameterType = getPythonType(pythonFile, command.parameterType)
-        val returnType = getPythonType(pythonFile, command.returnType)
-        pythonClass.addInstanceMethod(
-            PythonFunctionSpec.functionBuilder(command.name)
-                .addParameter(PARAMETER_VARIABLE_NAME, parameterType)
-                .returnTypeHint(returnType)
-                .build()
-        )
-            .addStatement("%s = Any()", ANY_PARAMETER_VARIABLE_NAME)
-            .addStatement("%s.Pack(msg=%s)", ANY_PARAMETER_VARIABLE_NAME, PARAMETER_VARIABLE_NAME)
-            .addStatement("%s = Some(any=[%s])", SOME_PARAMETER_VARIABLE_NAME, ANY_PARAMETER_VARIABLE_NAME)
+    private fun addCommandMethod(pythonClass: PythonClass, command: CommandInfo) {
+        pythonClass.addInstanceMethod(createCommandFunctionSpec(command))
+            .addStatement("%s = Some()", SOME_PARAMETER_VARIABLE_NAME)
+            .apply {
+                command.parameters.forEach {
+                    addParameterConversion(it)
+                }
+            }
             .addStatement("%s = %s.SerializeToString()", RAW_PARAMETER_VARIABLE_NAME, SOME_PARAMETER_VARIABLE_NAME)
             .addStatement(
                 "%s = self.%s.run(%d, %s)", RAW_RETURN_VALUE_VARIABLE_NAME, COMMAND_RUNNER_FIELD_NAME,
                 mCommandIdGenerator.generate(command), RAW_PARAMETER_VARIABLE_NAME
             )
-            .addStatement("%s = %s()", RETURN_VALUE_VARIABLE_NAME, returnType)
+            .addStatement("%s = %s()", RETURN_VALUE_VARIABLE_NAME, getPythonType(command.returnType))
             .addStatement("%s.ParseFromString(%s)", RETURN_VALUE_VARIABLE_NAME, RAW_RETURN_VALUE_VARIABLE_NAME)
             .addStatement("return %s", RETURN_VALUE_VARIABLE_NAME)
     }
 
-    private fun getPythonType(pythonFile: PythonFile, typeMirror: TypeMirror): String {
-        val typeName = TypeName.get(typeMirror)
-        return if (typeName is ClassName) {
-            pythonFile.addFromImport(mTypeTranslator.toPythonType(typeName))
-            typeName.simpleName()
-        } else typeName.toString()
+    private fun PythonCodeBlock.addParameterConversion(parameterInfo: ParameterInfo) {
+        val parameterAnyName = getParameterAnyName(parameterInfo.name)
+        addStatement("%s = Any()", parameterAnyName)
+            .addStatement("%s.Pack(msg=%s)", parameterAnyName, parameterInfo.name)
+            .addStatement("%s.any.append(%s)", SOME_PARAMETER_VARIABLE_NAME, parameterAnyName)
     }
 
+    private fun getParameterAnyName(name: String) = "${name}_any"
+
+    private fun createCommandFunctionSpec(command: CommandInfo): PythonFunctionSpec {
+        val builder = PythonFunctionSpec.functionBuilder(command.name)
+            .returnTypeHint(getPythonType(command.returnType))
+        command.parameters.forEach {
+            builder.addParameter(it.name, getPythonType(it.type))
+        }
+        return builder.build()
+    }
+
+    private fun getPythonType(typeMirror: TypeMirror): String {
+        val typeName = TypeName.get(typeMirror)
+        return if (typeName is ClassName) typeName.simpleName() else typeName.toString()
+    }
+
+    private fun addCommandImports(pythonFile: PythonFile, command: CommandInfo) {
+        importPythonType(pythonFile, command.returnType)
+        command.parameters.forEach { importPythonType(pythonFile, it.type) }
+    }
+
+    private fun importPythonType(pythonFile: PythonFile, typeMirror: TypeMirror) {
+        val typeName = TypeName.get(typeMirror)
+        if (typeName is ClassName) {
+            pythonFile.addFromImport(mTypeTranslator.toPythonType(typeName))
+        }
+    }
     private fun getClassName(service: ServiceInfo) = mNameGenerator.forService(service).serviceClassName
 
     private fun addImports(pythonFile: PythonFile) {
@@ -106,9 +132,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
         private const val COMMAND_RUNNER_FIELD_NAME = "__command_runner"
         private const val COMMAND_RUNNER_PARAMETER_NAME = "command_runner"
         private const val DEPENDENCY_CONTAINER_PARAMETER_NAME = "dependency_container"
-        private const val PARAMETER_VARIABLE_NAME = "parameter"
         private const val RAW_PARAMETER_VARIABLE_NAME = "raw_parameter"
-        private const val ANY_PARAMETER_VARIABLE_NAME = "any_parameter"
         private const val SOME_PARAMETER_VARIABLE_NAME = "some_parameter"
         private const val RAW_RETURN_VALUE_VARIABLE_NAME = "raw_return_value"
         private const val RETURN_VALUE_VARIABLE_NAME = "return_value"
