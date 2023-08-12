@@ -37,7 +37,6 @@ public class CommandsCollector {
     }
 
     private CommandInfo collectCommand(ExecutableElement element, ServiceInfo serviceInfo) {
-
         return new CommandInfo(element.getSimpleName().toString(), serviceInfo,
                 getParameterType(element), getReturnType(element));
     }
