@@ -13,6 +13,7 @@ class ProtobufModule {
     @Provides
     fun protobufLocations(processingEnvironment: ProcessingEnvironment) =
         ProtobufLocations(findFile(processingEnvironment, ProtobufLocations.PROJECT_PROTOBUF_DIR_OPTION),
+            findFile(processingEnvironment, ProtobufLocations.API_PROTOBUF_DIR_OPTION),
             findFile(processingEnvironment, ProtobufLocations.GOOGLE_PROTOBUF_DIR_OPTION))
 
     private fun findFile(processingEnvironment: ProcessingEnvironment, option: String) =
@@ -28,7 +29,9 @@ class ProtobufModule {
         return CachingTypeLocator(CompoundTypeLocator(listOf(
             pythonProperties.generatedProtobufPackage to
                     DirectoryProtobufTypeLocator(protobufLocations.projectProtobufDir),
-            Package() to DirectoryProtobufTypeLocator(protobufLocations.googleProtobufDir)
+            pythonProperties.generatedProtobufPackage to
+                    DirectoryProtobufTypeLocator(protobufLocations.apiProtobufDir),
+            Package("google", "protobuf") to DirectoryProtobufTypeLocator(protobufLocations.googleProtobufDir)
         )))
     }
 }

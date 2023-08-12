@@ -18,13 +18,15 @@ java {
 val pythonRootDir = rootProject.layout.projectDirectory.dir(providers.gradleProperty("PYTHON_ROOT_DIR_PATH")).get()
 val pythonGeneratedPackage = providers.gradleProperty("PYTHON_GENERATED_PACKAGE").get()
 val generatedProtoSubpackage = providers.gradleProperty("GENERATED_PROTO_SUBPACKAGE").get()
+val matildaProtoSubdir = providers.gradleProperty("MATILDA_PROTOS_SUBDIR").get()
 
 tasks.compileJava {
     options.compilerArgs.add("-ApythonRootDir=${pythonRootDir.asFile.absolutePath}")
     options.compilerArgs.add("-ApythonGeneratedPackage=$pythonGeneratedPackage")
     options.compilerArgs.add("-AgeneratedProtoSubpackage=$generatedProtoSubpackage")
-    options.compilerArgs.add("-AgoogleProtobufDir=${File(buildDir, "extracted-include-protos/main").absolutePath}")
+    options.compilerArgs.add("-AgoogleProtobufDir=${File(buildDir, "extracted-include-protos/main/google/protobuf").absolutePath}")
     options.compilerArgs.add("-AprojectProtobufDir=${File(projectDir, "src/main/proto").absolutePath}")
+    options.compilerArgs.add("-AapiProtobufDir=${File(buildDir, "extracted-include-protos/main/$matildaProtoSubdir").absolutePath}")
 }
 
 dependencies {
@@ -57,7 +59,7 @@ protobuf {
                 create("python") {
                     doLast {
                         copy {
-                            from(getOutputDir(this@create))
+                            from(File(getOutputDir(this@create), matildaProtoSubdir))
                             into(generatedProtoPythonDir)
                         }
                     }

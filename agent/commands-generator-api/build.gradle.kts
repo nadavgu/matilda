@@ -31,6 +31,7 @@ val generatedProtoSubpackage = providers.gradleProperty("GENERATED_PROTO_SUBPACK
 val generatedProtoPythonDir = pythonRootDir
     .dir(pythonGeneratedPackage.replace(".", File.separator))
     .dir(generatedProtoSubpackage.replace(".", File.separator))
+val matildaProtoSubdir = providers.gradleProperty("MATILDA_PROTOS_SUBDIR").get()
 
 protobuf {
     protoc {
@@ -44,7 +45,7 @@ protobuf {
                 create("python") {
                     doLast {
                         copy {
-                            from(getOutputDir(this@create))
+                            from(File(getOutputDir(this@create), matildaProtoSubdir))
                             into(generatedProtoPythonDir)
                         }
                     }

@@ -17,6 +17,7 @@ import javax.tools.Diagnostic
     PythonProperties.PYTHON_GENERATED_PACKAGE_OPTION,
     PythonProperties.GENERATED_PROTO_SUBPACKAGE_OPTION,
     ProtobufLocations.PROJECT_PROTOBUF_DIR_OPTION,
+    ProtobufLocations.API_PROTOBUF_DIR_OPTION,
     ProtobufLocations.GOOGLE_PROTOBUF_DIR_OPTION,
 )
 class CommandsGeneratingAnnotationProcessor : AbstractProcessor() {
