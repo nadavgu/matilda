@@ -2,7 +2,6 @@ from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 
 from matilda.di.destructors.destruction_manager import DestructionManager
-from matilda.exceptions.command_failed_exception import CommandFailedException
 from matilda.generated.commands.math_service import MathService
 
 
