@@ -7,7 +7,7 @@ import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
 import org.matilda.commands.types.isScalarType
-import org.matilda.commands.types.protobufWrapperType
+import org.matilda.commands.types.protobufWrapperJavaType
 import java.io.IOException
 import javax.annotation.processing.Filer
 import javax.inject.Inject
@@ -71,7 +71,7 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
         if (parameterInfo.type.isScalarType()) {
             addStatement("\$T \$L = \$L.getAny(\$L).unpack(\$T.class).getValue()",
                 parameterInfo.type, parameterInfo.name, SOME_PARAMETER_VARIABLE_NAME, index,
-                parameterInfo.type.protobufWrapperType)
+                parameterInfo.type.protobufWrapperJavaType)
         } else {
             addStatement("\$T \$L = \$L.getAny(\$L).unpack(\$T.class)",
                 parameterInfo.type, parameterInfo.name, SOME_PARAMETER_VARIABLE_NAME, index, parameterInfo.type)

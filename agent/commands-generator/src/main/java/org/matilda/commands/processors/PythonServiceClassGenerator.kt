@@ -8,9 +8,14 @@ import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
-import org.matilda.commands.python.*
+import org.matilda.commands.python.ANY_CLASS
+import org.matilda.commands.python.COMMAND_RUNNER_CLASS
+import org.matilda.commands.python.DEPENDENCY_CLASS
+import org.matilda.commands.python.DEPENDENCY_CONTAINER_CLASS
 import org.matilda.commands.python.writer.*
 import org.matilda.commands.types.TypeTranslator
+import org.matilda.commands.types.isScalarType
+import org.matilda.commands.types.protobufWrapperPythonType
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
 
@@ -86,13 +91,20 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     }
 
     private fun PythonCodeBlock.addParameterConversion(parameterInfo: ParameterInfo) {
+        if (parameterInfo.type.isScalarType()) {
+            addStatement("%s = %s(value=%s)", getParameterWrapperName(parameterInfo.name),
+                parameterInfo.type.protobufWrapperPythonType.name, parameterInfo.name)
+        }
+        val protobufParameterName =
+            if (parameterInfo.type.isScalarType()) getParameterWrapperName(parameterInfo.name) else parameterInfo.name
         val parameterAnyName = getParameterAnyName(parameterInfo.name)
         addStatement("%s = Any()", parameterAnyName)
-            .addStatement("%s.Pack(msg=%s)", parameterAnyName, parameterInfo.name)
+            .addStatement("%s.Pack(msg=%s)", parameterAnyName, protobufParameterName)
             .addStatement("%s.any.append(%s)", SOME_PARAMETER_VARIABLE_NAME, parameterAnyName)
     }
 
     private fun getParameterAnyName(name: String) = "${name}_any"
+    private fun getParameterWrapperName(name: String) = "${name}_wrapper"
 
     private fun createCommandFunctionSpec(command: CommandInfo): PythonFunctionSpec {
         val builder = PythonFunctionSpec.functionBuilder(command.name)
@@ -115,7 +127,9 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
 
     private fun importPythonType(pythonFile: PythonFile, typeMirror: TypeMirror) {
         val typeName = TypeName.get(typeMirror)
-        if (typeName is ClassName) {
+        if (typeName.isScalarType()) {
+            pythonFile.addFromImport(typeName.protobufWrapperPythonType)
+        } else if (typeName is ClassName) {
             pythonFile.addFromImport(mTypeTranslator.toPythonType(typeName))
         }
     }

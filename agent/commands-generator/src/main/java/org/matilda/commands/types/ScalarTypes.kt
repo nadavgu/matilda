@@ -11,9 +11,11 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import com.sun.jdi.BooleanValue
 import org.matilda.commands.python.PrimitiveTypeName
+import org.matilda.commands.python.PythonClassName
+import org.matilda.commands.utils.Package
 import javax.lang.model.type.TypeMirror
 
-data class ScalarTypeInfo(val protobufWrapperType: Class<*>, val pythonType: PrimitiveTypeName)
+data class ScalarTypeInfo(val protobufWrapperJavaType: Class<*>, val pythonType: PrimitiveTypeName)
 
 val SCALAR_TYPE_MAP = mapOf(
     TypeName.DOUBLE to ScalarTypeInfo(DoubleValue::class.java, PrimitiveTypeName("float")),
@@ -27,7 +29,11 @@ val SCALAR_TYPE_MAP = mapOf(
 
 fun TypeName.isScalarType() = this in SCALAR_TYPE_MAP
 fun TypeMirror.isScalarType() = TypeName.get(this).isScalarType()
-val TypeName.protobufWrapperType
-    get() = SCALAR_TYPE_MAP[this]!!.protobufWrapperType
-val TypeMirror.protobufWrapperType
-    get() = TypeName.get(this).protobufWrapperType
+val TypeName.protobufWrapperJavaType
+    get() = SCALAR_TYPE_MAP[this]!!.protobufWrapperJavaType
+val TypeMirror.protobufWrapperJavaType
+    get() = TypeName.get(this).protobufWrapperJavaType
+val TypeName.protobufWrapperPythonType
+    get() = PythonClassName(Package("google", "protobuf", "wrappers_pb2"), protobufWrapperJavaType.simpleName)
+val TypeMirror.protobufWrapperPythonType
+    get() = TypeName.get(this).protobufWrapperPythonType
