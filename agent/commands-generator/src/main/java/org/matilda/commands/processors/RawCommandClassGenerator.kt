@@ -6,6 +6,8 @@ import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
+import org.matilda.commands.types.isScalarType
+import org.matilda.commands.types.protobufWrapperType
 import java.io.IOException
 import javax.annotation.processing.Filer
 import javax.inject.Inject
@@ -66,8 +68,14 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .build()
 
     private fun MethodSpec.Builder.addParameterConversion(index: Int, parameterInfo: ParameterInfo) =
-        addStatement("\$T \$L = \$L.getAny(\$L).unpack(\$T.class)",
-            parameterInfo.type, parameterInfo.name, SOME_PARAMETER_VARIABLE_NAME, index, parameterInfo.type)
+        if (parameterInfo.type.isScalarType()) {
+            addStatement("\$T \$L = \$L.getAny(\$L).unpack(\$T.class).getValue()",
+                parameterInfo.type, parameterInfo.name, SOME_PARAMETER_VARIABLE_NAME, index,
+                parameterInfo.type.protobufWrapperType)
+        } else {
+            addStatement("\$T \$L = \$L.getAny(\$L).unpack(\$T.class)",
+                parameterInfo.type, parameterInfo.name, SOME_PARAMETER_VARIABLE_NAME, index, parameterInfo.type)
+        }
 
     companion object {
         private val BYTE_ARRAY_TYPE_NAME = ArrayTypeName.of(TypeName.BYTE)
