@@ -2,8 +2,7 @@ from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 
 from matilda.di.destructors.destruction_manager import DestructionManager
-from matilda.generated.commands.math_service import MathService, Int32Value, Some
-from google.protobuf.any_pb2 import Any
+from matilda.generated.commands.math_service import MathService
 
 
 class MatildaProcess(Dependency):
