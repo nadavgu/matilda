@@ -70,7 +70,9 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
                 .returnTypeHint(returnType)
                 .build()
         )
-            .addStatement("%s = %s.SerializeToString()", RAW_PARAMETER_VARIABLE_NAME, PARAMETER_VARIABLE_NAME)
+            .addStatement("%s = Any()", ANY_PARAMETER_VARIABLE_NAME)
+            .addStatement("%s.Pack(msg=%s)", ANY_PARAMETER_VARIABLE_NAME, PARAMETER_VARIABLE_NAME)
+            .addStatement("%s = %s.SerializeToString()", RAW_PARAMETER_VARIABLE_NAME, ANY_PARAMETER_VARIABLE_NAME)
             .addStatement(
                 "%s = self.%s.run(%d, %s)", RAW_RETURN_VALUE_VARIABLE_NAME, COMMAND_RUNNER_FIELD_NAME,
                 mCommandIdGenerator.generate(command), RAW_PARAMETER_VARIABLE_NAME
@@ -96,12 +98,14 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
             pythonFile.addFromImport(DEPENDENCY_CLASS)
                 .addFromImport(DEPENDENCY_CONTAINER_CLASS)
                 .addFromImport(COMMAND_RUNNER_CLASS)
+                .addFromImport(ANY_CLASS)
         }
 
         private const val COMMAND_RUNNER_PARAMETER_NAME = "command_runner"
         private const val DEPENDENCY_CONTAINER_PARAMETER_NAME = "dependency_container"
         private const val PARAMETER_VARIABLE_NAME = "parameter"
         private const val RAW_PARAMETER_VARIABLE_NAME = "raw_parameter"
+        private const val ANY_PARAMETER_VARIABLE_NAME = "any_parameter"
         private const val RAW_RETURN_VALUE_VARIABLE_NAME = "raw_return_value"
         private const val RETURN_VALUE_VARIABLE_NAME = "return_value"
     }

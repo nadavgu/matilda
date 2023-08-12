@@ -1,5 +1,6 @@
 package org.matilda.commands.processors
 
+import com.google.protobuf.Any
 import com.squareup.javapoet.*
 import org.matilda.commands.Command
 import org.matilda.commands.info.CommandInfo
@@ -47,8 +48,9 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .addParameter(ParameterSpec.builder(BYTE_ARRAY_TYPE_NAME, RAW_PARAMETER_NAME).build())
             .returns(ArrayTypeName.of(TypeName.BYTE))
             .beginControlFlow("try")
-            .addStatement("\$T \$L = \$T.parseFrom(\$L)",
-                command.parameterType, PARSED_PARAMETER_NAME, command.parameterType, RAW_PARAMETER_NAME)
+            .addStatement("\$T \$L = \$T.parseFrom(\$L).unpack(\$T.class)",
+                command.parameterType, PARSED_PARAMETER_NAME, Any::class.java, RAW_PARAMETER_NAME,
+                command.parameterType)
             .addStatement("\$T \$L = \$L.\$L(\$L)",
                 command.returnType, RETURN_VALUE_NAME, SERVICE_FIELD_NAME, command.name, PARSED_PARAMETER_NAME)
             .addStatement("return \$L.toByteArray()", RETURN_VALUE_NAME)
