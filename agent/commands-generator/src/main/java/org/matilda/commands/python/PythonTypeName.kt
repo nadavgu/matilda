@@ -2,4 +2,8 @@ package org.matilda.commands.python
 
 import org.matilda.commands.utils.Package
 
-data class PythonTypeName(val packageName: Package, val className: String)
+interface PythonTypeName {
+    val name: String
+}
+data class PythonClassName(val packageName: Package, override val name: String): PythonTypeName
+data class PrimitiveTypeName(override val name: String): PythonTypeName

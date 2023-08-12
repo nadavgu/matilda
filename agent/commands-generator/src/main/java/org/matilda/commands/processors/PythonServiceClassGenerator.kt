@@ -10,6 +10,7 @@ import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
 import org.matilda.commands.python.*
 import org.matilda.commands.python.writer.*
+import org.matilda.commands.types.TypeTranslator
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
 
@@ -35,7 +36,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
 
     private fun addClass(pythonFile: PythonFile, service: ServiceInfo) {
         val pythonClass = pythonFile.newClass(
-            PythonClassSpec(getClassName(service), DEPENDENCY_CLASS.className)
+            PythonClassSpec(getClassName(service), DEPENDENCY_CLASS.name)
         )
         addConstructor(pythonClass)
         addDICreator(pythonClass, service)
@@ -48,7 +49,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     private fun addConstructor(pythonClass: PythonClass) {
         pythonClass.addInstanceMethod(
             PythonFunctionSpec.constructorBuilder()
-                .addParameter(COMMAND_RUNNER_PARAMETER_NAME, COMMAND_RUNNER_CLASS.className)
+                .addParameter(COMMAND_RUNNER_PARAMETER_NAME, COMMAND_RUNNER_CLASS.name)
                 .build()
         )
             .addStatement("self.%s = %s", COMMAND_RUNNER_FIELD_NAME, COMMAND_RUNNER_PARAMETER_NAME)
@@ -57,12 +58,12 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     private fun addDICreator(pythonClass: PythonClass, service: ServiceInfo) {
         pythonClass.addStaticMethod(
             PythonFunctionSpec.functionBuilder("create")
-                .addParameter(DEPENDENCY_CONTAINER_PARAMETER_NAME, DEPENDENCY_CONTAINER_CLASS.className)
+                .addParameter(DEPENDENCY_CONTAINER_PARAMETER_NAME, DEPENDENCY_CONTAINER_CLASS.name)
                 .returnTypeHint("'" + getClassName(service) + "'").build()
         )
             .addStatement(
                 "return %s(%s.get(%s))", getClassName(service),
-                DEPENDENCY_CONTAINER_PARAMETER_NAME, COMMAND_RUNNER_CLASS.className
+                DEPENDENCY_CONTAINER_PARAMETER_NAME, COMMAND_RUNNER_CLASS.name
             )
     }
 

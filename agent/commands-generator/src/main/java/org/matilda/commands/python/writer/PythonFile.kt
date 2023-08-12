@@ -1,5 +1,6 @@
 package org.matilda.commands.python.writer
 
+import org.matilda.commands.python.PythonClassName
 import org.matilda.commands.python.PythonTypeName
 import org.matilda.commands.utils.Package
 import java.util.stream.Collectors
@@ -22,10 +23,10 @@ class PythonFile(val packageName: Package) : PythonCodeBlock() {
         return this
     }
 
-    fun addFromImport(pythonTypeName: PythonTypeName): PythonFile {
+    fun addFromImport(pythonTypeName: PythonClassName): PythonFile {
         if (pythonTypeName !in mImportedTypes) {
             mImportedTypes.add(pythonTypeName)
-            addFromImport(pythonTypeName.packageName, pythonTypeName.className)
+            addFromImport(pythonTypeName.packageName, pythonTypeName.name)
         }
         return this
     }
