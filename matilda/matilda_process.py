@@ -24,10 +24,7 @@ class MatildaProcess(Dependency):
         print(dependency_container.get(MathService).square(3))
         print(dependency_container.get(MathService).square(4))
         print(dependency_container.get(MathService).sum(3, 4))
-        try:
-            dependency_container.get(MathService).div(3, 0)
-        except CommandFailedException as e:
-            print(e)
+        dependency_container.get(MathService).div(3, 0)
 
         destruction_manager = dependency_container.get(DestructionManager)
         return MatildaProcess(destruction_manager)

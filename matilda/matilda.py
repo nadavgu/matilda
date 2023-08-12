@@ -27,7 +27,11 @@ class Matilda:
                                        connection)
         dependency_container.get(DestructionManager).add_destructor(connection.close)
 
-        return dependency_container.get(MatildaProcess)
+        try:
+            return dependency_container.get(MatildaProcess)
+        except:
+            dependency_container.get(DestructionManager).destruct()
+            raise
 
     @staticmethod
     def __create_dependency_container(connection: MatildaConnection) -> DependencyContainer:
@@ -37,7 +41,8 @@ class Matilda:
         return dependency_container
 
     @staticmethod
-    def __start_message_server(message_server: MessageServer, destruction_manager: DestructionManager, connection: MatildaConnection):
+    def __start_message_server(message_server: MessageServer, destruction_manager: DestructionManager,
+                               connection: MatildaConnection):
         thread = Thread(target=message_server.start)
         thread.start()
         destruction_manager.add_destructor(lambda: Matilda.__stop_message_server(thread, connection))
@@ -46,4 +51,3 @@ class Matilda:
     def __stop_message_server(message_server_thread: Thread, connection: MatildaConnection):
         connection.close()
         message_server_thread.join()
-
