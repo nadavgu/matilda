@@ -1,5 +1,6 @@
 plugins {
-    id("java")
+    java
+    id("com.google.protobuf") version "0.9.4"
 }
 
 group = "org.matilda"
@@ -17,8 +18,38 @@ java {
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation("com.google.protobuf:protobuf-java:3.23.0")
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+
+val pythonRootDir = rootProject.layout.projectDirectory.dir(providers.gradleProperty("PYTHON_ROOT_DIR_PATH")).get()
+val pythonGeneratedPackage = providers.gradleProperty("PYTHON_GENERATED_PACKAGE").get()
+val generatedProtoSubpackage = providers.gradleProperty("GENERATED_PROTO_SUBPACKAGE").get()
+val generatedProtoPythonDir = pythonRootDir
+    .dir(pythonGeneratedPackage.replace(".", File.separator))
+    .dir(generatedProtoSubpackage.replace(".", File.separator))
+
+protobuf {
+    protoc {
+        // The artifact spec for the Protobuf Compiler
+        artifact = "com.google.protobuf:protoc:3.23.0"
+    }
+
+    generateProtoTasks {
+        all().configureEach {
+            builtins {
+                create("python") {
+                    doLast {
+                        copy {
+                            from(getOutputDir(this@create))
+                            into(generatedProtoPythonDir)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
