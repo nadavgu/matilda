@@ -10,7 +10,7 @@ public class MathService {
     }
 
     @MatildaCommand
-    public Int32Value sum(Int32Value first, Int32Value second) {
-        return Int32Value.newBuilder().setValue(first.getValue() + second.getValue()).build();
+    public Int32Value sum(Int32Value first, int second) {
+        return Int32Value.newBuilder().setValue(first.getValue() + second).build();
     }
 }

@@ -1,11 +1,13 @@
 package org.matilda.commands.collectors
 
 import com.google.protobuf.Message
+import com.squareup.javapoet.TypeName
 import org.matilda.commands.MatildaCommand
 import org.matilda.commands.exceptions.AnnotationProcessingException
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.info.ServiceInfo
+import org.matilda.commands.types.isScalarType
 import javax.inject.Inject
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
@@ -47,9 +49,9 @@ class CommandsCollector @Inject constructor() {
     private fun verifyType(type: TypeMirror, element: Element) {
         val messageBaseType: TypeMirror =
             mTypes.getDeclaredType(mElements.getTypeElement(Message::class.java.canonicalName))
-        if (!mTypes.isSubtype(type, messageBaseType)) {
+        if (!TypeName.get(type).isScalarType() && !mTypes.isSubtype(type, messageBaseType)) {
             throw AnnotationProcessingException("Paramaters and return values of services have to be " +
-                    "protobuf messages!", element)
+                    "protobuf messages or scalar types!", element)
         }
     }
 }
