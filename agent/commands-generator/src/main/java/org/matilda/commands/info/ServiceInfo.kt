@@ -5,6 +5,6 @@ import javax.lang.model.type.TypeMirror
 data class ServiceInfo(
     val fullName: String,
     val type: TypeMirror,
-    val commands: List<CommandInfo>,
+    val commands: MutableList<CommandInfo>,
     val hasInjectConstructor: Boolean
 )

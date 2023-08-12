@@ -1,73 +1,57 @@
-package org.matilda.commands.collectors;
+package org.matilda.commands.collectors
 
-import org.matilda.commands.MatildaService;
-import org.matilda.commands.exceptions.AnnotationProcessingException;
-import org.matilda.commands.info.ProjectServices;
-import org.matilda.commands.info.ServiceInfo;
+import org.matilda.commands.MatildaService
+import org.matilda.commands.exceptions.AnnotationProcessingException
+import org.matilda.commands.info.ProjectServices
+import org.matilda.commands.info.ServiceInfo
+import javax.annotation.processing.RoundEnvironment
+import javax.inject.Inject
+import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
+import javax.lang.model.element.ExecutableElement
+import javax.lang.model.element.TypeElement
 
-import javax.annotation.processing.RoundEnvironment;
-import javax.inject.Inject;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class ServicesCollector {
+class ServicesCollector @Inject constructor() {
     @Inject
-    RoundEnvironment mRoundEnvironment;
+    lateinit var mRoundEnvironment: RoundEnvironment
 
     @Inject
-    CommandsCollector mCommandsCollector;
+    lateinit var mCommandsCollector: CommandsCollector
+    fun collect() = ProjectServices(
+        mRoundEnvironment.getElementsAnnotatedWith(MatildaService::class.java)
+            .map { obj: Any? -> TypeElement::class.java.cast(obj) }
+            .map { element: TypeElement -> collectService(element) }
+    )
 
-    @Inject
-    public ServicesCollector() {}
-
-    public ProjectServices collect() {
-        return new ProjectServices(mRoundEnvironment.getElementsAnnotatedWith(MatildaService.class)
-                .stream()
-                .map(TypeElement.class::cast)
-                .map(this::collectService)
-                .collect(Collectors.toList()));
+    private fun collectService(element: TypeElement): ServiceInfo {
+        val serviceInfo = ServiceInfo(
+            element.qualifiedName.toString(), element.asType(),
+            ArrayList(), checkIfServiceHasInjectConstructor(element)
+        )
+        serviceInfo.commands.addAll(mCommandsCollector.collect(serviceInfo, element))
+        return serviceInfo
     }
 
-    private ServiceInfo collectService(TypeElement element) {
-        ServiceInfo serviceInfo = new ServiceInfo(element.getQualifiedName().toString(), element.asType(),
-                new ArrayList<>(), checkIfServiceHasInjectConstructor(element));
-        serviceInfo.getCommands().addAll(mCommandsCollector.collect(serviceInfo, element));
-        return serviceInfo;
-    }
-
-    private boolean checkIfServiceHasInjectConstructor(TypeElement element) {
-        List<Element> constructors = getConstructors(element);
-        if (constructors.size() == 0) {
-            return false;
+    private fun checkIfServiceHasInjectConstructor(element: TypeElement): Boolean {
+        val constructors = getConstructors(element)
+        if (constructors.isEmpty()) {
+            return false
         }
-
-        if (constructors.stream().anyMatch(constructor -> constructor.getAnnotation(Inject.class) != null)) {
-            return true;
+        if (constructors.any { constructor -> constructor.getAnnotation(Inject::class.java) != null }) {
+            return true
         }
-
-        if (constructors.stream().anyMatch(this::isNonDefaultConstructor)) {
-            throw new AnnotationProcessingException("This service has non-default constructors that aren't marked " +
+        if (constructors.any { constructor -> isNonDefaultConstructor(constructor) }) {
+            throw AnnotationProcessingException("This service has non-default constructors that aren't marked " +
                     "with @Inject. In order for you to use the sweet sweet DI, mark a constructor with " +
                     "@Inject, or, if you don't want amazing DI, delete all the non-default constructors," +
-                    " so that I will be able to @Provide you",
-                    constructors.get(0));
+                    " so that I will be able to @Provide you", constructors[0])
         }
-
-        return false;
+        return false
     }
 
-    private List<Element> getConstructors(TypeElement element) {
-        return element.getEnclosedElements().stream()
-                .filter(enclosedElement -> enclosedElement.getKind() == ElementKind.CONSTRUCTOR)
-                .collect(Collectors.toList());
-    }
+    private fun getConstructors(element: TypeElement) =
+        element.enclosedElements.filter { enclosedElement: Element -> enclosedElement.kind == ElementKind.CONSTRUCTOR }
 
-    private boolean isNonDefaultConstructor(Element constructor) {
-        return ((ExecutableElement) constructor).getParameters().size() > 0;
-    }
+    private fun isNonDefaultConstructor(constructor: Element) =
+        (constructor as ExecutableElement).parameters.isNotEmpty()
 }
