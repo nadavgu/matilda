@@ -13,9 +13,6 @@ message CommandRequest {
 
 message CommandResponse {
   int32 id = 1;
-  bytes return_value = 2;
-}
-
-enum CommandType {
-  ECHO = 0;
+  bool success = 2;
+  bytes result = 3;
 }
