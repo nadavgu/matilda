@@ -33,6 +33,6 @@ data class Package(val parts: List<String>) {
         fun fromString(packageName: String) = Package(packageName.split("\\.".toRegex()))
 
         fun joinPackages(vararg packages: Package) = Package(packages.flatMap(Package::parts))
-        fun fromPath(path: String): Package = Package(path.split(File.separator))
+        fun fromPath(path: String): Package = Package(path.split(File.separator).filter { it.isNotEmpty() })
     }
 }
