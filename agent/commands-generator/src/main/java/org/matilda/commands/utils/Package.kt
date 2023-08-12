@@ -13,7 +13,7 @@ class Package(parts: List<String>) {
 
     fun subpackage(child: String) = subpackage(fromString(child))
 
-    private fun subpackage(child: Package) = joinPackages(this, child)
+    fun subpackage(child: Package) = joinPackages(this, child)
 
     val packageName: String
         get() = parts.joinToString(".")

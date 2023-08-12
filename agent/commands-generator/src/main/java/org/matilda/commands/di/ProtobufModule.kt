@@ -2,14 +2,16 @@ package org.matilda.commands.di
 
 import dagger.Module
 import dagger.Provides
-import org.matilda.commands.protobuf.ProtobufLocations
+import org.matilda.commands.protobuf.*
+import org.matilda.commands.python.PythonProperties
+import org.matilda.commands.utils.Package
 import java.io.File
 import javax.annotation.processing.ProcessingEnvironment
 
 @Module
 class ProtobufModule {
     @Provides
-    fun pythonProperties(processingEnvironment: ProcessingEnvironment) =
+    fun protobufLocations(processingEnvironment: ProcessingEnvironment) =
         ProtobufLocations(findFile(processingEnvironment, ProtobufLocations.PROJECT_PROTOBUF_DIR_OPTION),
             findFile(processingEnvironment, ProtobufLocations.GOOGLE_PROTOBUF_DIR_OPTION))
 
@@ -19,4 +21,14 @@ class ProtobufModule {
                 throw RuntimeException("Specified file doesn't exist: $it")
             }
         }
+
+    @Provides
+    fun protobufTypeLocator(protobufLocations: ProtobufLocations,
+                            pythonProperties: PythonProperties): ProtobufTypeLocator {
+        return CachingTypeLocator(CompoundTypeLocator(listOf(
+            pythonProperties.generatedProtobufPackage to
+                    DirectoryProtobufTypeLocator(protobufLocations.projectProtobufDir),
+            Package() to DirectoryProtobufTypeLocator(protobufLocations.googleProtobufDir)
+        )))
+    }
 }
