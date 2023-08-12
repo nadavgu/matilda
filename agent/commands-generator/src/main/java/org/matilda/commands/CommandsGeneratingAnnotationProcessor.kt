@@ -3,6 +3,7 @@ package org.matilda.commands
 import org.matilda.commands.di.AnnotationProcessorModule
 import org.matilda.commands.di.DaggerCommandsGeneratorComponent
 import org.matilda.commands.exceptions.AnnotationProcessingException
+import org.matilda.commands.protobuf.ProtobufLocations
 import org.matilda.commands.python.PythonProperties
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
@@ -11,7 +12,13 @@ import javax.tools.Diagnostic
 
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes("org.matilda.commands.MatildaService", "org.matilda.commands.MatildaCommand")
-@SupportedOptions(PythonProperties.PYTHON_ROOT_DIR_OPTION, PythonProperties.PYTHON_GENERATED_PACKAGE_OPTION)
+@SupportedOptions(
+    PythonProperties.PYTHON_ROOT_DIR_OPTION,
+    PythonProperties.PYTHON_GENERATED_PACKAGE_OPTION,
+    PythonProperties.GENERATED_PROTO_SUBPACKAGE_OPTION,
+    ProtobufLocations.PROJECT_PROTOBUF_DIR_OPTION,
+    ProtobufLocations.GOOGLE_PROTOBUF_DIR_OPTION,
+)
 class CommandsGeneratingAnnotationProcessor : AbstractProcessor() {
     private var mProcessingEnvironment: ProcessingEnvironment? = null
     private var mWasRun = false

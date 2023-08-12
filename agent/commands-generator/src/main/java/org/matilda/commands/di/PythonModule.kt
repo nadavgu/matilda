@@ -18,7 +18,9 @@ class PythonModule {
         }
         val pythonGeneratedPackage =
             Package.fromString(processingEnvironment.options[PythonProperties.PYTHON_GENERATED_PACKAGE_OPTION]!!)
-        return PythonProperties(pythonRootDir, pythonGeneratedPackage)
+        val generatedProtobufPackage = pythonGeneratedPackage.subpackage(
+            processingEnvironment.options[PythonProperties.GENERATED_PROTO_SUBPACKAGE_OPTION]!!)
+        return PythonProperties(pythonRootDir, pythonGeneratedPackage, generatedProtobufPackage)
     }
 
     @Provides

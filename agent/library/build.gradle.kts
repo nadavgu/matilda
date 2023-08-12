@@ -16,11 +16,15 @@ java {
 }
 
 val pythonRootDir = rootProject.layout.projectDirectory.dir(providers.gradleProperty("PYTHON_ROOT_DIR_PATH")).get()
+val pythonGeneratedPackage = providers.gradleProperty("PYTHON_GENERATED_PACKAGE").get()
+val generatedProtoSubpackage = providers.gradleProperty("GENERATED_PROTO_SUBPACKAGE").get()
 
 tasks.compileJava {
     options.compilerArgs.add("-ApythonRootDir=${pythonRootDir.asFile.absolutePath}")
-    options.compilerArgs.add("-ApythonGeneratedPackage=" +
-            providers.gradleProperty("PYTHON_GENERATED_PACKAGE").get())
+    options.compilerArgs.add("-ApythonGeneratedPackage=$pythonGeneratedPackage")
+    options.compilerArgs.add("-AgeneratedProtoSubpackage=$generatedProtoSubpackage")
+    options.compilerArgs.add("-AgoogleProtobufDir=${File(buildDir, "extracted-include-protos/main").absolutePath}")
+    options.compilerArgs.add("-AprojectProtobufDir=${File(projectDir, "src/main/proto").absolutePath}")
 }
 
 dependencies {
@@ -37,6 +41,10 @@ tasks.test {
     useJUnitPlatform()
 }
 
+val generatedProtoPythonDir = pythonRootDir
+    .dir(pythonGeneratedPackage.replace(".", File.separator))
+    .dir(generatedProtoSubpackage.replace(".", File.separator))
+
 protobuf {
     protoc {
         // The artifact spec for the Protobuf Compiler
@@ -50,7 +58,7 @@ protobuf {
                     doLast {
                         copy {
                             from(getOutputDir(this@create))
-                            into(pythonRootDir.dir(providers.gradleProperty("GENERATED_PROTO_SUBDIR")))
+                            into(generatedProtoPythonDir)
                         }
                     }
                 }

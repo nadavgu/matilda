@@ -1,6 +1,6 @@
 package org.matilda.commands.utils
 
-import java.nio.file.FileSystems
+import java.io.File
 
 class Package(parts: List<String>) {
     val parts: List<String>
@@ -33,13 +33,12 @@ class Package(parts: List<String>) {
         return Package(parts.subList(equalParts, parts.size))
     }
 
-    fun toPath() = parts.joinToString(FileSystems.getDefault().separator)
+    fun toPath() = parts.joinToString(File.separator)
 
     companion object {
-        @JvmStatic
         fun fromString(packageName: String) = Package(packageName.split("\\.".toRegex()))
 
-        @JvmStatic
         fun joinPackages(vararg packages: Package) = Package(packages.flatMap(Package::parts))
+        fun fromPath(path: String): Package = Package(path.split(File.separator))
     }
 }
