@@ -1,6 +1,7 @@
 from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 
+from matilda.exceptions.command_failed_exception import CommandFailedException
 from matilda.messages.message import Message
 from matilda.messages.message_listener import MessageListener, MessageListeningInstance
 from matilda.generated.proto.message_pb2 import MessageType
@@ -19,7 +20,10 @@ class CommandResponseListeningInstance:
 
     def wait_for_response(self) -> bytes:
         message = self.__message_listening_instance.wait_for_message()
-        return _parse_command_response(message.data).return_value
+        command_response = _parse_command_response(message.data)
+        if not command_response.success:
+            raise CommandFailedException(command_response.result.decode())
+        return command_response.result
 
     def stop(self):
         self.__message_listening_instance.stop()
