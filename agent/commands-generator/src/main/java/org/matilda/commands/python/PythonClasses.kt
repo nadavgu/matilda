@@ -5,4 +5,3 @@ import org.matilda.commands.utils.Package
 val DEPENDENCY_CLASS = PythonClassName(Package("maddie", "dependency"), "Dependency")
 val DEPENDENCY_CONTAINER_CLASS = PythonClassName(Package("maddie", "dependency_container"), "DependencyContainer")
 val COMMAND_RUNNER_CLASS = PythonClassName(Package("matilda", "commands", "command_runner"), "CommandRunner")
-val PROTO_WRAPPERS_PACKAGE = Package("google", "protobuf", "wrappers_pb2")

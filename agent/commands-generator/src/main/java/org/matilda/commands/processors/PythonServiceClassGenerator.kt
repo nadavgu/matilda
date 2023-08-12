@@ -6,10 +6,7 @@ import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
-import org.matilda.commands.python.COMMAND_RUNNER_CLASS
-import org.matilda.commands.python.DEPENDENCY_CLASS
-import org.matilda.commands.python.DEPENDENCY_CONTAINER_CLASS
-import org.matilda.commands.python.PROTO_WRAPPERS_PACKAGE
+import org.matilda.commands.python.*
 import org.matilda.commands.python.writer.*
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
@@ -24,6 +21,9 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     @Inject
     lateinit var mCommandIdGenerator: CommandIdGenerator
 
+    @Inject
+    lateinit var mTypeTranslator: TypeTranslator
+
     override fun process(instance: ServiceInfo) {
         val pythonFile = PythonFile(mNameGenerator.forService(instance).pythonGeneratedServicePackage)
         addImports(pythonFile)
@@ -37,7 +37,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
         )
         addConstructor(pythonClass)
         addDICreator(pythonClass, service)
-        service.commands.forEach { command -> addCommandMethod(pythonClass, command) }
+        service.commands.forEach { command -> addCommandMethod(pythonFile, pythonClass, command) }
     }
 
     private fun addConstructor(pythonClass: PythonClass) {
@@ -61,9 +61,9 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
             )
     }
 
-    private fun addCommandMethod(pythonClass: PythonClass, command: CommandInfo) {
-        val parameterType = getPythonType(command.parameterType)
-        val returnType = getPythonType(command.returnType)
+    private fun addCommandMethod(pythonFile: PythonFile, pythonClass: PythonClass, command: CommandInfo) {
+        val parameterType = getPythonType(pythonFile, command.parameterType)
+        val returnType = getPythonType(pythonFile, command.returnType)
         pythonClass.addInstanceMethod(
             PythonFunctionSpec.functionBuilder(command.name)
                 .addParameter(PARAMETER_VARIABLE_NAME, parameterType)
@@ -80,9 +80,10 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
             .addStatement("return %s", RETURN_VALUE_VARIABLE_NAME)
     }
 
-    private fun getPythonType(typeMirror: TypeMirror): String {
+    private fun getPythonType(pythonFile: PythonFile, typeMirror: TypeMirror): String {
         val typeName = TypeName.get(typeMirror)
         return if (typeName is ClassName) {
+            pythonFile.addFromImport(mTypeTranslator.toPythonType(typeName))
             typeName.simpleName()
         } else typeName.toString()
     }
@@ -95,7 +96,6 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
             pythonFile.addFromImport(DEPENDENCY_CLASS)
                 .addFromImport(DEPENDENCY_CONTAINER_CLASS)
                 .addFromImport(COMMAND_RUNNER_CLASS)
-                .addFromImport(PROTO_WRAPPERS_PACKAGE, "*")
         }
 
         private const val COMMAND_RUNNER_PARAMETER_NAME = "command_runner"
