@@ -11,4 +11,9 @@ public class MathService {
     public int sum(int first, int second) {
         return first + second;
     }
+
+    @MatildaCommand
+    public int div(int first, int second) {
+        return first / second;
+    }
 }

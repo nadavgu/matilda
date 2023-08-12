@@ -2,6 +2,7 @@ from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 
 from matilda.di.destructors.destruction_manager import DestructionManager
+from matilda.exceptions.command_failed_exception import CommandFailedException
 from matilda.generated.commands.math_service import MathService
 
 
@@ -23,6 +24,10 @@ class MatildaProcess(Dependency):
         print(dependency_container.get(MathService).square(3))
         print(dependency_container.get(MathService).square(4))
         print(dependency_container.get(MathService).sum(3, 4))
+        try:
+            dependency_container.get(MathService).div(3, 0)
+        except CommandFailedException as e:
+            print(e)
 
         destruction_manager = dependency_container.get(DestructionManager)
         return MatildaProcess(destruction_manager)
