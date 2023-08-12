@@ -33,7 +33,13 @@ val TypeName.protobufWrapperJavaType
     get() = SCALAR_TYPE_MAP[this]!!.protobufWrapperJavaType
 val TypeMirror.protobufWrapperJavaType
     get() = TypeName.get(this).protobufWrapperJavaType
+val TypeName.pythonType
+    get() = SCALAR_TYPE_MAP[this]!!.pythonType
+val TypeName.wrapperTypeName: String
+    get() = protobufWrapperJavaType.simpleName
+val TypeMirror.wrapperTypeName
+    get() = TypeName.get(this).wrapperTypeName
 val TypeName.protobufWrapperPythonType
-    get() = PythonClassName(Package("google", "protobuf", "wrappers_pb2"), protobufWrapperJavaType.simpleName)
+    get() = PythonClassName(Package("google", "protobuf", "wrappers_pb2"), wrapperTypeName)
 val TypeMirror.protobufWrapperPythonType
     get() = TypeName.get(this).protobufWrapperPythonType

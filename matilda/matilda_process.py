@@ -21,9 +21,9 @@ class MatildaProcess(Dependency):
 
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'MatildaProcess':
-        print(dependency_container.get(MathService).square(3).value)
-        print(dependency_container.get(MathService).square(4).value)
-        print(dependency_container.get(MathService).sum(3, 4).value)
+        print(dependency_container.get(MathService).square(3))
+        print(dependency_container.get(MathService).square(4))
+        print(dependency_container.get(MathService).sum(3, 4))
 
         destruction_manager = dependency_container.get(DestructionManager)
         return MatildaProcess(destruction_manager)

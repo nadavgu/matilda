@@ -13,9 +13,7 @@ import org.matilda.commands.python.COMMAND_RUNNER_CLASS
 import org.matilda.commands.python.DEPENDENCY_CLASS
 import org.matilda.commands.python.DEPENDENCY_CONTAINER_CLASS
 import org.matilda.commands.python.writer.*
-import org.matilda.commands.types.TypeTranslator
-import org.matilda.commands.types.isScalarType
-import org.matilda.commands.types.protobufWrapperPythonType
+import org.matilda.commands.types.*
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
 
@@ -85,9 +83,13 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
                 "%s = self.%s.run(%d, %s)", RAW_RETURN_VALUE_VARIABLE_NAME, COMMAND_RUNNER_FIELD_NAME,
                 mCommandIdGenerator.generate(command), RAW_PARAMETER_VARIABLE_NAME
             )
-            .addStatement("%s = %s()", RETURN_VALUE_VARIABLE_NAME, getPythonType(command.returnType))
+            .addStatement("%s = %s()", RETURN_VALUE_VARIABLE_NAME,
+                if (command.returnType.isScalarType()) command.returnType.wrapperTypeName else
+                    getPythonType(command.returnType))
             .addStatement("%s.ParseFromString(%s)", RETURN_VALUE_VARIABLE_NAME, RAW_RETURN_VALUE_VARIABLE_NAME)
-            .addStatement("return %s", RETURN_VALUE_VARIABLE_NAME)
+            .addStatement("return %s",
+                if (command.returnType.isScalarType()) "$RETURN_VALUE_VARIABLE_NAME.value"
+                else RETURN_VALUE_VARIABLE_NAME)
     }
 
     private fun PythonCodeBlock.addParameterConversion(parameterInfo: ParameterInfo) {
@@ -117,6 +119,9 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
 
     private fun getPythonType(typeMirror: TypeMirror): String {
         val typeName = TypeName.get(typeMirror)
+        if (typeName.isScalarType()) {
+            return typeName.pythonType.name
+        }
         return if (typeName is ClassName) typeName.simpleName() else typeName.toString()
     }
 
