@@ -13,7 +13,7 @@ class TypeTranslator @Inject constructor() {
     throw RuntimeException("Could not find protobuf definition of: $this")
 
     private fun ProtobufType.toPythonType() =
-        PythonClassName(typePackage.withoutLastPart().subpackage("${typePackage.lastPart}_pb2"), typeName)
+        PythonTypeName(typePackage.withoutLastPart().subpackage("${typePackage.lastPart}_pb2"), typeName)
 
     fun toPythonType(className: ClassName) = className.toProtobufType().toPythonType()
 }

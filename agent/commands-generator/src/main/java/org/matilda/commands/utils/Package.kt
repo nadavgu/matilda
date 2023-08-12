@@ -2,13 +2,7 @@ package org.matilda.commands.utils
 
 import java.io.File
 
-class Package(parts: List<String>) {
-    val parts: List<String>
-
-    init {
-        this.parts = parts.filter(String::isNotEmpty)
-    }
-
+data class Package(val parts: List<String>) {
     constructor(vararg parts: String) : this(listOf(*parts))
 
     fun subpackage(child: String) = subpackage(fromString(child))
