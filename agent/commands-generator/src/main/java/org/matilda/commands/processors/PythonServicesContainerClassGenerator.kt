@@ -82,7 +82,7 @@ class PythonServicesContainerClassGenerator @Inject internal constructor() : Pro
     }
 
     private fun PythonClass.addServiceProperty(service: ServiceInfo) {
-        addInstanceMethod(property(mNameGenerator.forService(service).serviceSnakeCaseName))
+        addInstanceMethod(property(mNameGenerator.forService(service).serviceSnakeCaseName, getClassName(service)))
             .addStatement("return self.%s", getServiceFieldName(service))
     }
 

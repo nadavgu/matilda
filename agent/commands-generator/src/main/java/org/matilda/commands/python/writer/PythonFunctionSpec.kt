@@ -79,6 +79,7 @@ data class PythonFunctionSpec(
 
         private fun propertyBuilder(name: String) = functionBuilder(name).addAnnotation("property")
 
-        fun property(name: String) = propertyBuilder(name).build()
+        fun property(name: String, returnTypeHint: String? = null) =
+            propertyBuilder(name).returnTypeHint(returnTypeHint).build()
     }
 }
