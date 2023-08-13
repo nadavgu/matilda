@@ -76,5 +76,9 @@ data class PythonFunctionSpec(
         fun functionBuilder(name: String) = Builder(name)
 
         fun constructorBuilder() = functionBuilder("__init__")
+
+        private fun propertyBuilder(name: String) = functionBuilder(name).addAnnotation("property")
+
+        fun property(name: String) = propertyBuilder(name).build()
     }
 }

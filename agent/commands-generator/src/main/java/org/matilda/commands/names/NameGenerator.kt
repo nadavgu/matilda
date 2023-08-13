@@ -5,6 +5,7 @@ import com.squareup.javapoet.TypeName
 import org.apache.commons.lang3.StringUtils
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ServiceInfo
+import org.matilda.commands.python.PythonClassName
 import org.matilda.commands.python.PythonProperties
 import org.matilda.commands.utils.Package
 import org.matilda.commands.utils.Package.Companion.fromString
@@ -17,12 +18,15 @@ class NameGenerator @Inject internal constructor() {
     val pythonGeneratedCommandsPackage: Package
         get() = mPythonProperties.pythonGeneratedPackage.subpackage("commands")
 
+    val pythonGeneratedServicesContainerPackage: Package
+        get() = mPythonProperties.pythonGeneratedPackage.subpackage("services")
+
     inner class ServiceNameGenerator(private val mServiceInfo: ServiceInfo) {
         private val fullNamePackage: Package
             get() = fromString(mServiceInfo.fullName)
         val serviceClassName: String
             get() = fullNamePackage.lastPart
-        private val serviceSnakeCaseName: String
+        val serviceSnakeCaseName: String
             get() {
                 val regex = "([a-z])([A-Z]+)".toRegex()
 
@@ -36,6 +40,10 @@ class NameGenerator @Inject internal constructor() {
             }
         val pythonGeneratedServicePackage: Package
             get() = pythonGeneratedCommandsPackage.subpackage(serviceSnakeCaseName)
+
+        val serviceFullClassName: PythonClassName
+            get() = PythonClassName(pythonGeneratedServicePackage, serviceClassName)
+
         private val servicePackage: Package
             get() = fullNamePackage.withoutLastPart()
         private val serviceRelativePackage: Package
@@ -74,5 +82,6 @@ class NameGenerator @Inject internal constructor() {
             SERVICES_MODULE_CLASS_NAME
         )
         val ORIGINAL_PACKAGE = Package("org", "matilda", "commands")
+        const val SERVICES_CONTAINER_CLASS_NAME = "Services"
     }
 }
