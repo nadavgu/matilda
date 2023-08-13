@@ -32,25 +32,24 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
 
     override fun process(instance: ServiceInfo) {
         val pythonFile = PythonFile(mNameGenerator.forService(instance).pythonGeneratedServicePackage)
-        addImports(pythonFile)
-        addClass(pythonFile, instance)
+            .addImports()
+            .addClass(instance)
         mPythonFileWriter.write(pythonFile)
     }
 
-    private fun addClass(pythonFile: PythonFile, service: ServiceInfo) {
-        val pythonClass = pythonFile.newClass(
-            PythonClassSpec(getClassName(service), DEPENDENCY_CLASS.name)
-        )
-        addConstructor(pythonClass)
-        addDICreator(pythonClass, service)
+    private fun PythonFile.addClass(service: ServiceInfo) = apply {
+        val pythonClass = newClass(PythonClassSpec(getClassName(service), DEPENDENCY_CLASS.name))
+            .addConstructor()
+            .addDICreator(service)
+
         service.commands.forEach { command ->
-            addCommandImports(pythonFile, command)
-            addCommandMethod(pythonClass, command)
+            addCommandImports(command)
+            pythonClass.addCommandMethod(command)
         }
     }
 
-    private fun addConstructor(pythonClass: PythonClass) {
-        pythonClass.addInstanceMethod(
+    private fun PythonClass.addConstructor() = apply {
+        addInstanceMethod(
             PythonFunctionSpec.constructorBuilder()
                 .addParameter(COMMAND_RUNNER_PARAMETER_NAME, COMMAND_RUNNER_CLASS.name)
                 .build()
@@ -58,8 +57,8 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
             .addStatement("self.%s = %s", COMMAND_RUNNER_FIELD_NAME, COMMAND_RUNNER_PARAMETER_NAME)
     }
 
-    private fun addDICreator(pythonClass: PythonClass, service: ServiceInfo) {
-        pythonClass.addStaticMethod(
+    private fun PythonClass.addDICreator(service: ServiceInfo) = apply {
+        addStaticMethod(
             PythonFunctionSpec.functionBuilder("create")
                 .addParameter(DEPENDENCY_CONTAINER_PARAMETER_NAME, DEPENDENCY_CONTAINER_CLASS.name)
                 .returnTypeHint("'" + getClassName(service) + "'").build()
@@ -70,8 +69,8 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
             )
     }
 
-    private fun addCommandMethod(pythonClass: PythonClass, command: CommandInfo) {
-        pythonClass.addInstanceMethod(createCommandFunctionSpec(command))
+    private fun PythonClass.addCommandMethod(command: CommandInfo) {
+        addInstanceMethod(createCommandFunctionSpec(command))
             .addStatement("%s = Some()", SOME_PARAMETER_VARIABLE_NAME)
             .apply {
                 command.parameters.forEach {
@@ -125,23 +124,23 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
         return if (typeName is ClassName) typeName.simpleName() else typeName.toString()
     }
 
-    private fun addCommandImports(pythonFile: PythonFile, command: CommandInfo) {
-        importPythonType(pythonFile, command.returnType)
-        command.parameters.forEach { importPythonType(pythonFile, it.type) }
+    private fun PythonFile.addCommandImports(command: CommandInfo) = apply {
+        importPythonType(command.returnType)
+        command.parameters.forEach { importPythonType(it.type) }
     }
 
-    private fun importPythonType(pythonFile: PythonFile, typeMirror: TypeMirror) {
+    private fun PythonFile.importPythonType(typeMirror: TypeMirror) {
         val typeName = TypeName.get(typeMirror)
         if (typeName.isScalarType()) {
-            pythonFile.addFromImport(typeName.protobufWrapperPythonType)
+            addFromImport(typeName.protobufWrapperPythonType)
         } else if (typeName is ClassName) {
-            pythonFile.addFromImport(mTypeTranslator.toPythonType(typeName))
+            addFromImport(mTypeTranslator.toPythonType(typeName))
         }
     }
     private fun getClassName(service: ServiceInfo) = mNameGenerator.forService(service).serviceClassName
 
-    private fun addImports(pythonFile: PythonFile) {
-        pythonFile.addFromImport(DEPENDENCY_CLASS)
+    private fun PythonFile.addImports() = apply {
+        addFromImport(DEPENDENCY_CLASS)
             .addFromImport(DEPENDENCY_CONTAINER_CLASS)
             .addFromImport(COMMAND_RUNNER_CLASS)
             .addFromImport(ANY_CLASS)
