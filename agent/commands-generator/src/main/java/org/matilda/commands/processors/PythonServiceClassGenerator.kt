@@ -108,7 +108,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     private fun getParameterWrapperName(name: String) = "${name}_wrapper"
 
     private fun createCommandFunctionSpec(command: CommandInfo): PythonFunctionSpec {
-        val builder = PythonFunctionSpec.functionBuilder(command.name)
+        val builder = PythonFunctionSpec.functionBuilder(mNameGenerator.forCommand(command).snakeCaseName)
             .returnTypeHint(getPythonType(command.returnType))
         command.parameters.forEach {
             builder.addParameter(it.name, getPythonType(it.type))

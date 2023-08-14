@@ -10,6 +10,7 @@ import org.matilda.commands.python.PythonProperties
 import org.matilda.commands.utils.Package
 import org.matilda.commands.utils.Package.Companion.fromString
 import org.matilda.commands.utils.Package.Companion.joinPackages
+import org.matilda.commands.utils.toSnakeCase
 import javax.inject.Inject
 
 class NameGenerator @Inject internal constructor() {
@@ -26,18 +27,10 @@ class NameGenerator @Inject internal constructor() {
             get() = fromString(mServiceInfo.fullName)
         val serviceClassName: String
             get() = fullNamePackage.lastPart
+
         val serviceSnakeCaseName: String
-            get() {
-                val regex = "([a-z])([A-Z]+)".toRegex()
+            get() = serviceClassName.toSnakeCase()
 
-                // Replacement string
-                val replacement = "$1_$2"
-
-                // Replace the given regex
-                // with replacement string
-                // and convert it to lower case.
-                return serviceClassName.replace(regex, replacement).lowercase()
-            }
         val pythonGeneratedServicePackage: Package
             get() = pythonGeneratedCommandsPackage.subpackage(serviceSnakeCaseName)
 
@@ -60,6 +53,9 @@ class NameGenerator @Inject internal constructor() {
                 get() = serviceRelativePackage.parts.joinToString(separator = "") {
                     str -> StringUtils.capitalize(str)
                 } + rawCommandClassName
+
+            val snakeCaseName: String
+                get() = mCommandInfo.name.toSnakeCase()
         }
     }
 
