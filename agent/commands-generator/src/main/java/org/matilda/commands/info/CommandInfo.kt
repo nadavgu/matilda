@@ -6,5 +6,6 @@ data class CommandInfo(
     val name: String,
     val service: ServiceInfo,
     val parameters: List<ParameterInfo>,
-    val returnType: TypeMirror
+    val returnType: TypeMirror,
+    val thrownTypes: List<TypeMirror>,
 )

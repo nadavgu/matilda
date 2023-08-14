@@ -51,6 +51,7 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .addModifiers(Modifier.PUBLIC)
             .addParameter(ParameterSpec.builder(BYTE_ARRAY_TYPE_NAME, RAW_PARAMETER_NAME).build())
             .returns(ArrayTypeName.of(TypeName.BYTE))
+            .addExceptions(command.thrownTypes.map(TypeName::get))
             .beginControlFlow("try")
             .addStatement("\$T \$L = \$T.parseFrom(\$L)",
                 Some::class.java, SOME_PARAMETER_VARIABLE_NAME, Some::class.java, RAW_PARAMETER_NAME)

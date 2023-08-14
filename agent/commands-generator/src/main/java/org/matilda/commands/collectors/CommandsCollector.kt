@@ -31,7 +31,8 @@ class CommandsCollector @Inject constructor() {
             .map { collectCommand(it, serviceInfo) }
 
     private fun collectCommand(element: ExecutableElement, serviceInfo: ServiceInfo) =
-        CommandInfo(element.simpleName.toString(), serviceInfo, getParameters(element), getReturnType(element))
+        CommandInfo(element.simpleName.toString(), serviceInfo, getParameters(element),
+            getReturnType(element), element.thrownTypes)
 
     private fun getParameters(element: ExecutableElement) = element.parameters.map {
         getParameter(it)
