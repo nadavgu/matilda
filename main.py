@@ -5,4 +5,5 @@ if __name__ == '__main__':
         print(matilda_process.services.math_service.square(3))
         print(matilda_process.services.math_service.square(4))
         print(matilda_process.services.math_service.sum(3, 4))
-        matilda_process.services.math_service.div(3, 0)
+        print(matilda_process.services.reflection_service.findClass("java.util.ArrayList"))
+        print(matilda_process.services.reflection_service.findClass("java.util.NotRealList"))
