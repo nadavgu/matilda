@@ -14,6 +14,7 @@ import org.matilda.commands.python.DEPENDENCY_CLASS
 import org.matilda.commands.python.DEPENDENCY_CONTAINER_CLASS
 import org.matilda.commands.python.writer.*
 import org.matilda.commands.types.*
+import org.matilda.commands.utils.toSnakeCase
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
 
@@ -93,12 +94,14 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
 
     private fun PythonCodeBlock.addParameterConversion(parameterInfo: ParameterInfo) {
         if (parameterInfo.type.isScalarType()) {
-            addStatement("%s = %s(value=%s)", getParameterWrapperName(parameterInfo.name),
-                parameterInfo.type.protobufWrapperPythonType.name, parameterInfo.name)
+            addStatement("%s = %s(value=%s)", getParameterWrapperName(parameterInfo.pythonName),
+                parameterInfo.type.protobufWrapperPythonType.name, parameterInfo.pythonName
+            )
         }
         val protobufParameterName =
-            if (parameterInfo.type.isScalarType()) getParameterWrapperName(parameterInfo.name) else parameterInfo.name
-        val parameterAnyName = getParameterAnyName(parameterInfo.name)
+            if (parameterInfo.type.isScalarType()) getParameterWrapperName(parameterInfo.pythonName)
+            else parameterInfo.pythonName
+        val parameterAnyName = getParameterAnyName(parameterInfo.pythonName)
         addStatement("%s = Any()", parameterAnyName)
             .addStatement("%s.Pack(msg=%s)", parameterAnyName, protobufParameterName)
             .addStatement("%s.any.append(%s)", SOME_PARAMETER_VARIABLE_NAME, parameterAnyName)
@@ -111,10 +114,13 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
         val builder = PythonFunctionSpec.functionBuilder(mNameGenerator.forCommand(command).snakeCaseName)
             .returnTypeHint(getPythonType(command.returnType))
         command.parameters.forEach {
-            builder.addParameter(it.name, getPythonType(it.type))
+            builder.addParameter(it.pythonName, getPythonType(it.type))
         }
         return builder.build()
     }
+
+    private val ParameterInfo.pythonName
+        get() = name.toSnakeCase()
 
     private fun getPythonType(typeMirror: TypeMirror): String {
         val typeName = TypeName.get(typeMirror)
