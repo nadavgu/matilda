@@ -1,9 +1,12 @@
 package org.matilda.services.reflection;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
+@Singleton
 public class ObjectRepository {
     @Inject
     ObjectIdGenerator mObjectIdGenerator;
@@ -21,7 +24,10 @@ public class ObjectRepository {
         return id;
     }
 
-    public Object get(long id) {
+    public Object get(long id) throws NoSuchElementException {
+        if (!mObjects.containsKey(id)) {
+            throw new NoSuchElementException(String.valueOf(id));
+        }
         return mObjects.get(id);
     }
 
