@@ -18,4 +18,10 @@ public class ReflectionService {
         Class<?> clazz = Class.forName(className);
         return mObjectRepository.add(clazz);
     }
+
+    @MatildaCommand
+    public String getClassName(long id) {
+        Class<?> clazz = (Class<?>) mObjectRepository.get(id);
+        return clazz.getCanonicalName();
+    }
 }
