@@ -1,22 +1,27 @@
+from functools import cached_property
+
 from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 
 from matilda.di.destructors.destruction_manager import DestructionManager
-from matilda.generated.commands.math_service import MathService
 from matilda.generated.services import Services
+from matilda.java.java_module import JavaModule
 
 
 class MatildaProcess(Dependency):
-    def __init__(self, services: Services, destruction_manager: DestructionManager):
-        self.__services = services
-        self.__destruction_manager = destruction_manager
+    def __init__(self, dependency_container: DependencyContainer):
+        self.__dependency_container = dependency_container
 
     def close(self):
-        self.__destruction_manager.destruct()
+        self.__dependency_container.get(DestructionManager).destruct()
 
-    @property
+    @cached_property
     def services(self) -> Services:
-        return self.__services
+        return self.__dependency_container.get(Services)
+
+    @cached_property
+    def java(self) -> JavaModule:
+        return self.__dependency_container.get(JavaModule)
 
     def __enter__(self):
         return self
@@ -26,5 +31,5 @@ class MatildaProcess(Dependency):
 
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'MatildaProcess':
-        return MatildaProcess(dependency_container.get(Services), dependency_container.get(DestructionManager))
+        return MatildaProcess(dependency_container)
 
