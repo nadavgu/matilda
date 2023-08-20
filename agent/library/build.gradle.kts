@@ -25,7 +25,7 @@ tasks.compileJava {
     options.compilerArgs.add("-ApythonGeneratedPackage=$pythonGeneratedPackage")
     options.compilerArgs.add("-AgeneratedProtoSubpackage=$generatedProtoSubpackage")
     options.compilerArgs.add("-AgoogleProtobufDir=${File(buildDir, "extracted-include-protos/main/google/protobuf").absolutePath}")
-    options.compilerArgs.add("-AprojectProtobufDir=${File(projectDir, "src/main/proto").absolutePath}")
+    options.compilerArgs.add("-AprojectProtobufDir=${File(projectDir, "src/main/proto/$matildaProtoSubdir").absolutePath}")
     options.compilerArgs.add("-AapiProtobufDir=${File(buildDir, "extracted-include-protos/main/$matildaProtoSubdir").absolutePath}")
 }
 
