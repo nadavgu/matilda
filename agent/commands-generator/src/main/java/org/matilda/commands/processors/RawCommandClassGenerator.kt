@@ -85,7 +85,7 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
 
     private fun MethodSpec.Builder.addReturnValueConversion(returnType: TypeMirror): MethodSpec.Builder {
         val (converterFormat, converterArgs) = mTypeConverter.javaConverter(returnType)
-        addStatement("return $converterFormat.convert(\$L).toByteArray()",
+        addStatement("return $converterFormat.convertToProtobuf(\$L).toByteArray()",
             *converterArgs.toTypedArray(), RETURN_VALUE_NAME)
         return this
     }
