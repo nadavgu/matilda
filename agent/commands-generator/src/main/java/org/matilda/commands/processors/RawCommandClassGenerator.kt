@@ -6,6 +6,7 @@ import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
+import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.isScalarType
 import org.matilda.commands.types.protobufWrapperJavaType
 import java.io.IOException
@@ -20,6 +21,9 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
 
     @Inject
     lateinit var mNameGenerator: NameGenerator
+
+    @Inject
+    lateinit var mTypeConverter: TypeConverter
 
     override fun process(instance: CommandInfo) {
         JavaFile.builder(mNameGenerator.forCommand(instance).rawCommandPackageName, createClassSpec(instance))
@@ -80,13 +84,9 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
         }
 
     private fun MethodSpec.Builder.addReturnValueConversion(returnType: TypeMirror): MethodSpec.Builder {
-        val returnValueVariable = if (returnType.isScalarType()) WRAPPER_RETURN_VALUE_NAME else RETURN_VALUE_NAME
-        if (returnType.isScalarType()) {
-            addStatement("\$T \$L = \$T.newBuilder().setValue(\$L).build()",
-                returnType.protobufWrapperJavaType, WRAPPER_RETURN_VALUE_NAME, returnType.protobufWrapperJavaType,
-                RETURN_VALUE_NAME)
-        }
-        addStatement("return \$L.toByteArray()", returnValueVariable)
+        val (converterFormat, converterArgs) = mTypeConverter.javaConverter(returnType)
+        addStatement("return $converterFormat.convert(\$L).toByteArray()",
+            *converterArgs.toTypedArray(), RETURN_VALUE_NAME)
         return this
     }
 
@@ -95,7 +95,6 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
         private const val SERVICE_FIELD_NAME = "mService"
         private const val RAW_PARAMETER_NAME = "rawParameter"
         private const val RETURN_VALUE_NAME = "returnValue"
-        private const val WRAPPER_RETURN_VALUE_NAME = "wrapperReturnValue"
         private const val EXCEPTION_NAME = "exception"
         private const val SOME_PARAMETER_VARIABLE_NAME = "someParameter"
     }

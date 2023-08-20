@@ -4,6 +4,10 @@ import dagger.Module
 import dagger.Provides
 import org.matilda.commands.protobuf.*
 import org.matilda.commands.python.PythonProperties
+import org.matilda.commands.types.CompoundTypeConverter
+import org.matilda.commands.types.MessageTypeConverter
+import org.matilda.commands.types.ScalarTypeConverter
+import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.utils.Package
 import java.io.File
 import javax.annotation.processing.ProcessingEnvironment
@@ -33,5 +37,13 @@ class ProtobufModule {
                     DirectoryProtobufTypeLocator(protobufLocations.apiProtobufDir),
             Package("google", "protobuf") to DirectoryProtobufTypeLocator(protobufLocations.googleProtobufDir)
         )))
+    }
+
+    @Provides
+    fun typeConverter(messageTypeConverter: MessageTypeConverter, scalarTypeConverter: ScalarTypeConverter): TypeConverter {
+        return CompoundTypeConverter(listOf(
+            messageTypeConverter,
+            scalarTypeConverter
+        ))
     }
 }
