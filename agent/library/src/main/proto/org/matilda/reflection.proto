@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option java_package = "org.matilda.services.reflection.protobuf";
+option java_outer_classname = "OuterReflectionClass";
+option java_multiple_files = true;
+
+message ParameterType {
+  oneof type {
+    int64 class_id = 1;
+    string primitive_class_name = 2;
+  }
+}
+
+message MethodSpec {
+  string name = 1;
+  repeated ParameterType parameter_types = 2;
+}
+
+message Method {
+  MethodSpec spec = 1;
+  int64 method_id = 2;
+}
+
+message MethodList {
+  repeated Method methods = 1;
+}

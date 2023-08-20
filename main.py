@@ -2,8 +2,4 @@ from matilda.matilda import Matilda
 
 if __name__ == '__main__':
     with Matilda().run_in_java_process() as matilda_process:
-        print(matilda_process.services.math_service.square(3))
-        print(matilda_process.services.math_service.square(4))
-        print(matilda_process.services.math_service.sum(3, 4))
-        print(matilda_process.java.find_class("java.util.ArrayList"))
-        print(matilda_process.java.find_class("java.util.NotRealList"))
+        print(matilda_process.java.find_class("java.util.ArrayList").get_methods())
