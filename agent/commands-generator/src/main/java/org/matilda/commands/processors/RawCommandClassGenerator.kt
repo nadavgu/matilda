@@ -7,8 +7,6 @@ import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
 import org.matilda.commands.types.TypeConverter
-import org.matilda.commands.types.isScalarType
-import org.matilda.commands.types.protobufWrapperJavaType
 import java.io.IOException
 import javax.annotation.processing.Filer
 import javax.inject.Inject
@@ -73,15 +71,11 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .endControlFlow()
             .build()
 
-    private fun MethodSpec.Builder.addParameterConversion(index: Int, parameterInfo: ParameterInfo) =
-        if (parameterInfo.type.isScalarType()) {
-            addStatement("\$T \$L = \$L.getAny(\$L).unpack(\$T.class).getValue()",
-                parameterInfo.type, parameterInfo.name, SOME_PARAMETER_VARIABLE_NAME, index,
-                parameterInfo.type.protobufWrapperJavaType)
-        } else {
-            addStatement("\$T \$L = \$L.getAny(\$L).unpack(\$T.class)",
-                parameterInfo.type, parameterInfo.name, SOME_PARAMETER_VARIABLE_NAME, index, parameterInfo.type)
-        }
+    private fun MethodSpec.Builder.addParameterConversion(index: Int, parameterInfo: ParameterInfo) {
+        val (converterFormat, converterArgs) = mTypeConverter.javaConverter(parameterInfo.type)
+        addStatement("\$T \$L = $converterFormat.convertFromProtobuf(\$L.getAny(\$L))",
+            parameterInfo.type, parameterInfo.name, *converterArgs.toTypedArray(), SOME_PARAMETER_VARIABLE_NAME, index)
+    }
 
     private fun MethodSpec.Builder.addReturnValueConversion(returnType: TypeMirror): MethodSpec.Builder {
         val (converterFormat, converterArgs) = mTypeConverter.javaConverter(returnType)
