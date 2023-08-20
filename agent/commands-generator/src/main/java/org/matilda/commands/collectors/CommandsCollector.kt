@@ -7,6 +7,7 @@ import org.matilda.commands.exceptions.AnnotationProcessingException
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.info.ServiceInfo
+import org.matilda.commands.types.TypeUtilities
 import org.matilda.commands.types.isScalarType
 import javax.inject.Inject
 import javax.lang.model.element.Element
@@ -14,15 +15,10 @@ import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.type.TypeMirror
-import javax.lang.model.util.Elements
-import javax.lang.model.util.Types
 
 class CommandsCollector @Inject constructor() {
     @Inject
-    lateinit var mTypes: Types
-
-    @Inject
-    lateinit var mElements: Elements
+    lateinit var mTypes: TypeUtilities
 
     fun collect(serviceInfo: ServiceInfo, serviceElement: TypeElement) =
         serviceElement.enclosedElements
@@ -48,9 +44,7 @@ class CommandsCollector @Inject constructor() {
     }
 
     private fun verifyType(type: TypeMirror, element: Element) {
-        val messageBaseType: TypeMirror =
-            mTypes.getDeclaredType(mElements.getTypeElement(Message::class.java.canonicalName))
-        if (!TypeName.get(type).isScalarType() && !mTypes.isSubtype(type, messageBaseType)) {
+        if (!TypeName.get(type).isScalarType() && !mTypes.isSubtype(type, Message::class.java)) {
             throw AnnotationProcessingException("Paramaters and return values of services have to be " +
                     "protobuf messages or scalar types!", element)
         }
