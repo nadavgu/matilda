@@ -4,10 +4,7 @@ import dagger.Module
 import dagger.Provides
 import org.matilda.commands.protobuf.*
 import org.matilda.commands.python.PythonProperties
-import org.matilda.commands.types.CompoundTypeConverter
-import org.matilda.commands.types.MessageTypeConverter
-import org.matilda.commands.types.ScalarTypeConverter
-import org.matilda.commands.types.TypeConverter
+import org.matilda.commands.types.*
 import org.matilda.commands.utils.Package
 import java.io.File
 import javax.annotation.processing.ProcessingEnvironment
@@ -40,10 +37,13 @@ class ProtobufModule {
     }
 
     @Provides
-    fun typeConverter(messageTypeConverter: MessageTypeConverter, scalarTypeConverter: ScalarTypeConverter): TypeConverter {
+    fun typeConverter(messageTypeConverter: MessageTypeConverter,
+                      scalarTypeConverter: ScalarTypeConverter,
+                      boxedTypeConverter: BoxedTypeConverter): TypeConverter {
         return CompoundTypeConverter(listOf(
             messageTypeConverter,
-            scalarTypeConverter
+            scalarTypeConverter,
+            boxedTypeConverter,
         ))
     }
 }
