@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import TypeVar, Generic
 
-from google.protobuf.internal.well_known_types import Any
+from google.protobuf.any_pb2 import Any
 from google.protobuf.message import Message
 
 T = TypeVar('T')

@@ -13,16 +13,12 @@ class ScalarTypeConverter @Inject constructor() : TypeConverter {
     }
 
     override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<PythonTypeName>> {
-        val wrapperPythonType = pythonMessageType(type)
+        val wrapperTypeName = type.scalarProtobufWrapperJavaType.simpleName
+        val wrapperPythonType = PythonClassName(WRAPPERS_PACKAGE, wrapperTypeName)
         return Pair("${CONVERTER_CLASS.name}(${wrapperPythonType.name})", listOf(CONVERTER_CLASS, wrapperPythonType))
     }
 
     override fun pythonType(type: TypeMirror, outerConverter: TypeConverter) = type.scalarPythonType
-
-    override fun pythonMessageType(type: TypeMirror, outerConverter: TypeConverter): PythonTypeName {
-        val wrapperTypeName = type.scalarProtobufWrapperJavaType.simpleName
-        return PythonClassName(WRAPPERS_PACKAGE, wrapperTypeName)
-    }
 
     override fun isSupported(type: TypeMirror, outerConverter: TypeConverter) =  type.isScalar()
     override val supportedTypesDescription: String

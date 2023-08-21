@@ -13,9 +13,6 @@ class CompoundTypeConverter(private val converters: List<TypeConverter>) : TypeC
     override fun pythonType(type: TypeMirror, outerConverter: TypeConverter) =
         converters.first { it.isSupported(type, outerConverter) }.pythonType(type, outerConverter)
 
-    override fun pythonMessageType(type: TypeMirror, outerConverter: TypeConverter) =
-        converters.first { it.isSupported(type, outerConverter) }.pythonMessageType(type, outerConverter)
-
     override fun isSupported(type: TypeMirror, outerConverter: TypeConverter) =
         converters.any { it.isSupported(type, outerConverter) }
 
