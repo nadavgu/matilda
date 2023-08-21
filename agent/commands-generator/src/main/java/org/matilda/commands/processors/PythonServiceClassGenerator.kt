@@ -14,8 +14,6 @@ import org.matilda.commands.python.DEPENDENCY_CONTAINER_CLASS
 import org.matilda.commands.python.writer.*
 import org.matilda.commands.types.ProtobufTypeTranslator
 import org.matilda.commands.types.TypeConverter
-import org.matilda.commands.types.isScalarType
-import org.matilda.commands.types.protobufWrapperPythonType
 import org.matilda.commands.utils.toSnakeCase
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
@@ -92,16 +90,12 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     }
 
     private fun PythonCodeBlock.addParameterConversion(parameterInfo: ParameterInfo) {
-        if (parameterInfo.type.isScalarType()) {
-            addStatement("%s = %s(value=%s)", getParameterWrapperName(parameterInfo.pythonName),
-                parameterInfo.type.protobufWrapperPythonType.name, parameterInfo.pythonName
-            )
-        }
-        val protobufParameterName =
-            if (parameterInfo.type.isScalarType()) getParameterWrapperName(parameterInfo.pythonName)
-            else parameterInfo.pythonName
+        val protobufParameterName = getParameterWrapperName(parameterInfo.pythonName)
         val parameterAnyName = getParameterAnyName(parameterInfo.pythonName)
-        addStatement("%s = Any()", parameterAnyName)
+        val (converter, _) = mTypeConverter.pythonConverter(parameterInfo.type)
+        addStatement("%s = %s.to_protobuf(%s)", getParameterWrapperName(parameterInfo.pythonName), converter,
+            parameterInfo.pythonName)
+            .addStatement("%s = Any()", parameterAnyName)
             .addStatement("%s.Pack(msg=%s)", parameterAnyName, protobufParameterName)
             .addStatement("%s.any.append(%s)", SOME_PARAMETER_VARIABLE_NAME, parameterAnyName)
     }

@@ -28,7 +28,7 @@ class ScalarTypeConverter @Inject constructor() : TypeConverter {
         return PythonClassName(WRAPPERS_PACKAGE, wrapperTypeName)
     }
 
-    override fun isSupported(type: TypeMirror) =  type.isScalarType()
+    override fun isSupported(type: TypeMirror) =  TypeName.get(type) in SCALAR_TYPE_MAP
     override val supportedTypesDescription: String
         get() = "scalar types"
 
