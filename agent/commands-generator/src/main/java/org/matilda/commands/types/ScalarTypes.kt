@@ -4,9 +4,6 @@ import com.google.protobuf.*
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import org.matilda.commands.python.PrimitiveTypeName
-import org.matilda.commands.python.PythonClassName
-import org.matilda.commands.utils.Package
-import javax.lang.model.type.TypeMirror
 
 data class ScalarTypeInfo(val protobufWrapperJavaType: Class<*>,
                           val javaConverterType: Class<*>,
@@ -36,18 +33,3 @@ val SCALAR_TYPE_MAP = mapOf(
         PrimitiveTypeName("bytes")),
 )
 
-fun TypeName.isScalarType() = this in SCALAR_TYPE_MAP
-fun TypeMirror.isScalarType() = TypeName.get(this).isScalarType()
-val TypeName.protobufWrapperJavaType
-    get() = SCALAR_TYPE_MAP[this]!!.protobufWrapperJavaType
-
-val TypeName.pythonType
-    get() = SCALAR_TYPE_MAP[this]!!.pythonType
-val TypeName.wrapperTypeName: String
-    get() = protobufWrapperJavaType.simpleName
-val TypeMirror.wrapperTypeName
-    get() = TypeName.get(this).wrapperTypeName
-val TypeName.protobufWrapperPythonType
-    get() = PythonClassName(Package("google", "protobuf", "wrappers_pb2"), wrapperTypeName)
-val TypeMirror.protobufWrapperPythonType
-    get() = TypeName.get(this).protobufWrapperPythonType

@@ -6,7 +6,7 @@ import org.matilda.commands.protobuf.ProtobufTypeLocator
 import org.matilda.commands.python.PythonClassName
 import javax.inject.Inject
 
-class TypeTranslator @Inject constructor() {
+class ProtobufTypeTranslator @Inject constructor() {
     @Inject
     lateinit var mProtobufTypeLocator: ProtobufTypeLocator
 
