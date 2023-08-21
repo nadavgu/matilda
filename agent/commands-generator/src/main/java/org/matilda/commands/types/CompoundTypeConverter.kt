@@ -16,7 +16,7 @@ class CompoundTypeConverter(private val converters: List<TypeConverter>) : TypeC
 
     override val supportedTypesDescription: String
         get() =
-            "one of the following:\n" + converters.joinToString("\n") {
-                "- ${it.supportedTypesDescription}"
+            "one of the following: " + converters.joinToString(", ") {
+                it.supportedTypesDescription
             }
 }
