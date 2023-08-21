@@ -12,8 +12,7 @@ import org.matilda.commands.python.COMMAND_RUNNER_CLASS
 import org.matilda.commands.python.DEPENDENCY_CLASS
 import org.matilda.commands.python.DEPENDENCY_CONTAINER_CLASS
 import org.matilda.commands.python.writer.*
-import org.matilda.commands.types.ProtobufTypeTranslator
-import org.matilda.commands.types.TypeConverter
+import org.matilda.commands.types.*
 import org.matilda.commands.utils.toSnakeCase
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror

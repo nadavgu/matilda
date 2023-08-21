@@ -7,6 +7,7 @@ import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
 import org.matilda.commands.types.TypeConverter
+import org.matilda.commands.types.javaConverter
 import java.io.IOException
 import javax.annotation.processing.Filer
 import javax.inject.Inject
