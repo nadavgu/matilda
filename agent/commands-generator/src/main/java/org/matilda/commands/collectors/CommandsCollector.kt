@@ -6,6 +6,7 @@ import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.types.TypeConverter
+import org.matilda.commands.types.isSupported
 import javax.inject.Inject
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement

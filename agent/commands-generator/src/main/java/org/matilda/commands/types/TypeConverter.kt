@@ -5,15 +5,15 @@ import org.matilda.commands.utils.Package
 import javax.lang.model.type.TypeMirror
 
 interface TypeConverter {
-    fun javaConverter(type: TypeMirror): Pair<String, List<Any>>
+    fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<Any>>
 
-    fun pythonConverter(type: TypeMirror): Pair<String, List<PythonTypeName>>
+    fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<PythonTypeName>>
 
-    fun pythonType(type: TypeMirror): PythonTypeName
+    fun pythonType(type: TypeMirror, outerConverter: TypeConverter): PythonTypeName
 
-    fun pythonMessageType(type: TypeMirror): PythonTypeName
+    fun pythonMessageType(type: TypeMirror, outerConverter: TypeConverter): PythonTypeName
 
-    fun isSupported(type: TypeMirror): Boolean
+    fun isSupported(type: TypeMirror, outerConverter: TypeConverter): Boolean
 
     val supportedTypesDescription: String
 
@@ -21,3 +21,9 @@ interface TypeConverter {
         val MAIN_CONVERTERS_PACKAGE = Package("matilda", "commands", "protobuf")
     }
 }
+
+fun TypeConverter.javaConverter(type: TypeMirror) = javaConverter(type, this)
+fun TypeConverter.pythonConverter(type: TypeMirror) = pythonConverter(type, this)
+fun TypeConverter.pythonType(type: TypeMirror) = pythonType(type, this)
+fun TypeConverter.pythonMessageType(type: TypeMirror) = pythonMessageType(type, this)
+fun TypeConverter.isSupported(type: TypeMirror) = isSupported(type, this)

@@ -12,8 +12,7 @@ import org.matilda.commands.python.COMMAND_RUNNER_CLASS
 import org.matilda.commands.python.DEPENDENCY_CLASS
 import org.matilda.commands.python.DEPENDENCY_CONTAINER_CLASS
 import org.matilda.commands.python.writer.*
-import org.matilda.commands.types.ProtobufTypeTranslator
-import org.matilda.commands.types.TypeConverter
+import org.matilda.commands.types.*
 import org.matilda.commands.utils.toSnakeCase
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
@@ -104,7 +103,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     private fun getParameterWrapperName(name: String) = "${name}_wrapper"
 
     private fun PythonCodeBlock.addReturnStatement(returnType: TypeMirror) {
-        addStatement("%s = %s()", RETURN_VALUE_VARIABLE_NAME, mTypeConverter.pythonMessageType(returnType).name)
+        addStatement("%s = Any()", RETURN_VALUE_VARIABLE_NAME)
         addStatement("%s.ParseFromString(%s)", RETURN_VALUE_VARIABLE_NAME, RAW_RETURN_VALUE_VARIABLE_NAME)
 
         val (converter, _) = mTypeConverter.pythonConverter(returnType)

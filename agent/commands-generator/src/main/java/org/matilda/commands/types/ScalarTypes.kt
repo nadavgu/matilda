@@ -4,6 +4,8 @@ import com.google.protobuf.*
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import org.matilda.commands.python.PrimitiveTypeName
+import org.matilda.commands.python.PythonTypeName
+import javax.lang.model.type.TypeMirror
 
 data class ScalarTypeInfo(val protobufWrapperJavaType: Class<*>,
                           val javaConverterType: Class<*>,
@@ -12,24 +14,36 @@ data class ScalarTypeInfo(val protobufWrapperJavaType: Class<*>,
 val SCALAR_TYPE_MAP = mapOf(
     TypeName.DOUBLE to ScalarTypeInfo(DoubleValue::class.java,
         DoubleConverter::class.java,
-        PrimitiveTypeName("float")),
+        PythonTypeName.FLOAT),
     TypeName.FLOAT to ScalarTypeInfo(FloatValue::class.java,
         FloatConverter::class.java,
-        PrimitiveTypeName("float")),
+        PythonTypeName.FLOAT),
     TypeName.INT to ScalarTypeInfo(Int32Value::class.java,
         IntConverter::class.java,
-        PrimitiveTypeName("int")),
+        PythonTypeName.INT),
     TypeName.LONG to ScalarTypeInfo(Int64Value::class.java,
         LongConverter::class.java,
-        PrimitiveTypeName("int")),
+        PythonTypeName.INT),
     TypeName.BOOLEAN to ScalarTypeInfo(BoolValue::class.java,
         BooleanConverter::class.java,
-        PrimitiveTypeName("bool")),
+        PythonTypeName.BOOL),
     ClassName.get(java.lang.String::class.java) to ScalarTypeInfo(StringValue::class.java,
         StringConverter::class.java,
-        PrimitiveTypeName("str")),
+        PythonTypeName.STR),
     ClassName.get(ByteString::class.java) to ScalarTypeInfo(BytesValue::class.java,
         ByteStringConverter::class.java,
-        PrimitiveTypeName("bytes")),
+        PythonTypeName.BYTES),
 )
 
+fun TypeMirror.isScalar() = TypeName.get(this) in SCALAR_TYPE_MAP
+
+val TypeMirror.scalarProtobufWrapperJavaType
+    get() = SCALAR_TYPE_MAP[TypeName.get(this)]!!.protobufWrapperJavaType
+
+
+val TypeMirror.scalarJavaConverterType
+    get() = SCALAR_TYPE_MAP[TypeName.get(this)]!!.javaConverterType
+
+
+val TypeMirror.scalarPythonType
+    get() = SCALAR_TYPE_MAP[TypeName.get(this)]!!.pythonType
