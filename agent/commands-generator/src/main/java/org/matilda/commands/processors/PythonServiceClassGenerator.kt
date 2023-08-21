@@ -103,7 +103,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     private fun getParameterWrapperName(name: String) = "${name}_wrapper"
 
     private fun PythonCodeBlock.addReturnStatement(returnType: TypeMirror) {
-        addStatement("%s = %s()", RETURN_VALUE_VARIABLE_NAME, mTypeConverter.pythonMessageType(returnType).name)
+        addStatement("%s = Any()", RETURN_VALUE_VARIABLE_NAME)
         addStatement("%s.ParseFromString(%s)", RETURN_VALUE_VARIABLE_NAME, RAW_RETURN_VALUE_VARIABLE_NAME)
 
         val (converter, _) = mTypeConverter.pythonConverter(returnType)

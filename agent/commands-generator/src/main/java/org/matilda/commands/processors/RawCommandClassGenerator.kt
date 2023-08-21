@@ -1,5 +1,6 @@
 package org.matilda.commands.processors
 
+import com.google.protobuf.Any
 import com.squareup.javapoet.*
 import org.matilda.commands.Command
 import org.matilda.commands.info.CommandInfo
@@ -80,8 +81,8 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
 
     private fun MethodSpec.Builder.addReturnValueConversion(returnType: TypeMirror): MethodSpec.Builder {
         val (converterFormat, converterArgs) = mTypeConverter.javaConverter(returnType)
-        addStatement("return $converterFormat.convertToProtobuf(\$L).toByteArray()",
-            *converterArgs.toTypedArray(), RETURN_VALUE_NAME)
+        addStatement("return \$T.pack($converterFormat.convertToProtobuf(\$L)).toByteArray()",
+            Any::class.java, *converterArgs.toTypedArray(), RETURN_VALUE_NAME)
         return this
     }
 
