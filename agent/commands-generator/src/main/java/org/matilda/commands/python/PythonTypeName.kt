@@ -5,6 +5,14 @@ import org.matilda.commands.utils.Package
 interface PythonTypeName {
     val name: String
     val requiredClasses: List<PythonClassName>
+
+    companion object {
+        val FLOAT = PrimitiveTypeName("float")
+        val INT = PrimitiveTypeName("int")
+        val BOOL = PrimitiveTypeName("bool")
+        val STR = PrimitiveTypeName("str")
+        val BYTES = PrimitiveTypeName("bytes")
+    }
 }
 
 data class PythonClassName(val packageName: Package, override val name: String): PythonTypeName {
