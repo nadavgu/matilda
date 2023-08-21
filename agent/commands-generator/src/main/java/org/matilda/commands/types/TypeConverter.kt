@@ -11,8 +11,6 @@ interface TypeConverter {
 
     fun pythonType(type: TypeMirror, outerConverter: TypeConverter): PythonTypeName
 
-    fun pythonMessageType(type: TypeMirror, outerConverter: TypeConverter): PythonTypeName
-
     fun isSupported(type: TypeMirror, outerConverter: TypeConverter): Boolean
 
     val supportedTypesDescription: String
@@ -25,5 +23,4 @@ interface TypeConverter {
 fun TypeConverter.javaConverter(type: TypeMirror) = javaConverter(type, this)
 fun TypeConverter.pythonConverter(type: TypeMirror) = pythonConverter(type, this)
 fun TypeConverter.pythonType(type: TypeMirror) = pythonType(type, this)
-fun TypeConverter.pythonMessageType(type: TypeMirror) = pythonMessageType(type, this)
 fun TypeConverter.isSupported(type: TypeMirror) = isSupported(type, this)

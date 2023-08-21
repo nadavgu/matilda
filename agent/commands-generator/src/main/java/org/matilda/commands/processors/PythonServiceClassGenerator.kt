@@ -131,7 +131,6 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
 
     private fun PythonFile.importPythonType(typeMirror: TypeMirror) {
         addRequiredFromImports(mTypeConverter.pythonType(typeMirror))
-        addRequiredFromImports(mTypeConverter.pythonMessageType(typeMirror))
 
         val (_, converterRequiredTypes) = mTypeConverter.pythonConverter(typeMirror)
         converterRequiredTypes.forEach {

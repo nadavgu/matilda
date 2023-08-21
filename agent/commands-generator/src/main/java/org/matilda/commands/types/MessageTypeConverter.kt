@@ -27,8 +27,6 @@ class MessageTypeConverter @Inject constructor() : TypeConverter {
 
     override fun pythonType(type: TypeMirror, outerConverter: TypeConverter) = mProtobufTypeTranslator.toPythonType(TypeName.get(type) as ClassName)
 
-    override fun pythonMessageType(type: TypeMirror, outerConverter: TypeConverter) = pythonType(type, outerConverter)
-
     override fun isSupported(type: TypeMirror, outerConverter: TypeConverter) =  mTypes.isSubtype(type, Message::class.java)
     override val supportedTypesDescription: String
         get() = "protobuf messages"

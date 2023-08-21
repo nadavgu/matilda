@@ -17,9 +17,6 @@ class BoxedTypeConverter @Inject constructor() : TypeConverter {
     override fun pythonType(type: TypeMirror, outerConverter: TypeConverter) =
         outerConverter.pythonType(mTypes.unboxedType(type))
 
-    override fun pythonMessageType(type: TypeMirror, outerConverter: TypeConverter) =
-        outerConverter.pythonMessageType(mTypes.unboxedType(type))
-
     override fun isSupported(type: TypeMirror, outerConverter: TypeConverter) =
         TypeName.get(type).isBoxedPrimitive && outerConverter.isSupported(mTypes.unboxedType(type))
     override val supportedTypesDescription: String
