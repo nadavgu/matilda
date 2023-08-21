@@ -29,7 +29,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     lateinit var mCommandIdGenerator: CommandIdGenerator
 
     @Inject
-    lateinit var mTypeTranslator: TypeTranslator
+    lateinit var mProtobufTypeTranslator: ProtobufTypeTranslator
 
     override fun process(instance: ServiceInfo) {
         val pythonFile = PythonFile(mNameGenerator.forService(instance).pythonGeneratedServicePackage)
@@ -140,7 +140,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
         if (typeName.isScalarType()) {
             addFromImport(typeName.protobufWrapperPythonType)
         } else if (typeName is ClassName) {
-            addFromImport(mTypeTranslator.toPythonType(typeName))
+            addFromImport(mProtobufTypeTranslator.toPythonType(typeName))
         }
     }
     private fun getClassName(service: ServiceInfo) = mNameGenerator.forService(service).serviceClassName
@@ -150,7 +150,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
             .addFromImport(DEPENDENCY_CONTAINER_CLASS)
             .addFromImport(COMMAND_RUNNER_CLASS)
             .addFromImport(ANY_CLASS)
-            .addFromImport(mTypeTranslator.toPythonType(ClassName.get(Some::class.java)))
+            .addFromImport(mProtobufTypeTranslator.toPythonType(ClassName.get(Some::class.java)))
     }
 
     companion object {

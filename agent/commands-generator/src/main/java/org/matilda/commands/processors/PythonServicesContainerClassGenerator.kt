@@ -8,7 +8,7 @@ import org.matilda.commands.python.DEPENDENCY_CLASS
 import org.matilda.commands.python.DEPENDENCY_CONTAINER_CLASS
 import org.matilda.commands.python.writer.*
 import org.matilda.commands.python.writer.PythonFunctionSpec.Companion.property
-import org.matilda.commands.types.TypeTranslator
+import org.matilda.commands.types.ProtobufTypeTranslator
 import javax.inject.Inject
 
 class PythonServicesContainerClassGenerator @Inject internal constructor() : Processor<ProjectServices> {
@@ -22,7 +22,7 @@ class PythonServicesContainerClassGenerator @Inject internal constructor() : Pro
     lateinit var mCommandIdGenerator: CommandIdGenerator
 
     @Inject
-    lateinit var mTypeTranslator: TypeTranslator
+    lateinit var mProtobufTypeTranslator: ProtobufTypeTranslator
 
     override fun process(instance: ProjectServices) {
         val pythonFile = PythonFile(mNameGenerator.pythonGeneratedServicesContainerPackage)
