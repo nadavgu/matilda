@@ -5,6 +5,7 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import org.matilda.commands.python.PrimitiveTypeName
 import org.matilda.commands.python.PythonTypeName
+import javax.lang.model.type.TypeMirror
 
 data class ScalarTypeInfo(val protobufWrapperJavaType: Class<*>,
                           val javaConverterType: Class<*>,
@@ -34,3 +35,15 @@ val SCALAR_TYPE_MAP = mapOf(
         PythonTypeName.BYTES),
 )
 
+fun TypeMirror.isScalar() = TypeName.get(this) in SCALAR_TYPE_MAP
+
+val TypeMirror.scalarProtobufWrapperJavaType
+    get() = SCALAR_TYPE_MAP[TypeName.get(this)]!!.protobufWrapperJavaType
+
+
+val TypeMirror.scalarJavaConverterType
+    get() = SCALAR_TYPE_MAP[TypeName.get(this)]!!.javaConverterType
+
+
+val TypeMirror.scalarPythonType
+    get() = SCALAR_TYPE_MAP[TypeName.get(this)]!!.pythonType
