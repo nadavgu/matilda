@@ -8,6 +8,8 @@ interface TypeConverter {
 
     fun pythonConverter(type: TypeMirror): Pair<String, List<PythonTypeName>>
 
+    fun pythonType(type: TypeMirror): PythonTypeName
+
     fun isSupported(type: TypeMirror): Boolean
 
     val supportedTypesDescription: String

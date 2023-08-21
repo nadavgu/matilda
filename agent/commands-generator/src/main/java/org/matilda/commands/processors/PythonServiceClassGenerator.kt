@@ -31,6 +31,9 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     @Inject
     lateinit var mProtobufTypeTranslator: ProtobufTypeTranslator
 
+    @Inject
+    lateinit var mTypeConverter: TypeConverter
+
     override fun process(instance: ServiceInfo) {
         val pythonFile = PythonFile(mNameGenerator.forService(instance).pythonGeneratedServicePackage)
             .addImports()
@@ -122,13 +125,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     private val ParameterInfo.pythonName
         get() = name.toSnakeCase()
 
-    private fun getPythonType(typeMirror: TypeMirror): String {
-        val typeName = TypeName.get(typeMirror)
-        if (typeName.isScalarType()) {
-            return typeName.pythonType.name
-        }
-        return if (typeName is ClassName) typeName.simpleName() else typeName.toString()
-    }
+    private fun getPythonType(typeMirror: TypeMirror) = mTypeConverter.pythonType(typeMirror).name
 
     private fun PythonFile.addCommandImports(command: CommandInfo) = apply {
         importPythonType(command.returnType)
@@ -136,11 +133,13 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     }
 
     private fun PythonFile.importPythonType(typeMirror: TypeMirror) {
+        mTypeConverter.pythonType(typeMirror).requiredClasses.forEach {
+            addFromImport(it)
+        }
+
         val typeName = TypeName.get(typeMirror)
         if (typeName.isScalarType()) {
             addFromImport(typeName.protobufWrapperPythonType)
-        } else if (typeName is ClassName) {
-            addFromImport(mProtobufTypeTranslator.toPythonType(typeName))
         }
     }
     private fun getClassName(service: ServiceInfo) = mNameGenerator.forService(service).serviceClassName

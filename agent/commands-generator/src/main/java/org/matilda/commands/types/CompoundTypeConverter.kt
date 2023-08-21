@@ -8,6 +8,8 @@ class CompoundTypeConverter(private val converters: List<TypeConverter>) : TypeC
 
     override fun pythonConverter(type: TypeMirror) = converters.first { it.isSupported(type) }.pythonConverter(type)
 
+    override fun pythonType(type: TypeMirror) = converters.first { it.isSupported(type) }.pythonType(type)
+
     override fun isSupported(type: TypeMirror) = converters.any { it.isSupported(type) }
 
     override val supportedTypesDescription: String

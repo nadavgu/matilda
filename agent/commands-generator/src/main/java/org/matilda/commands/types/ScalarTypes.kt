@@ -40,9 +40,6 @@ fun TypeName.isScalarType() = this in SCALAR_TYPE_MAP
 fun TypeMirror.isScalarType() = TypeName.get(this).isScalarType()
 val TypeName.protobufWrapperJavaType
     get() = SCALAR_TYPE_MAP[this]!!.protobufWrapperJavaType
-
-val TypeName.pythonType
-    get() = SCALAR_TYPE_MAP[this]!!.pythonType
 val TypeName.wrapperTypeName: String
     get() = protobufWrapperJavaType.simpleName
 val TypeMirror.wrapperTypeName
