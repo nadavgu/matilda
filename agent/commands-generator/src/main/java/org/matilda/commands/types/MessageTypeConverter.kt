@@ -13,7 +13,7 @@ class MessageTypeConverter @Inject constructor() : TypeConverter {
         return Pair("new \$T<>(\$T.class)", listOf(MessageConverter::class.java, type))
     }
 
-    override fun pythonConverter(type: TypeMirror): PythonTypeName {
+    override fun pythonConverter(type: TypeMirror): Pair<String, List<PythonTypeName>> {
         TODO("Not yet implemented")
     }
 

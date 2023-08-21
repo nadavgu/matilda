@@ -1,7 +1,7 @@
 package org.matilda.commands.types
 
 import com.squareup.javapoet.TypeName
-import org.matilda.commands.python.writer.PythonClass
+import org.matilda.commands.python.PythonTypeName
 import java.lang.reflect.Type
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
@@ -14,7 +14,7 @@ class ScalarTypeConverter @Inject constructor() : TypeConverter {
         return Pair("new \$T()", listOf(SCALAR_TYPE_MAP[TypeName.get(type)]!!.javaConverterType))
     }
 
-    override fun pythonConverter(type: TypeMirror): Pair<String, List<PythonClass>> {
+    override fun pythonConverter(type: TypeMirror): Pair<String, List<PythonTypeName>> {
         TODO("Not yet implemented")
     }
 

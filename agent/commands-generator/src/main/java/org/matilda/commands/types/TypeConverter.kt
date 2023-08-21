@@ -6,7 +6,7 @@ import javax.lang.model.type.TypeMirror
 interface TypeConverter {
     fun javaConverter(type: TypeMirror): Pair<String, List<Any>>
 
-    fun pythonConverter(type: TypeMirror): PythonTypeName
+    fun pythonConverter(type: TypeMirror): Pair<String, List<PythonTypeName>>
 
     fun isSupported(type: TypeMirror): Boolean
 
