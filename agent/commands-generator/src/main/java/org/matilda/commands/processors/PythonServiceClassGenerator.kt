@@ -1,7 +1,6 @@
 package org.matilda.commands.processors
 
 import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.TypeName
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.info.ServiceInfo
@@ -13,7 +12,10 @@ import org.matilda.commands.python.COMMAND_RUNNER_CLASS
 import org.matilda.commands.python.DEPENDENCY_CLASS
 import org.matilda.commands.python.DEPENDENCY_CONTAINER_CLASS
 import org.matilda.commands.python.writer.*
-import org.matilda.commands.types.*
+import org.matilda.commands.types.ProtobufTypeTranslator
+import org.matilda.commands.types.TypeConverter
+import org.matilda.commands.types.isScalarType
+import org.matilda.commands.types.protobufWrapperPythonType
 import org.matilda.commands.utils.toSnakeCase
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
@@ -86,13 +88,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
                 "%s = self.%s.run(%d, %s)", RAW_RETURN_VALUE_VARIABLE_NAME, COMMAND_RUNNER_FIELD_NAME,
                 mCommandIdGenerator.generate(command), RAW_PARAMETER_VARIABLE_NAME
             )
-            .addStatement("%s = %s()", RETURN_VALUE_VARIABLE_NAME,
-                if (command.returnType.isScalarType()) command.returnType.wrapperTypeName else
-                    getPythonType(command.returnType))
-            .addStatement("%s.ParseFromString(%s)", RETURN_VALUE_VARIABLE_NAME, RAW_RETURN_VALUE_VARIABLE_NAME)
-            .addStatement("return %s",
-                if (command.returnType.isScalarType()) "$RETURN_VALUE_VARIABLE_NAME.value"
-                else RETURN_VALUE_VARIABLE_NAME)
+            .addReturnStatement(command.returnType)
     }
 
     private fun PythonCodeBlock.addParameterConversion(parameterInfo: ParameterInfo) {
@@ -112,6 +108,14 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
 
     private fun getParameterAnyName(name: String) = "${name}_any"
     private fun getParameterWrapperName(name: String) = "${name}_wrapper"
+
+    private fun PythonCodeBlock.addReturnStatement(returnType: TypeMirror) {
+        addStatement("%s = %s()", RETURN_VALUE_VARIABLE_NAME, mTypeConverter.pythonMessageType(returnType).name)
+        addStatement("%s.ParseFromString(%s)", RETURN_VALUE_VARIABLE_NAME, RAW_RETURN_VALUE_VARIABLE_NAME)
+
+        val (converter, _) = mTypeConverter.pythonConverter(returnType)
+        addStatement("return %s.from_protobuf(%s)", converter, RETURN_VALUE_VARIABLE_NAME)
+    }
 
     private fun createCommandFunctionSpec(command: CommandInfo): PythonFunctionSpec {
         val builder = PythonFunctionSpec.functionBuilder(mNameGenerator.forCommand(command).snakeCaseName)
@@ -133,13 +137,12 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     }
 
     private fun PythonFile.importPythonType(typeMirror: TypeMirror) {
-        mTypeConverter.pythonType(typeMirror).requiredClasses.forEach {
-            addFromImport(it)
-        }
+        addRequiredFromImports(mTypeConverter.pythonType(typeMirror))
+        addRequiredFromImports(mTypeConverter.pythonMessageType(typeMirror))
 
-        val typeName = TypeName.get(typeMirror)
-        if (typeName.isScalarType()) {
-            addFromImport(typeName.protobufWrapperPythonType)
+        val (_, converterRequiredTypes) = mTypeConverter.pythonConverter(typeMirror)
+        converterRequiredTypes.forEach {
+            addRequiredFromImports(it)
         }
     }
     private fun getClassName(service: ServiceInfo) = mNameGenerator.forService(service).serviceClassName

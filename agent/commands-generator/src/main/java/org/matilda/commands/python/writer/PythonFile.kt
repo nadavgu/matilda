@@ -31,6 +31,12 @@ class PythonFile(val packageName: Package) : PythonCodeBlock() {
         return this
     }
 
+    fun addRequiredFromImports(pythonTypeName: PythonTypeName) = apply {
+        pythonTypeName.requiredClasses.forEach {
+            addFromImport(it)
+        }
+    }
+
     override val lines: Stream<String>
         get() {
             val importLines = mImportsCodeBlock.lines.toList()

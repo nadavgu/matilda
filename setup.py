@@ -6,6 +6,7 @@ setup(name='matilda',
       author_email='nadavgu@gmail.com',
       packages=find_packages(include='matilda*'),
       install_requires=[
-            'maddie~=0.1.0'
+            'maddie~=0.1.0',
+            'protobuf~=4.23'
       ]
       )
