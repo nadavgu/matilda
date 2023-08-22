@@ -18,7 +18,7 @@ class JavaClass:
 
     def get_methods(self) -> List['JavaMethod']:
         from matilda.java.java_method import JavaMethod
-        return [JavaMethod.from_protobuf(self.__reflection_service, protobuf) for protobuf in
+        return [JavaMethod(method_id, self.__reflection_service) for method_id in
                 self.__reflection_service.get_class_methods(self.__object_id)]
 
     def __str__(self):
