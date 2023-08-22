@@ -2,12 +2,13 @@ from functools import cached_property
 from typing import List
 
 from matilda.generated.commands.reflection_service import ReflectionService
+from matilda.java.java_object import JavaObject
 from matilda.java.java_type import JavaType
 
 
-class JavaMethod:
+class JavaMethod(JavaObject):
     def __init__(self, method_id: int, reflection_service: ReflectionService):
-        self.__method_id = method_id
+        super().__init__(method_id)
         self.__reflection_service = reflection_service
 
     def __str__(self):
@@ -19,10 +20,10 @@ class JavaMethod:
 
     @cached_property
     def name(self) -> str:
-        return self.__reflection_service.get_method_name(self.__method_id)
+        return self.__reflection_service.get_method_name(self.object_id)
 
     @cached_property
     def parameter_types(self) -> List[JavaType]:
         from matilda.java.java_type import get_type_from_protobuf
         return [get_type_from_protobuf(self.__reflection_service, protobuf) for protobuf
-                in self.__reflection_service.get_method_parameter_types(self.__method_id)]
+                in self.__reflection_service.get_method_parameter_types(self.object_id)]
