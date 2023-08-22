@@ -20,7 +20,3 @@ message Method {
   MethodSpec spec = 1;
   int64 method_id = 2;
 }
-
-message MethodList {
-  repeated Method methods = 1;
-}
