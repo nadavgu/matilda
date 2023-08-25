@@ -8,6 +8,7 @@ import org.matilda.services.reflection.protobuf.ParameterType;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
@@ -57,6 +58,12 @@ public class ReflectionService {
             }
             return parameterTypeBuilder.build();
         }).collect(Collectors.toList());
+    }
+
+    @MatildaCommand
+    public boolean isMethodStatic(long id) {
+        Method method = (Method) mObjectRepository.get(id);
+        return (method.getModifiers() & Modifier.STATIC) != 0;
     }
 
     @MatildaCommand

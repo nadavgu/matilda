@@ -14,7 +14,7 @@ class JavaMethod(JavaObject):
 
     def __str__(self):
         from matilda.java.java_type import get_type_name
-        return f"{self.name}({', '.join(map(get_type_name, self.parameter_types))})"
+        return f"{'static ' if self.is_static else ''}{self.name}({', '.join(map(get_type_name, self.parameter_types))})"
 
     def __repr__(self):
         return f"JavaMethod({str(self)})"
@@ -28,6 +28,10 @@ class JavaMethod(JavaObject):
         from matilda.java.java_type import get_type_from_protobuf
         return [get_type_from_protobuf(self.__reflection_service, protobuf) for protobuf
                 in self.__reflection_service.get_method_parameter_types(self.object_id)]
+
+    @cached_property
+    def is_static(self) -> bool:
+        return self.__reflection_service.is_method_static(self.object_id)
 
     def invoke(self, receiver: JavaObject, *args: JavaValue) -> JavaValue:
         result = self.__reflection_service.invoke_method(self.object_id, receiver.object_id,
