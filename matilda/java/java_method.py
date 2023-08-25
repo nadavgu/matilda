@@ -4,6 +4,7 @@ from typing import List
 from matilda.generated.commands.reflection_service import ReflectionService
 from matilda.java.java_object import JavaObject
 from matilda.java.java_type import JavaType
+from matilda.java.java_value import JavaValue, convert_value_to_protobuf, get_value_from_protobuf
 
 
 class JavaMethod(JavaObject):
@@ -27,3 +28,14 @@ class JavaMethod(JavaObject):
         from matilda.java.java_type import get_type_from_protobuf
         return [get_type_from_protobuf(self.__reflection_service, protobuf) for protobuf
                 in self.__reflection_service.get_method_parameter_types(self.object_id)]
+
+    def invoke(self, receiver: JavaObject, *args: JavaValue) -> JavaValue:
+        result = self.__reflection_service.invoke_method(self.object_id, receiver.object_id,
+                                                         [convert_value_to_protobuf(arg) for arg in args])
+        return get_value_from_protobuf(result)
+
+    def invoke_static(self, *args: JavaValue) -> JavaValue:
+        result = self.__reflection_service.invoke_static_method(self.object_id,
+                                                                [convert_value_to_protobuf(arg) for arg in args])
+        return get_value_from_protobuf(result)
+
