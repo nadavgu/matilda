@@ -6,6 +6,7 @@ from matilda.java.java_object import JavaObject
 
 if TYPE_CHECKING:
     from matilda.java.java_method import JavaMethod
+    from matilda.java.java_type import JavaType
 
 
 class JavaClass(JavaObject):
@@ -21,6 +22,14 @@ class JavaClass(JavaObject):
         from matilda.java.java_method import JavaMethod
         return [JavaMethod(method_id, self.__reflection_service) for method_id in
                 self.__reflection_service.get_class_methods(self.object_id)]
+
+    def get_method(self, name: str, *parameters: 'JavaType') -> 'JavaMethod':
+        from matilda.java.java_method import JavaMethod
+        from matilda.java.java_type import convert_type_to_protobuf
+        return JavaMethod(
+            self.__reflection_service.get_method(self.object_id, name,
+                                                 [convert_type_to_protobuf(param) for param in parameters]),
+            self.__reflection_service)
 
     def __str__(self):
         return self.name

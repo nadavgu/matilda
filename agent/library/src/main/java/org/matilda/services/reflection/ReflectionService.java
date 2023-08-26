@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,6 +59,44 @@ public class ReflectionService {
             }
             return parameterTypeBuilder.build();
         }).collect(Collectors.toList());
+    }
+
+    @MatildaCommand
+    public long getMethod(long classId, String methodName, List<ParameterType> parameterTypes)
+            throws NoSuchMethodException, ClassNotFoundException {
+        Class<?> clazz = (Class<?>) mObjectRepository.get(classId);
+        List<Class<?>> list = new ArrayList<>();
+        for (ParameterType parameterType : parameterTypes) {
+            Class<?> parameterClass = fromParameterType(parameterType);
+            list.add(parameterClass);
+        }
+        return mObjectRepository.add(clazz.getDeclaredMethod(methodName, list.toArray(new Class<?>[0])));
+    }
+
+    private Class<?> fromParameterType(ParameterType parameterType) throws ClassNotFoundException {
+        if (parameterType.hasPrimitiveClassName()) {
+            return getPrimitiveClass(parameterType.getPrimitiveClassName());
+        } else {
+            return (Class<?>) mObjectRepository.get(parameterType.getClassId());
+        }
+    }
+
+    private static final Class<?>[] PRIMITIVE_CLASSES = new Class<?>[] {
+            int.class,
+            long.class,
+            short.class,
+            byte.class,
+            boolean.class,
+            double.class,
+            float.class,
+            char.class
+    };
+
+    private Class<?> getPrimitiveClass(String name) throws ClassNotFoundException {
+        return Arrays.stream(PRIMITIVE_CLASSES)
+                .filter(clazz -> clazz.getName().equals(name))
+                .findFirst()
+                .orElseThrow(ClassNotFoundException::new);
     }
 
     @MatildaCommand
