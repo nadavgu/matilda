@@ -3,7 +3,7 @@ package org.matilda.services.reflection;
 import org.matilda.commands.MatildaCommand;
 import org.matilda.commands.MatildaService;
 import org.matilda.services.reflection.protobuf.JavaValue;
-import org.matilda.services.reflection.protobuf.ParameterType;
+import org.matilda.services.reflection.protobuf.JavaType;
 
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @MatildaService
 public class ReflectionService {
     @Inject
-    ObjectRepository mObjectRepository;
+    ReflectionUtils mReflectionUtils;
 
     @Inject
     public ReflectionService() {}
@@ -26,88 +26,56 @@ public class ReflectionService {
     @MatildaCommand
     public long findClass(String className) throws ClassNotFoundException {
         Class<?> clazz = Class.forName(className);
-        return mObjectRepository.add(clazz);
+        return mReflectionUtils.register(clazz);
     }
 
     @MatildaCommand
     public String getClassName(long id) {
-        Class<?> clazz = (Class<?>) mObjectRepository.get(id);
+        Class<?> clazz = mReflectionUtils.getClass(id);
         return clazz.getCanonicalName();
     }
 
     @MatildaCommand
     public List<Long> getClassMethods(long id) {
-        Class<?> clazz = (Class<?>) mObjectRepository.get(id);
-        return Arrays.stream(clazz.getDeclaredMethods()).map(mObjectRepository::add).collect(Collectors.toList());
+        Class<?> clazz = mReflectionUtils.getClass(id);
+        return Arrays.stream(clazz.getDeclaredMethods()).map(mReflectionUtils::register).collect(Collectors.toList());
     }
 
     @MatildaCommand
     public String getMethodName(long id) {
-        Method method = (Method) mObjectRepository.get(id);
-        return method.getName();
+        return mReflectionUtils.getMethod(id).getName();
     }
 
     @MatildaCommand
-    public List<ParameterType> getMethodParameterTypes(long id) {
-        Method method = (Method) mObjectRepository.get(id);
-        return Arrays.stream(method.getParameters()).map(parameter -> {
-            ParameterType.Builder parameterTypeBuilder = ParameterType.newBuilder();
-            if (parameter.getType().isPrimitive()) {
-                parameterTypeBuilder.setPrimitiveClassName(parameter.getType().getCanonicalName());
-            } else {
-                parameterTypeBuilder.setClassId(mObjectRepository.add(parameter.getType()));
-            }
-            return parameterTypeBuilder.build();
-        }).collect(Collectors.toList());
+    public List<JavaType> getMethodParameterTypes(long id) {
+        Method method = mReflectionUtils.getMethod(id);
+        return Arrays.stream(method.getParameters())
+                .map(Parameter::getType)
+                .map(mReflectionUtils::toJavaType)
+                .collect(Collectors.toList());
     }
 
     @MatildaCommand
-    public long getMethod(long classId, String methodName, List<ParameterType> parameterTypes)
+    public long getMethod(long classId, String methodName, List<JavaType> parameterTypes)
             throws NoSuchMethodException, ClassNotFoundException {
-        Class<?> clazz = (Class<?>) mObjectRepository.get(classId);
+        Class<?> clazz = mReflectionUtils.getClass(classId);
         List<Class<?>> list = new ArrayList<>();
-        for (ParameterType parameterType : parameterTypes) {
-            Class<?> parameterClass = fromParameterType(parameterType);
+        for (JavaType parameterType : parameterTypes) {
+            Class<?> parameterClass = mReflectionUtils.fromJavaType(parameterType);
             list.add(parameterClass);
         }
-        return mObjectRepository.add(clazz.getDeclaredMethod(methodName, list.toArray(new Class<?>[0])));
-    }
-
-    private Class<?> fromParameterType(ParameterType parameterType) throws ClassNotFoundException {
-        if (parameterType.hasPrimitiveClassName()) {
-            return getPrimitiveClass(parameterType.getPrimitiveClassName());
-        } else {
-            return (Class<?>) mObjectRepository.get(parameterType.getClassId());
-        }
-    }
-
-    private static final Class<?>[] PRIMITIVE_CLASSES = new Class<?>[] {
-            int.class,
-            long.class,
-            short.class,
-            byte.class,
-            boolean.class,
-            double.class,
-            float.class,
-            char.class
-    };
-
-    private Class<?> getPrimitiveClass(String name) throws ClassNotFoundException {
-        return Arrays.stream(PRIMITIVE_CLASSES)
-                .filter(clazz -> clazz.getName().equals(name))
-                .findFirst()
-                .orElseThrow(ClassNotFoundException::new);
+        return mReflectionUtils.register(clazz.getDeclaredMethod(methodName, list.toArray(new Class<?>[0])));
     }
 
     @MatildaCommand
     public boolean isMethodStatic(long id) {
-        Method method = (Method) mObjectRepository.get(id);
+        Method method = mReflectionUtils.getMethod(id);
         return (method.getModifiers() & Modifier.STATIC) != 0;
     }
 
     @MatildaCommand
     public JavaValue invokeMethod(long methodId, long objectId, List<JavaValue> arguments) throws InvocationTargetException, IllegalAccessException {
-        return invokeMethod(mObjectRepository.get(objectId), methodId, arguments);
+        return invokeMethod(mReflectionUtils.getObject(objectId), methodId, arguments);
     }
 
     @MatildaCommand
@@ -117,7 +85,7 @@ public class ReflectionService {
 
 
     private JavaValue invokeMethod(Object receiver, long methodId, List<JavaValue> arguments) throws InvocationTargetException, IllegalAccessException {
-        Method method = (Method) mObjectRepository.get(methodId);
+        Method method = mReflectionUtils.getMethod(methodId);
         Parameter[] parameters = method.getParameters();
         if (parameters.length != arguments.size()) {
             throw new IllegalArgumentException();
@@ -125,57 +93,9 @@ public class ReflectionService {
 
         Object[] objectArguments = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
-            objectArguments[i] = fromJavaValue(parameters[i].getType(), arguments.get(i));
+            objectArguments[i] = mReflectionUtils.fromJavaValue(parameters[i].getType(), arguments.get(i));
         }
 
-        return toJavaValue(method.invoke(receiver, objectArguments));
-    }
-
-    private JavaValue toJavaValue(Object object) {
-        if (object == null) {
-            return JavaValue.newBuilder().build();
-        } if (object instanceof Integer) {
-            return JavaValue.newBuilder().setInt((Integer) object).build();
-        } else if (object instanceof Long) {
-            return JavaValue.newBuilder().setInt((Long) object).build();
-        } else if (object instanceof Boolean) {
-            return JavaValue.newBuilder().setBool((Boolean) object).build();
-        } else if (object instanceof Double) {
-            return JavaValue.newBuilder().setFloat((Double) object).build();
-        } else if (object instanceof Float) {
-            return JavaValue.newBuilder().setFloat((Float) object).build();
-        } else {
-            return JavaValue.newBuilder().setObjectId(mObjectRepository.add(object)).build();
-        }
-    }
-
-    private Object fromJavaValue(Class<?> type, JavaValue javaValue) {
-        switch (javaValue.getValueCase()) {
-            case INT: {
-                if (type.equals(byte.class) || type.equals(Byte.class)) {
-                    return (byte) javaValue.getInt();
-                } else if (type.equals(short.class) || type.equals(Short.class)) {
-                    return (short) javaValue.getInt();
-                } else if (type.equals(int.class) || type.equals(Integer.class)) {
-                    return (int) javaValue.getInt();
-                } else if (type.equals(long.class) || type.equals(Long.class)) {
-                    return javaValue.getInt();
-                } else {
-                    throw new IllegalArgumentException(String.valueOf(javaValue.getInt()));
-                }
-            }
-            case BOOL: return javaValue.getBool();
-            case FLOAT: {
-                if (type.equals(float.class) || type.equals(Float.class)) {
-                    return (float) javaValue.getFloat();
-                } else if (type.equals(double.class) || type.equals(Double.class)) {
-                    return javaValue.getFloat();
-                } else {
-                    throw new IllegalArgumentException(String.valueOf(javaValue.getFloat()));
-                }
-            }
-            case OBJECT_ID: return mObjectRepository.get(javaValue.getObjectId());
-            default: return null;
-        }
+        return mReflectionUtils.toJavaValue(method.invoke(receiver, objectArguments));
     }
 }

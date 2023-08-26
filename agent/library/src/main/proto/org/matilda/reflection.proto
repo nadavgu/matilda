@@ -4,7 +4,7 @@ option java_package = "org.matilda.services.reflection.protobuf";
 option java_outer_classname = "OuterReflectionClass";
 option java_multiple_files = true;
 
-message ParameterType {
+message JavaType {
   oneof type {
     int64 class_id = 1;
     string primitive_class_name = 2;

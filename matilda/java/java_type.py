@@ -3,7 +3,7 @@ from typing import Union
 from matilda.generated.commands.reflection_service import ReflectionService
 from matilda.java.java_class import JavaClass
 from matilda.java.java_primitive_type import JavaPrimitiveType
-from matilda.generated.proto.reflection_pb2 import ParameterType
+from matilda.generated.proto import reflection_pb2
 
 JavaType = Union[JavaPrimitiveType, JavaClass]
 
@@ -22,8 +22,8 @@ def get_type_from_protobuf(reflection_service: ReflectionService, protobuf) -> J
         return JavaClass(reflection_service, protobuf.class_id)
 
 
-def convert_type_to_protobuf(java_type: JavaType) -> ParameterType:
+def convert_type_to_protobuf(java_type: JavaType) -> reflection_pb2.JavaType:
     if isinstance(java_type, JavaPrimitiveType):
-        return ParameterType(primitive_class_name=java_type.value)
+        return reflection_pb2.JavaType(primitive_class_name=java_type.value)
     else:
-        return ParameterType(class_id=java_type.object_id)
+        return reflection_pb2.JavaType(class_id=java_type.object_id)
