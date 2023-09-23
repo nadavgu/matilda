@@ -5,6 +5,7 @@ import com.squareup.javapoet.*
 import org.matilda.commands.Command
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ParameterInfo
+import org.matilda.commands.info.hasReturnValue
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
 import org.matilda.commands.types.TypeConverter
@@ -13,7 +14,6 @@ import java.io.IOException
 import javax.annotation.processing.Filer
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
-import javax.lang.model.type.TypeMirror
 
 class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
     @Inject
@@ -64,10 +64,8 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
                     addParameterConversion(index, parameter)
                 }
             }
-            .addStatement("\$T \$L = \$L.\$L(\$L)",
-                command.returnType, RETURN_VALUE_NAME, SERVICE_FIELD_NAME, command.name,
-                command.parameters.joinToString { it.name })
-            .addReturnValueConversion(command.returnType)
+            .addCommandInvocation(command)
+            .addReturnValueConversion(command)
             .nextControlFlow("catch (\$T \$L)", IOException::class.java, EXCEPTION_NAME)
             .addStatement("throw new \$T(\$L)", RuntimeException::class.java, EXCEPTION_NAME)
             .endControlFlow()
@@ -79,10 +77,23 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             parameterInfo.type, parameterInfo.name, *converterArgs.toTypedArray(), SOME_PARAMETER_VARIABLE_NAME, index)
     }
 
-    private fun MethodSpec.Builder.addReturnValueConversion(returnType: TypeMirror): MethodSpec.Builder {
-        val (converterFormat, converterArgs) = mTypeConverter.javaConverter(returnType)
+    private fun MethodSpec.Builder.addCommandInvocation(command: CommandInfo): MethodSpec.Builder {
+        if (command.hasReturnValue()) {
+            addStatement("\$T \$L = \$L.\$L(\$L)",
+                command.returnType, RETURN_VALUE_NAME, SERVICE_FIELD_NAME, command.name,
+                command.parameters.joinToString { it.name })
+        } else {
+            addStatement("\$L.\$L(\$L)",
+                SERVICE_FIELD_NAME, command.name, command.parameters.joinToString { it.name })
+        }
+        return this
+    }
+
+    private fun MethodSpec.Builder.addReturnValueConversion(commandInfo: CommandInfo): MethodSpec.Builder {
+        val (converterFormat, converterArgs) = mTypeConverter.javaConverter(commandInfo.returnType)
         addStatement("return \$T.pack($converterFormat.convertToProtobuf(\$L)).toByteArray()",
-            Any::class.java, *converterArgs.toTypedArray(), RETURN_VALUE_NAME)
+            Any::class.java, *converterArgs.toTypedArray(),
+            if (commandInfo.hasReturnValue()) RETURN_VALUE_NAME else "null")
         return this
     }
 
