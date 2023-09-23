@@ -11,6 +11,7 @@ interface PythonTypeName {
         val INT = PrimitiveTypeName("int")
         val BOOL = PrimitiveTypeName("bool")
         val STR = PrimitiveTypeName("str")
+        val NONE = PrimitiveTypeName("None")
         val BYTES = PrimitiveTypeName("bytes")
         val LIST = PythonClassName(Package("typing"), "List")
     }

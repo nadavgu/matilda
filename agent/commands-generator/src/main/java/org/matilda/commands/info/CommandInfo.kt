@@ -1,5 +1,6 @@
 package org.matilda.commands.info
 
+import com.squareup.javapoet.TypeName
 import javax.lang.model.type.TypeMirror
 
 data class CommandInfo(
@@ -9,3 +10,7 @@ data class CommandInfo(
     val returnType: TypeMirror,
     val thrownTypes: List<TypeMirror>,
 )
+
+fun CommandInfo.hasReturnValue(): Boolean {
+    return TypeName.get(returnType) != TypeName.VOID
+}

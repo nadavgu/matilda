@@ -41,12 +41,14 @@ class ProtobufModule {
                       scalarTypeConverter: ScalarTypeConverter,
                       boxedTypeConverter: BoxedTypeConverter,
                       listTypeConverter: ListTypeConverter,
+                      voidTypeConverter: VoidTypeConverter,
                       ): TypeConverter {
         return CompoundTypeConverter(listOf(
             messageTypeConverter,
             scalarTypeConverter,
             boxedTypeConverter,
             listTypeConverter,
+            voidTypeConverter,
         ))
     }
 }
