@@ -11,8 +11,11 @@ PING_BYTE = 0
 
 
 class JavaProcessMatildaRunner(MatildaRunner):
+    def __init__(self, java_path: str = 'java'):
+        self.__java_path = java_path
+
     def run(self) -> MatildaConnection:
-        popen = Popen(args=["java", "-cp", get_resource_path("agent.jar"), "org.matilda.Main"],
+        popen = Popen(args=[self.__java_path, "-cp", get_resource_path("agent.jar"), "org.matilda.Main"],
                       stdin=PIPE, stdout=PIPE, stderr=PIPE)
         self.__verify_agent_loaded(popen)
         return PopenMatildaConnection(popen)

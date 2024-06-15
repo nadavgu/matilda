@@ -16,8 +16,8 @@ class Matilda:
         connection = runner.run()
         return self.__create_matilda_process(connection)
 
-    def run_in_java_process(self) -> MatildaProcess:
-        return self.run(JavaProcessMatildaRunner())
+    def run_in_java_process(self, java_path='java') -> MatildaProcess:
+        return self.run(JavaProcessMatildaRunner(java_path=java_path))
 
     @staticmethod
     def __create_matilda_process(connection: MatildaConnection) -> MatildaProcess:
