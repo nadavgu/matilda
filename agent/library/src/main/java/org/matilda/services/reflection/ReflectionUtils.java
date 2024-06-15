@@ -4,6 +4,7 @@ import org.matilda.services.reflection.protobuf.JavaType;
 import org.matilda.services.reflection.protobuf.JavaValue;
 
 import javax.inject.Inject;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -24,6 +25,10 @@ public class ReflectionUtils {
 
     Method getMethod(long methodId) {
         return (Method) mObjectRepository.get(methodId);
+    }
+
+    Field getField(long methodId) {
+        return (Field) mObjectRepository.get(methodId);
     }
 
     Object getObject(long objectId) {
@@ -67,10 +72,14 @@ public class ReflectionUtils {
     }
 
 
-    JavaValue toJavaValue(Object object) {
+    JavaValue toJavaValue(Class<?> type, Object object) {
+        if (!type.isPrimitive()) {
+            return JavaValue.newBuilder().setObjectId(register(object)).build();
+        }
+
         if (object == null) {
             return JavaValue.newBuilder().build();
-        } if (object instanceof Integer) {
+        } if (object instanceof Integer ) {
             return JavaValue.newBuilder().setInt((Integer) object).build();
         } else if (object instanceof Long) {
             return JavaValue.newBuilder().setInt((Long) object).build();
@@ -81,7 +90,7 @@ public class ReflectionUtils {
         } else if (object instanceof Float) {
             return JavaValue.newBuilder().setFloat((Float) object).build();
         } else {
-            return JavaValue.newBuilder().setObjectId(register(object)).build();
+            throw new IllegalArgumentException(object.toString());
         }
     }
 

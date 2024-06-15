@@ -6,14 +6,12 @@ import org.matilda.services.reflection.protobuf.JavaValue;
 import org.matilda.services.reflection.protobuf.JavaType;
 
 import javax.inject.Inject;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @MatildaService
 public class ReflectionService {
@@ -96,6 +94,64 @@ public class ReflectionService {
             objectArguments[i] = mReflectionUtils.fromJavaValue(parameters[i].getType(), arguments.get(i));
         }
 
-        return mReflectionUtils.toJavaValue(method.invoke(receiver, objectArguments));
+        return mReflectionUtils.toJavaValue(method.getReturnType(), method.invoke(receiver, objectArguments));
+    }
+
+    @MatildaCommand
+    public List<Long> getClassFields(long id) {
+        Class<?> clazz = mReflectionUtils.getClass(id);
+        return Arrays.stream(clazz.getDeclaredFields()).map(mReflectionUtils::register).collect(Collectors.toList());
+    }
+
+    @MatildaCommand
+    public String getFieldName(long id) {
+        return mReflectionUtils.getField(id).getName();
+    }
+
+    @MatildaCommand
+    public JavaType getFieldType(long id) {
+        return mReflectionUtils.toJavaType(mReflectionUtils.getField(id).getType());
+    }
+
+    @MatildaCommand
+    public long getField(long classId, String fieldName) throws NoSuchFieldException {
+        return mReflectionUtils.register(mReflectionUtils.getClass(classId).getDeclaredField(fieldName));
+    }
+
+    @MatildaCommand
+    public boolean isFieldStatic(long id) {
+        return (mReflectionUtils.getField(id).getModifiers() & Modifier.STATIC) != 0;
+    }
+
+    @MatildaCommand
+    public JavaValue getFieldValue(long fieldId, long objectId) throws IllegalAccessException {
+        return getFieldValue(fieldId, mReflectionUtils.getObject(objectId));
+    }
+
+    @MatildaCommand
+    public JavaValue getStaticFieldValue(long fieldId) throws IllegalAccessException {
+        return getFieldValue(fieldId, null);
+    }
+
+    private JavaValue getFieldValue(long fieldId, Object object) throws IllegalAccessException {
+        Field field = mReflectionUtils.getField(fieldId);
+        field.setAccessible(true);
+        return mReflectionUtils.toJavaValue(field.getType(), field.get(object));
+    }
+
+    @MatildaCommand
+    public void setFieldValue(long fieldId, long objectId, JavaValue newValue) throws IllegalAccessException {
+        setFieldValue(fieldId, mReflectionUtils.getObject(objectId), newValue);
+    }
+
+    @MatildaCommand
+    public void setStaticFieldValue(long fieldId, JavaValue newValue) throws IllegalAccessException {
+        setFieldValue(fieldId, null, newValue);
+    }
+
+    private void setFieldValue(long fieldId, Object object, JavaValue newValue) throws IllegalAccessException {
+        Field field = mReflectionUtils.getField(fieldId);
+        field.setAccessible(true);
+        field.set(object, mReflectionUtils.fromJavaValue(field.getType(), newValue));
     }
 }
