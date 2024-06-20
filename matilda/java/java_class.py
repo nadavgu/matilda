@@ -23,6 +23,11 @@ class JavaClass(JavaObject):
     def superclass(self) -> 'JavaClass':
         return JavaClass(self.__reflection_service, self.__reflection_service.get_superclass(self.object_id))
 
+    @cached_property
+    def interfaces(self) -> List['JavaClass']:
+        return [JavaClass(self.__reflection_service, interface_id) for interface_id in
+                self.__reflection_service.get_interfaces(self.object_id)]
+
     def get_methods(self) -> List['JavaMethod']:
         from matilda.java.java_method import JavaMethod
         return [JavaMethod(method_id, self.__reflection_service) for method_id in

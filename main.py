@@ -8,3 +8,4 @@ if __name__ == '__main__':
         print(integer_class.get_field("value").get(integer_object))
         print(matilda_process.java.find_class("java.util.ArrayList").get_fields())
         print(matilda_process.java.find_class("java.util.ArrayList").superclass)
+        print(matilda_process.java.find_class("java.util.ArrayList").interfaces)

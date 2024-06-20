@@ -46,6 +46,12 @@ public class ReflectionService {
     }
 
     @MatildaCommand
+    public List<Long> getInterfaces(long classId) {
+        Class<?>[] interfaces  = mReflectionUtils.getClass(classId).getInterfaces();
+        return Arrays.stream(interfaces).map(mReflectionUtils::register).collect(Collectors.toList());
+    }
+
+    @MatildaCommand
     public String getMethodName(long id) {
         return mReflectionUtils.getMethod(id).getName();
     }
