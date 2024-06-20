@@ -7,3 +7,4 @@ if __name__ == '__main__':
         integer_object = integer_class.get_method("valueOf", JavaPrimitiveType.INT).invoke_static(12)
         print(integer_class.get_field("value").get(integer_object))
         print(matilda_process.java.find_class("java.util.ArrayList").get_fields())
+        print(matilda_process.java.find_class("java.util.ArrayList").superclass)

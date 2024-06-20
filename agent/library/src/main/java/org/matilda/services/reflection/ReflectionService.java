@@ -40,6 +40,12 @@ public class ReflectionService {
     }
 
     @MatildaCommand
+    public long getSuperclass(long classId) {
+        Class<?> superClass = mReflectionUtils.getClass(classId).getSuperclass();
+        return mReflectionUtils.register(superClass);
+    }
+
+    @MatildaCommand
     public String getMethodName(long id) {
         return mReflectionUtils.getMethod(id).getName();
     }
