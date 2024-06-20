@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class JavaClass(JavaObject):
     def __init__(self, reflection_service: ReflectionService, object_id: int):
-        super().__init__(object_id)
+        super().__init__(reflection_service, object_id)
         self.__reflection_service = reflection_service
 
     @cached_property

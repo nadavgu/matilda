@@ -8,7 +8,7 @@ from matilda.java.java_value import JavaValue, convert_value_to_protobuf, get_va
 
 class JavaField(JavaObject):
     def __init__(self, field_id: int, reflection_service: ReflectionService):
-        super().__init__(field_id)
+        super().__init__(reflection_service, field_id)
         self.__reflection_service = reflection_service
 
     def __str__(self):
@@ -34,11 +34,11 @@ class JavaField(JavaObject):
 
     def get(self, receiver: JavaObject) -> JavaValue:
         result = self.__reflection_service.get_field_value(self.object_id, receiver.object_id)
-        return get_value_from_protobuf(result)
+        return get_value_from_protobuf(self.__reflection_service, result)
 
     def get_static(self) -> JavaValue:
         result = self.__reflection_service.get_static_field_value(self.object_id)
-        return get_value_from_protobuf(result)
+        return get_value_from_protobuf(self.__reflection_service, result)
 
     def set(self, receiver: JavaObject, value: JavaValue) -> None:
         self.__reflection_service.set_field_value(self.object_id, receiver.object_id, convert_value_to_protobuf(value))

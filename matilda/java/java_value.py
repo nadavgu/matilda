@@ -1,5 +1,6 @@
 from typing import Union
 
+from matilda.generated.commands.reflection_service import ReflectionService
 from matilda.java.java_object import JavaObject
 from matilda.generated.proto import reflection_pb2
 
@@ -7,9 +8,9 @@ JavaPrimitive = Union[int, float, bool]
 JavaValue = Union[JavaObject, JavaPrimitive]
 
 
-def get_value_from_protobuf(protobuf):
+def get_value_from_protobuf(reflection_service: ReflectionService, protobuf):
     if protobuf.object_id:
-        return JavaObject(protobuf.object_id)
+        return JavaObject(reflection_service, protobuf.object_id)
     return getattr(protobuf, protobuf.WhichOneof("value"))
 
 

@@ -28,6 +28,11 @@ public class ReflectionService {
     }
 
     @MatildaCommand
+    public long getObjectClass(long objectId) {
+        return mReflectionUtils.register(mReflectionUtils.getObject(objectId).getClass());
+    }
+
+    @MatildaCommand
     public String getClassName(long id) {
         Class<?> clazz = mReflectionUtils.getClass(id);
         return clazz.getCanonicalName();

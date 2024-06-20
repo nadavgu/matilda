@@ -9,7 +9,7 @@ from matilda.java.java_value import JavaValue, convert_value_to_protobuf, get_va
 
 class JavaMethod(JavaObject):
     def __init__(self, method_id: int, reflection_service: ReflectionService):
-        super().__init__(method_id)
+        super().__init__(reflection_service, method_id)
         self.__reflection_service = reflection_service
 
     def __str__(self):
@@ -36,10 +36,9 @@ class JavaMethod(JavaObject):
     def invoke(self, receiver: JavaObject, *args: JavaValue) -> JavaValue:
         result = self.__reflection_service.invoke_method(self.object_id, receiver.object_id,
                                                          [convert_value_to_protobuf(arg) for arg in args])
-        return get_value_from_protobuf(result)
+        return get_value_from_protobuf(self.__reflection_service, result)
 
     def invoke_static(self, *args: JavaValue) -> JavaValue:
         result = self.__reflection_service.invoke_static_method(self.object_id,
                                                                 [convert_value_to_protobuf(arg) for arg in args])
-        return get_value_from_protobuf(result)
-
+        return get_value_from_protobuf(self.__reflection_service, result)
