@@ -6,7 +6,7 @@ setup(name='matilda',
       author_email='nadavgu@gmail.com',
       packages=find_packages(include='matilda*'),
       install_requires=[
-            'maddie~=0.1.0',
+            'maddie @ git+git://github.com/nadavgu/maddie-python.git@dev',
             'protobuf~=4.23'
       ]
       )
