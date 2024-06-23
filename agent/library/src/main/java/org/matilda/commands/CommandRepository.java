@@ -9,20 +9,22 @@ import java.util.Map;
 public class CommandRepository {
     private static final int DEFAULT_PROVIDER_ID = 0;
     private final Map<Integer, CommandRegistry> mCommandsRegistries;
-    private int mLastProviderId;
+    private int mLastRegistryId;
 
     @Inject
-    public CommandRepository(CommandRegistry defaultRegistry) {
-        mCommandsRegistries = new HashMap<Integer, CommandRegistry>() {{
-            put(DEFAULT_PROVIDER_ID, defaultRegistry);
-        }};
-        mLastProviderId = DEFAULT_PROVIDER_ID;
+    public CommandRepository() {
+        mCommandsRegistries = new HashMap<>();
+        mLastRegistryId = DEFAULT_PROVIDER_ID;
     }
 
     public int addCommandRegistry(CommandRegistry commandRegistry) {
-        mLastProviderId++;
-        mCommandsRegistries.put(mLastProviderId, commandRegistry);
-        return mLastProviderId;
+        mLastRegistryId++;
+        mCommandsRegistries.put(mLastRegistryId, commandRegistry);
+        return mLastRegistryId;
+    }
+
+    public void setDefaultCommandRegistry(CommandRegistry commandRegistry) {
+        mCommandsRegistries.put(DEFAULT_PROVIDER_ID, commandRegistry);
     }
 
     public CommandRegistry getCommandRegistry(int registryId) {

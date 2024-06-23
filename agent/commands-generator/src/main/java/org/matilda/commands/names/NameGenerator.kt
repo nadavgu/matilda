@@ -67,10 +67,10 @@ class NameGenerator @Inject internal constructor() {
         private val MAIN_GENERATED_PACKAGE = fromString("org.matilda.generated")
         val COMMANDS_GENERATED_PACKAGE = MAIN_GENERATED_PACKAGE.subpackage("commands")
         val RAW_COMMAND_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("raw")
-        const val COMMANDS_MODULE_CLASS_NAME = "CommandsModule"
+        const val COMMAND_REGISTRY_MODULE_CLASS_NAME = "CommandRegistryModule"
         val COMMANDS_MODULE_TYPE_NAME: TypeName = ClassName.get(
             COMMANDS_GENERATED_PACKAGE.packageName,
-            COMMANDS_MODULE_CLASS_NAME
+            COMMAND_REGISTRY_MODULE_CLASS_NAME
         )
         const val SERVICES_MODULE_CLASS_NAME = "ServicesModule"
         val SERVICES_MODULE_TYPE_NAME: TypeName = ClassName.get(

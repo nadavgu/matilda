@@ -9,11 +9,13 @@ import org.matilda.messages.MessageSender;
 import org.matilda.messages.handlers.MessageHandler;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import static org.matilda.commands.CommandsModule.INITIALIZED_COMMAND_REPOSITORY_TAG;
 import static org.matilda.messages.protobuf.MessageType.COMMAND_RESPONSE;
 
 public class CommandMessageHandler implements MessageHandler {
@@ -21,6 +23,7 @@ public class CommandMessageHandler implements MessageHandler {
     MessageSender mMessageSender;
 
     @Inject
+    @Named(INITIALIZED_COMMAND_REPOSITORY_TAG)
     CommandRepository mCommandRepository;
 
     @Inject

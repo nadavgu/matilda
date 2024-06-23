@@ -30,7 +30,7 @@ class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServ
     }
 
     private fun createClassSpec(services: ProjectServices): TypeSpec {
-        val builder = TypeSpec.classBuilder(NameGenerator.COMMANDS_MODULE_CLASS_NAME)
+        val builder = TypeSpec.classBuilder(NameGenerator.COMMAND_REGISTRY_MODULE_CLASS_NAME)
             .addAnnotation(createModuleAnnotation())
             .addModifiers(Modifier.PUBLIC)
         services.forEachCommand { command -> builder.addField(createCommandField(command)) }
