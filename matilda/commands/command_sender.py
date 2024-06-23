@@ -11,8 +11,9 @@ class CommandSender(Dependency):
     def __init__(self, message_sender: MessageSender):
         self.__message_sender = message_sender
 
-    def send(self, command_type: int, command_id: int, parameter: bytes):
+    def send(self, command_registry_id: int, command_type: int, command_id: int, parameter: bytes):
         command_request = CommandRequest()
+        command_request.registry_id = command_registry_id
         command_request.type = command_type
         command_request.param = parameter
         command_request.id = command_id

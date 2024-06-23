@@ -6,9 +6,10 @@ option java_multiple_files = true;
 
 
 message CommandRequest {
-  int32 type = 1;
-  int32 id = 2;
-  bytes param = 3;
+  int32 registry_id = 1;
+  int32 type = 2;
+  int32 id = 3;
+  bytes param = 4;
 }
 
 message CommandResponse {

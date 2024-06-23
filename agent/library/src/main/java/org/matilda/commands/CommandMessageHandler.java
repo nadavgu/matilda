@@ -21,7 +21,7 @@ public class CommandMessageHandler implements MessageHandler {
     MessageSender mMessageSender;
 
     @Inject
-    CommandRegistry mCommandRegistry;
+    CommandRepository mCommandRepository;
 
     @Inject
     Logger mLogger;
@@ -35,7 +35,8 @@ public class CommandMessageHandler implements MessageHandler {
             CommandRequest request = CommandRequest.parseFrom(message.data);
             byte[] result;
             try {
-                result = mCommandRegistry.get(request.getType()).run(request.getParam().toByteArray());
+                result = mCommandRepository.getCommand(request.getRegistryId(), request.getType())
+                        .run(request.getParam().toByteArray());
             } catch (Throwable e) {
                 mLogger.log("Failure", e);
                 reportCommandFailure(request, e);
