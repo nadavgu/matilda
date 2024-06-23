@@ -18,6 +18,9 @@ public class CommandRegistry {
     }
 
     public Command get(int type) {
+        if (!mCommands.containsKey(type)) {
+            throw new IllegalArgumentException(String.format("Command %d not found", type));
+        }
         return mCommands.get(type);
     }
 }

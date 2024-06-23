@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+- Indicative error when for some reason a command doesn't exist on the java side
+
+
 ### Changed
 
 ### Removed
