@@ -33,7 +33,7 @@ class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServ
         val builder = TypeSpec.classBuilder(NameGenerator.COMMAND_REGISTRY_MODULE_CLASS_NAME)
             .addAnnotation(createModuleAnnotation())
             .addModifiers(Modifier.PUBLIC)
-        services.forEachCommand { command -> builder.addField(createCommandField(command)) }
+        services.forEachStaticCommand { command -> builder.addField(createCommandField(command)) }
         return builder.addMethod(createInjectConstructor())
             .addMethod(createRegisterCommandsMethod(services))
             .addMethod(createCommandRegistryProviderMethod())
@@ -56,7 +56,7 @@ class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServ
         val builder = MethodSpec.methodBuilder(REGISTER_COMMANDS_METHOD_NAME)
             .addModifiers(Modifier.PUBLIC)
             .addParameter(commandRegistryParameter)
-        services.forEachCommand { command ->
+        services.forEachStaticCommand { command ->
             builder.addStatement("\$L.addCommand(\$L, \$L)", COMMAND_REGISTRY_PARAMETER_NAME,
                 mCommandIdGenerator.generate(command), getCommandFieldName(command))
         }

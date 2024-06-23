@@ -1,9 +1,11 @@
 package org.matilda.commands.collectors
 
+import org.matilda.commands.MatildaDynamicService
 import org.matilda.commands.MatildaService
 import org.matilda.commands.exceptions.AnnotationProcessingException
 import org.matilda.commands.info.ProjectServices
 import org.matilda.commands.info.ServiceInfo
+import org.matilda.commands.info.StaticServiceInfo
 import javax.annotation.processing.RoundEnvironment
 import javax.inject.Inject
 import javax.lang.model.element.Element
@@ -17,17 +19,22 @@ class ServicesCollector @Inject constructor() {
 
     @Inject
     lateinit var mCommandsCollector: CommandsCollector
-    fun collect() = ProjectServices(
-        mRoundEnvironment.getElementsAnnotatedWith(MatildaService::class.java)
+    fun collect() = ProjectServices(collectStaticServices(), collectDynamicServices())
+
+    private fun collectStaticServices() = collectServices(MatildaService::class.java).map { (element, serviceInfo) ->
+        StaticServiceInfo(serviceInfo, checkIfServiceHasInjectConstructor(element))
+    }
+
+    private fun collectDynamicServices() = collectServices(MatildaDynamicService::class.java)
+        .map { (_, serviceInfo) -> serviceInfo }
+
+    private fun collectServices(annotation: Class<out Annotation>) =
+        mRoundEnvironment.getElementsAnnotatedWith(annotation)
             .map { obj: Any? -> TypeElement::class.java.cast(obj) }
-            .map { element: TypeElement -> collectService(element) }
-    )
+            .map { element: TypeElement -> Pair(element, collectService(element)) }
 
     private fun collectService(element: TypeElement): ServiceInfo {
-        val serviceInfo = ServiceInfo(
-            element.qualifiedName.toString(), element.asType(),
-            ArrayList(), checkIfServiceHasInjectConstructor(element)
-        )
+        val serviceInfo = ServiceInfo(element.qualifiedName.toString(), element.asType(), ArrayList())
         serviceInfo.commands.addAll(mCommandsCollector.collect(serviceInfo, element))
         return serviceInfo
     }

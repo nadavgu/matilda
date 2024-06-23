@@ -11,7 +11,8 @@ import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
 
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@SupportedAnnotationTypes("org.matilda.commands.MatildaService", "org.matilda.commands.MatildaCommand")
+@SupportedAnnotationTypes("org.matilda.commands.MatildaService", "org.matilda.commands.MatildaCommand",
+    "org.matilda.commands.MatildaDynamicService")
 @SupportedOptions(
     PythonProperties.PYTHON_ROOT_DIR_OPTION,
     PythonProperties.PYTHON_GENERATED_PACKAGE_OPTION,

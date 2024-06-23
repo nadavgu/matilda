@@ -71,7 +71,7 @@ class PythonServicesContainerClassGenerator @Inject internal constructor() : Pro
 
     private fun PythonClass.addDICreator(services: ProjectServices) = apply {
         val dependencyArgumentList = services.services.joinToString {
-            "${DEPENDENCY_CONTAINER_PARAMETER_NAME}.get(${getClassName(it)})"
+            "${DEPENDENCY_CONTAINER_PARAMETER_NAME}.get(${getClassName(it.serviceInfo)})"
         }
         addStaticMethod(
             PythonFunctionSpec.functionBuilder("create")

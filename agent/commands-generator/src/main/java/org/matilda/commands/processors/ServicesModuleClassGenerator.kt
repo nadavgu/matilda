@@ -35,9 +35,9 @@ class ServicesModuleClassGenerator @Inject constructor() : Processor<ProjectServ
         val builder = TypeSpec.classBuilder(NameGenerator.SERVICES_MODULE_CLASS_NAME)
             .addAnnotation(Module::class.java)
             .addModifiers(Modifier.PUBLIC)
-        services.forEachService { service ->
+        services.forEachStaticService { service ->
             if (!service.hasInjectConstructor) {
-                builder.addMethod(createServiceProvideMethod(service))
+                builder.addMethod(createServiceProvideMethod(service.serviceInfo))
             }
         }
         return builder.build()
