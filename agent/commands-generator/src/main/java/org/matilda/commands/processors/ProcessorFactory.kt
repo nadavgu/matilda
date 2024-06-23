@@ -21,6 +21,9 @@ class ProcessorFactory @Inject constructor() {
     @Inject
     lateinit var mCommandDependenciesClassGenerator: CommandDependenciesClassGenerator
 
+    @Inject
+    lateinit var mCommandsRegistryFactoryClassGenerator: CommandsRegistryFactoryClassGenerator
+
     @set: Inject
     var mWasRun: Boolean = false
 
@@ -32,6 +35,7 @@ class ProcessorFactory @Inject constructor() {
             OnlyRunOnceProcessor(mWasRun, mServicesModuleClassGenerator),
             ProjectServicesProcessor(mPythonServiceClassGenerator),
             OnlyRunOnceProcessor(mWasRun, mPythonServicesContainerClassGenerator),
+            ProjectServicesProcessor(mCommandsRegistryFactoryClassGenerator),
         )
     )
 }

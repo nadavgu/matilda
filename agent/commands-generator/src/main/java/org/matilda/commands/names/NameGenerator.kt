@@ -41,6 +41,10 @@ class NameGenerator @Inject internal constructor() {
             get() = fullNamePackage.withoutLastPart()
         private val serviceRelativePackage: Package
             get() = servicePackage.removeCommonPrefixFrom(ORIGINAL_PACKAGE)
+        val commandRegistryFactoryPackageName: String
+            get() = joinPackages(COMMAND_REGISTRY_FACTORIES_PACKAGE, serviceRelativePackage).packageName
+        val commandRegistryClassName: String
+            get() = serviceClassName + "CommandRegistryFactory"
 
         inner class CommandNameGenerator(private val mCommandInfo: CommandInfo) {
             val rawCommandClassName: String
@@ -74,6 +78,7 @@ class NameGenerator @Inject internal constructor() {
         val COMMANDS_GENERATED_PACKAGE = MAIN_GENERATED_PACKAGE.subpackage("commands")
         val RAW_COMMAND_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("raw")
         val COMMAND_DEPENDENCIES_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("dependencies")
+        val COMMAND_REGISTRY_FACTORIES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("registryFactories")
         const val COMMAND_REGISTRY_MODULE_CLASS_NAME = "CommandRegistryModule"
         val COMMANDS_MODULE_TYPE_NAME: TypeName = ClassName.get(
             COMMANDS_GENERATED_PACKAGE.packageName,

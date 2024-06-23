@@ -37,24 +37,30 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .addSuperinterface(Command::class.java)
             .addField(createServiceField(command))
             .addField(createCommandDependenciesField(command))
-            .addMethod(createInjectConstructor())
+            .addMethod(createInjectConstructor(command))
             .addMethod(createRunMethod(command))
             .build()
 
     private fun createServiceField(command: CommandInfo) =
         FieldSpec.builder(TypeName.get(command.service.type), SERVICE_FIELD_NAME)
-            .addAnnotation(Inject::class.java)
+            .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             .build()
 
     private fun createCommandDependenciesField(command: CommandInfo) =
         FieldSpec.builder(mNameGenerator.forCommand(command).commandDependenciesTypeName,
             COMMAND_DEPENDENCIES_FIELD_NAME)
-            .addAnnotation(Inject::class.java)
+            .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             .build()
 
-    private fun createInjectConstructor() =
+    private fun createInjectConstructor(command: CommandInfo) =
         MethodSpec.constructorBuilder()
             .addAnnotation(Inject::class.java)
+            .addModifiers(Modifier.PUBLIC)
+            .addParameter(ParameterSpec.builder(TypeName.get(command.service.type), SERVICE_PARAMETER_NAME).build())
+            .addParameter(ParameterSpec.builder(mNameGenerator.forCommand(command).commandDependenciesTypeName,
+                COMMAND_DEPENDENCIES_PARAMETER_NAME).build())
+            .addStatement("\$L = \$L", SERVICE_FIELD_NAME, SERVICE_PARAMETER_NAME)
+            .addStatement("\$L = \$L", COMMAND_DEPENDENCIES_FIELD_NAME, COMMAND_DEPENDENCIES_PARAMETER_NAME)
             .build()
 
     private fun createRunMethod(command: CommandInfo) =
@@ -107,10 +113,12 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
     companion object {
         private val BYTE_ARRAY_TYPE_NAME = ArrayTypeName.of(TypeName.BYTE)
         private const val SERVICE_FIELD_NAME = "mService"
+        private const val SERVICE_PARAMETER_NAME = "service"
         private const val RAW_PARAMETER_NAME = "rawParameter"
         private const val RETURN_VALUE_NAME = "returnValue"
         private const val EXCEPTION_NAME = "exception"
         private const val SOME_PARAMETER_VARIABLE_NAME = "someParameter"
         const val COMMAND_DEPENDENCIES_FIELD_NAME = "mCommandDependencies"
+        const val COMMAND_DEPENDENCIES_PARAMETER_NAME = "commandDependencies"
     }
 }
