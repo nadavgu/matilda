@@ -45,10 +45,16 @@ class NameGenerator @Inject internal constructor() {
         inner class CommandNameGenerator(private val mCommandInfo: CommandInfo) {
             val rawCommandClassName: String
                 get() = serviceClassName + StringUtils.capitalize(mCommandInfo.name) + "Command"
+            val commandDependenciesClassName: String
+                get() = serviceClassName + StringUtils.capitalize(mCommandInfo.name) + "CommandDependencies"
             val rawCommandPackageName: String
                 get() = joinPackages(RAW_COMMAND_CLASSES_PACKAGE, serviceRelativePackage).packageName
+            val commandDependenciesPackageName: String
+                get() = joinPackages(COMMAND_DEPENDENCIES_CLASSES_PACKAGE, serviceRelativePackage).packageName
             val rawCommandTypeName: TypeName
                 get() = ClassName.get(rawCommandPackageName, rawCommandClassName)
+            val commandDependenciesTypeName: TypeName
+                get() = ClassName.get(commandDependenciesPackageName, commandDependenciesClassName)
             val fullCommandName: String
                 get() = serviceRelativePackage.parts.joinToString(separator = "") {
                     str -> StringUtils.capitalize(str)
@@ -67,6 +73,7 @@ class NameGenerator @Inject internal constructor() {
         private val MAIN_GENERATED_PACKAGE = fromString("org.matilda.generated")
         val COMMANDS_GENERATED_PACKAGE = MAIN_GENERATED_PACKAGE.subpackage("commands")
         val RAW_COMMAND_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("raw")
+        val COMMAND_DEPENDENCIES_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("dependencies")
         const val COMMAND_REGISTRY_MODULE_CLASS_NAME = "CommandRegistryModule"
         val COMMANDS_MODULE_TYPE_NAME: TypeName = ClassName.get(
             COMMANDS_GENERATED_PACKAGE.packageName,

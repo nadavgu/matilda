@@ -8,14 +8,12 @@ import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.info.hasReturnValue
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
-import org.matilda.commands.types.DependencyInfo
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.javaConverter
 import java.io.IOException
 import javax.annotation.processing.Filer
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
-import javax.lang.model.type.TypeMirror
 
 class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
     @Inject
@@ -38,7 +36,7 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .addModifiers(Modifier.PUBLIC)
             .addSuperinterface(Command::class.java)
             .addField(createServiceField(command))
-            .addFields(createConverterDependenciesFields(command))
+            .addField(createCommandDependenciesField(command))
             .addMethod(createInjectConstructor())
             .addMethod(createRunMethod(command))
             .build()
@@ -48,22 +46,11 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .addAnnotation(Inject::class.java)
             .build()
 
-    private fun createConverterDependenciesFields(command: CommandInfo) = collectConverterDependencies(command)
-        .map { dependencyInfo ->
-            FieldSpec.builder(dependencyInfo.typeName, dependencyInfo.variableName)
+    private fun createCommandDependenciesField(command: CommandInfo) =
+        FieldSpec.builder(mNameGenerator.forCommand(command).commandDependenciesTypeName,
+            COMMAND_DEPENDENCIES_FIELD_NAME)
             .addAnnotation(Inject::class.java)
             .build()
-        }
-
-    private fun collectConverterDependencies(command: CommandInfo): Set<DependencyInfo> =
-        HashSet<DependencyInfo>().apply {
-            command.parameters.forEach {
-                addAll(collectConverterDependencies(it.type))
-            }
-            addAll(collectConverterDependencies(command.returnType))
-        }
-
-    private fun collectConverterDependencies(type: TypeMirror) = mTypeConverter.javaConverter(type).dependencies
 
     private fun createInjectConstructor() =
         MethodSpec.constructorBuilder()
@@ -124,5 +111,6 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
         private const val RETURN_VALUE_NAME = "returnValue"
         private const val EXCEPTION_NAME = "exception"
         private const val SOME_PARAMETER_VARIABLE_NAME = "someParameter"
+        const val COMMAND_DEPENDENCIES_FIELD_NAME = "mCommandDependencies"
     }
 }
