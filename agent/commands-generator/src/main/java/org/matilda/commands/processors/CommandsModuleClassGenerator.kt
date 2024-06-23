@@ -10,6 +10,7 @@ import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
 import javax.annotation.processing.Filer
 import javax.inject.Inject
+import javax.inject.Singleton
 import javax.lang.model.element.Modifier
 
 class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServices> {
@@ -71,8 +72,8 @@ class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServ
 
     private fun createCommandRegistryProviderMethod() =
         MethodSpec.methodBuilder("commandRegistry")
-            .addModifiers(Modifier.STATIC)
             .addAnnotation(Provides::class.java)
+            .addAnnotation(Singleton::class.java)
             .addParameter(ParameterSpec.builder(NameGenerator.COMMANDS_MODULE_TYPE_NAME,
                 COMMANDS_MODULE_PARAMETER_NAME).build())
             .addStatement("\$T \$L = new \$T()", CommandRegistry::class.java, COMMAND_REGISTRY_VARIABLE_NAME,
