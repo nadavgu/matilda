@@ -16,8 +16,8 @@ class MessageTypeConverter @Inject constructor() : TypeConverter {
     @Inject
     lateinit var mProtobufTypeTranslator: ProtobufTypeTranslator
 
-    override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<Any>> {
-        return Pair("new \$T<>(\$T.class)", listOf(MessageConverter::class.java, type))
+    override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): JavaTypeConverterInfo {
+        return JavaTypeConverterInfo("new \$T<>(\$T.class)", listOf(MessageConverter::class.java, type))
     }
 
     override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<PythonTypeName>> {

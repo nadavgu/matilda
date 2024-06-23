@@ -11,9 +11,10 @@ import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.TypeMirror
 
 class ListTypeConverter @Inject constructor() : TypeConverter {
-    override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<Any>> {
+    override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): JavaTypeConverterInfo {
         val (innerFormat, innerArguments) = outerConverter.javaConverter(type.typeArgument, outerConverter)
-        return Pair("new \$T<>($innerFormat)", listOf(ListConverter::class.java, *innerArguments.toTypedArray()))
+        return JavaTypeConverterInfo("new \$T<>($innerFormat)",
+            listOf(ListConverter::class.java, *innerArguments.toTypedArray()))
     }
 
     override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<PythonTypeName>> {

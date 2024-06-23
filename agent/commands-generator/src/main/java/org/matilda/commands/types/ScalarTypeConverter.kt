@@ -3,13 +3,12 @@ package org.matilda.commands.types
 import org.matilda.commands.python.PythonClassName
 import org.matilda.commands.python.PythonTypeName
 import org.matilda.commands.utils.Package
-import java.lang.reflect.Type
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
 
 class ScalarTypeConverter @Inject constructor() : TypeConverter {
-    override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<Type>> {
-        return Pair("new \$T()", listOf(type.scalarJavaConverterType))
+    override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): JavaTypeConverterInfo {
+        return JavaTypeConverterInfo("new \$T()", listOf(type.scalarJavaConverterType))
     }
 
     override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<PythonTypeName>> {

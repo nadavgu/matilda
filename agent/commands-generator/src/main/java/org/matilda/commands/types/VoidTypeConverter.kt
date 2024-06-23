@@ -3,13 +3,12 @@ package org.matilda.commands.types
 import com.squareup.javapoet.TypeName
 import org.matilda.commands.python.PythonClassName
 import org.matilda.commands.python.PythonTypeName
-import java.lang.reflect.Type
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
 
 class VoidTypeConverter @Inject constructor() : TypeConverter {
-    override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<Type>> {
-        return Pair("new \$T()", listOf(EmptyConverter::class.java))
+    override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): JavaTypeConverterInfo {
+        return JavaTypeConverterInfo("new \$T()", listOf(EmptyConverter::class.java))
     }
 
     override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<PythonTypeName>> {
