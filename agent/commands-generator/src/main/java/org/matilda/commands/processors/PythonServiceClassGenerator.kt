@@ -7,10 +7,7 @@ import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
-import org.matilda.commands.python.ANY_CLASS
-import org.matilda.commands.python.COMMAND_RUNNER_CLASS
-import org.matilda.commands.python.DEPENDENCY_CLASS
-import org.matilda.commands.python.DEPENDENCY_CONTAINER_CLASS
+import org.matilda.commands.python.*
 import org.matilda.commands.python.writer.*
 import org.matilda.commands.types.*
 import org.matilda.commands.utils.toSnakeCase
@@ -55,9 +52,12 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
         addInstanceMethod(
             PythonFunctionSpec.constructorBuilder()
                 .addParameter(COMMAND_RUNNER_PARAMETER_NAME, COMMAND_RUNNER_CLASS.name)
+                .addParameter(COMMAND_REGISTRY_ID_PARAMETER_NAME, pythonOptionalType(PythonTypeName.INT).name,
+                    "None")
                 .build()
         )
             .addStatement("self.%s = %s", COMMAND_RUNNER_FIELD_NAME, COMMAND_RUNNER_PARAMETER_NAME)
+            .addStatement("self.%s = %s", COMMAND_REGISTRY_ID_FIELD_NAME, COMMAND_REGISTRY_ID_PARAMETER_NAME)
     }
 
     private fun PythonClass.addDICreator(service: ServiceInfo) = apply {
@@ -82,8 +82,9 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
             }
             .addStatement("%s = %s.SerializeToString()", RAW_PARAMETER_VARIABLE_NAME, SOME_PARAMETER_VARIABLE_NAME)
             .addStatement(
-                "%s = self.%s.run(%d, %s)", RAW_RETURN_VALUE_VARIABLE_NAME, COMMAND_RUNNER_FIELD_NAME,
-                mCommandIdGenerator.generate(command), RAW_PARAMETER_VARIABLE_NAME
+                "%s = self.%s.run(%d, %s, %s=self.%s)", RAW_RETURN_VALUE_VARIABLE_NAME, COMMAND_RUNNER_FIELD_NAME,
+                mCommandIdGenerator.generate(command), RAW_PARAMETER_VARIABLE_NAME,
+                COMMAND_REGISTRY_ID_PARAMETER_NAME, COMMAND_REGISTRY_ID_FIELD_NAME
             )
             .addReturnStatement(command.returnType)
     }
@@ -144,12 +145,15 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
             .addFromImport(DEPENDENCY_CONTAINER_CLASS)
             .addFromImport(COMMAND_RUNNER_CLASS)
             .addFromImport(ANY_CLASS)
+            .addRequiredFromImports(pythonOptionalType(PythonTypeName.INT))
             .addFromImport(mProtobufTypeTranslator.toPythonType(ClassName.get(Some::class.java)))
     }
 
     companion object {
         private const val COMMAND_RUNNER_FIELD_NAME = "__command_runner"
         private const val COMMAND_RUNNER_PARAMETER_NAME = "command_runner"
+        private const val COMMAND_REGISTRY_ID_FIELD_NAME = "__command_registry_id"
+        private const val COMMAND_REGISTRY_ID_PARAMETER_NAME = "command_registry_id"
         private const val DEPENDENCY_CONTAINER_PARAMETER_NAME = "dependency_container"
         private const val RAW_PARAMETER_VARIABLE_NAME = "raw_parameter"
         private const val SOME_PARAMETER_VARIABLE_NAME = "some_parameter"

@@ -20,3 +20,4 @@ data class ParameterizedTypeName(val rawTypeName: PythonTypeName, val args: List
 }
 
 fun pythonListType(type: PythonTypeName) = ParameterizedTypeName(PythonTypeName.LIST, listOf(TypeVariable(type)))
+fun pythonOptionalType(type: PythonTypeName) = ParameterizedTypeName(PythonTypeName.OPTIONAL, listOf(TypeVariable(type)))

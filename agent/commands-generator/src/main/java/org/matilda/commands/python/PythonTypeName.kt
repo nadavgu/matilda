@@ -14,6 +14,7 @@ interface PythonTypeName {
         val NONE = PrimitiveTypeName("None")
         val BYTES = PrimitiveTypeName("bytes")
         val LIST = PythonClassName(Package("typing"), "List")
+        val OPTIONAL = PythonClassName(Package("typing"), "Optional")
     }
 }
 

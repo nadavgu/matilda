@@ -49,6 +49,11 @@ data class PythonFunctionSpec(
             return this
         }
 
+        fun addParameter(parameter: String, typeHint: String, defaultValue: String): Builder {
+            mParameters.add(PythonParameter(PythonVariable(parameter, typeHint), defaultValue))
+            return this
+        }
+
         fun addParameterAtStart(parameter: String): Builder {
             mParameters.add(0, PythonParameter(parameter))
             return this

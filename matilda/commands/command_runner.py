@@ -1,3 +1,5 @@
+from typing import Optional
+
 from maddie.dependency import Dependency, T
 from maddie.dependency_container import DependencyContainer
 
@@ -16,7 +18,10 @@ class CommandRunner(Dependency):
         self.__command_response_listener = command_response_listener
         self.__command_id_generator = command_id_generator
 
-    def run(self, command_type: int, parameter: bytes, command_registry_id: int = DEFAULT_REGISTRY_ID) -> bytes:
+    def run(self, command_type: int, parameter: bytes, command_registry_id: Optional[int] = None) -> bytes:
+        if command_registry_id is None:
+            command_registry_id = self.DEFAULT_REGISTRY_ID
+
         command_id = self.__command_id_generator.generate()
         with self.__command_response_listener.listen(command_id) as listening_instance:
             self.__command_sender.send(command_registry_id, command_type, command_id, parameter)
