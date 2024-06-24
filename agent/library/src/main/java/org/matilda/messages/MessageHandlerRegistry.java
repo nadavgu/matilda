@@ -18,12 +18,19 @@ public class MessageHandlerRegistry implements MessageHandler {
         mMessageHandlers = new HashMap<>();
     }
 
-    public void registerHandler(int type, MessageHandler handler) {
+    public MessageHandlerRegistration registerHandler(int type, MessageHandler handler) {
         if (!mMessageHandlers.containsKey(type)) {
             mMessageHandlers.put(type, new ArrayList<>());
         }
 
         mMessageHandlers.get(type).add(handler);
+        return new MessageHandlerRegistration(this, type, handler);
+    }
+
+    public void unregisterHandler(int type, MessageHandler handler) {
+        if (mMessageHandlers.containsKey(type)) {
+            mMessageHandlers.get(type).remove(handler);
+        }
     }
 
     @Override
