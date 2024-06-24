@@ -9,17 +9,19 @@ import org.matilda.commands.CommandRepository;
 public class DynamicServiceConverter<T> implements ProtobufConverter<T> {
     private final CommandRepository mCommandRepository;
     private final CommandRegistryFactory<T> mCommandRegistryFactory;
+    private final IntConverter mIntConverter;
 
     public DynamicServiceConverter(CommandRepository commandRepository,
                                    CommandRegistryFactory<T> commandRegistryFactory) {
         mCommandRepository = commandRepository;
         mCommandRegistryFactory = commandRegistryFactory;
+        mIntConverter = new IntConverter();
     }
 
     @Override
     public Int32Value convertToProtobuf(T service) {
         int registryId = mCommandRepository.addCommandRegistry(mCommandRegistryFactory.createCommandRegistry(service));
-        return Int32Value.newBuilder().setValue(registryId).build();
+        return mIntConverter.convertToProtobuf(registryId);
     }
 
     @Override

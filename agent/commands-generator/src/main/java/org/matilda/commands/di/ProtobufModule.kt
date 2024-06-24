@@ -42,6 +42,7 @@ class ProtobufModule {
                       boxedTypeConverter: BoxedTypeConverter,
                       listTypeConverter: ListTypeConverter,
                       voidTypeConverter: VoidTypeConverter,
+                      dynamicServiceTypeConverter: DynamicServiceTypeConverter,
                       ): TypeConverter {
         return CompoundTypeConverter(listOf(
             messageTypeConverter,
@@ -49,6 +50,7 @@ class ProtobufModule {
             boxedTypeConverter,
             listTypeConverter,
             voidTypeConverter,
+            dynamicServiceTypeConverter,
         ))
     }
 }

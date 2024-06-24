@@ -150,7 +150,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     }
 
     companion object {
-        private const val COMMAND_RUNNER_FIELD_NAME = "__command_runner"
+        const val COMMAND_RUNNER_FIELD_NAME = "__command_runner"
         private const val COMMAND_RUNNER_PARAMETER_NAME = "command_runner"
         private const val COMMAND_REGISTRY_ID_FIELD_NAME = "__command_registry_id"
         private const val COMMAND_REGISTRY_ID_PARAMETER_NAME = "command_registry_id"
