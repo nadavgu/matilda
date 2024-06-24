@@ -9,18 +9,19 @@ import java.util.Map;
 public class CommandRepository {
     private static final int DEFAULT_PROVIDER_ID = 0;
     private final Map<Integer, CommandRegistry> mCommandsRegistries;
-    private int mLastRegistryId;
+
+    @Inject
+    CommandRegistryIdGenerator mCommandRegistryIdGenerator;
 
     @Inject
     public CommandRepository() {
         mCommandsRegistries = new HashMap<>();
-        mLastRegistryId = DEFAULT_PROVIDER_ID;
     }
 
     public int addCommandRegistry(CommandRegistry commandRegistry) {
-        mLastRegistryId++;
-        mCommandsRegistries.put(mLastRegistryId, commandRegistry);
-        return mLastRegistryId;
+        int id = mCommandRegistryIdGenerator.generate();
+        mCommandsRegistries.put(id, commandRegistry);
+        return id;
     }
 
     public void setDefaultCommandRegistry(CommandRegistry commandRegistry) {
