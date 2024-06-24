@@ -3,7 +3,7 @@ package org.matilda.di;
 import dagger.Component;
 import org.matilda.commands.CommandsModule;
 import org.matilda.di.destructors.DestructionManager;
-import org.matilda.messages.MessageListener;
+import org.matilda.messages.MessageServer;
 
 import javax.inject.Singleton;
 
@@ -11,7 +11,7 @@ import javax.inject.Singleton;
         CommandsModule.class, UtilsModule.class})
 @Singleton
 public interface MatildaComponent {
-    MessageListener messageListener();
+    MessageServer messageListener();
 
     DestructionManager destructionManager();
 }
