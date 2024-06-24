@@ -2,6 +2,7 @@ package org.matilda.commands.processors
 
 import com.squareup.javapoet.*
 import org.matilda.commands.CommandRegistry
+import org.matilda.commands.CommandRegistryFactory
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.CommandIdGenerator
@@ -27,15 +28,16 @@ class CommandsRegistryFactoryClassGenerator @Inject constructor() : Processor<Se
             .writeTo(mFiler)
     }
 
-    private fun createClassSpec(service: ServiceInfo): TypeSpec {
-        val builder = TypeSpec.classBuilder(mNameGenerator.forService(service).commandRegistryClassName)
+    private fun createClassSpec(service: ServiceInfo) =
+        TypeSpec.classBuilder(mNameGenerator.forService(service).commandRegistryFactoryClassName)
             .addModifiers(Modifier.PUBLIC)
-        return builder.addMethod(createInjectConstructor())
+            .addSuperinterface(ParameterizedTypeName.get(ClassName.get(CommandRegistryFactory::class.java),
+                TypeName.get(service.type)))
+            .addMethod(createInjectConstructor())
             .addFields(createCommandDependenciesFields(service))
             .addMethod(createRegisterCommandsMethod(service))
             .addMethod(createCommandRegistryMethod(service))
             .build()
-    }
 
     private fun createCommandDependenciesFields(service: ServiceInfo) =
         service.commands.map(this::createCommandDependenciesField)
@@ -54,7 +56,6 @@ class CommandsRegistryFactoryClassGenerator @Inject constructor() : Processor<Se
         val serviceParameter =
             ParameterSpec.builder(TypeName.get(service.type), SERVICE_PARAMETER_NAME).build()
         val builder = MethodSpec.methodBuilder(REGISTER_COMMANDS_METHOD_NAME)
-            .addModifiers(Modifier.PUBLIC)
             .addParameter(commandRegistryParameter)
             .addParameter(serviceParameter)
         service.commands.forEach { command ->
@@ -72,6 +73,8 @@ class CommandsRegistryFactoryClassGenerator @Inject constructor() : Processor<Se
 
     private fun createCommandRegistryMethod(service: ServiceInfo) =
         MethodSpec.methodBuilder("createCommandRegistry")
+            .addAnnotation(Override::class.java)
+            .addModifiers(Modifier.PUBLIC)
             .addParameter(ParameterSpec.builder(TypeName.get(service.type), SERVICE_PARAMETER_NAME).build())
             .addStatement("\$T \$L = new \$T()", CommandRegistry::class.java, COMMAND_REGISTRY_VARIABLE_NAME,
                 CommandRegistry::class.java)

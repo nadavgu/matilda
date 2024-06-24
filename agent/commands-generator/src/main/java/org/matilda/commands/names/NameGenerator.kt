@@ -22,9 +22,9 @@ class NameGenerator @Inject internal constructor() {
     val pythonGeneratedServicesContainerPackage: Package
         get() = mPythonProperties.pythonGeneratedPackage.subpackage("services")
 
-    inner class ServiceNameGenerator(private val mServiceInfo: ServiceInfo) {
+    inner class ServiceNameGenerator(private val mServiceFullName: String) {
         private val fullNamePackage: Package
-            get() = fromString(mServiceInfo.fullName)
+            get() = fromString(mServiceFullName)
         val serviceClassName: String
             get() = fullNamePackage.lastPart
 
@@ -43,8 +43,10 @@ class NameGenerator @Inject internal constructor() {
             get() = servicePackage.removeCommonPrefixFrom(ORIGINAL_PACKAGE)
         val commandRegistryFactoryPackageName: String
             get() = joinPackages(COMMAND_REGISTRY_FACTORIES_PACKAGE, serviceRelativePackage).packageName
-        val commandRegistryClassName: String
+        val commandRegistryFactoryClassName: String
             get() = serviceClassName + "CommandRegistryFactory"
+        val commandRegistryFactoryTypeName: TypeName
+            get() = ClassName.get(commandRegistryFactoryPackageName, commandRegistryFactoryClassName)
 
         inner class CommandNameGenerator(private val mCommandInfo: CommandInfo) {
             val rawCommandClassName: String
@@ -69,7 +71,8 @@ class NameGenerator @Inject internal constructor() {
         }
     }
 
-    fun forService(serviceInfo: ServiceInfo) = ServiceNameGenerator(serviceInfo)
+    fun forService(serviceInfo: ServiceInfo) = forService(serviceInfo.fullName)
+    fun forService(fullName: String) = ServiceNameGenerator(fullName)
 
     fun forCommand(commandInfo: CommandInfo) = forService(commandInfo.service).CommandNameGenerator(commandInfo)
 

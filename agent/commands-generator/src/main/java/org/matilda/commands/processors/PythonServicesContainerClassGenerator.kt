@@ -33,8 +33,8 @@ class PythonServicesContainerClassGenerator @Inject internal constructor() : Pro
 
     private fun PythonFile.addImports(services: ProjectServices) = apply {
         addFromImport(DEPENDENCY_CLASS).addFromImport(DEPENDENCY_CONTAINER_CLASS)
-        services.forEachService {
-            addFromImport(mNameGenerator.forService(it).serviceFullClassName)
+        services.forEachStaticService {
+            addFromImport(mNameGenerator.forService(it.serviceInfo).serviceFullClassName)
         }
     }
 
@@ -43,16 +43,17 @@ class PythonServicesContainerClassGenerator @Inject internal constructor() : Pro
             .addConstructor(services)
             .addDICreator(services)
 
-        services.forEachService {
-            pythonClass.addServiceProperty(it)
+        services.forEachStaticService {
+            pythonClass.addServiceProperty(it.serviceInfo)
         }
     }
 
     private fun PythonClass.addConstructor(services: ProjectServices) = apply {
         val constructor = addInstanceMethod(createConstructorSpec(services))
         if (services.services.isNotEmpty()) {
-            services.forEachService { service ->
-                constructor.addStatement("self.%s = %s", getServiceFieldName(service), getServiceParameterName(service))
+            services.forEachStaticService { service ->
+                constructor.addStatement("self.%s = %s", getServiceFieldName(service.serviceInfo),
+                    getServiceParameterName(service.serviceInfo))
             }
         } else {
             constructor.addStatement("pass")
@@ -62,8 +63,8 @@ class PythonServicesContainerClassGenerator @Inject internal constructor() : Pro
     private fun createConstructorSpec(services: ProjectServices) =
         PythonFunctionSpec.constructorBuilder()
             .apply {
-                services.forEachService { service ->
-                    addParameter(getServiceParameterName(service), getClassName(service))
+                services.forEachStaticService { service ->
+                    addParameter(getServiceParameterName(service.serviceInfo), getClassName(service.serviceInfo))
                 }
             }.build()
 
