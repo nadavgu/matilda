@@ -3,9 +3,11 @@ from typing import Dict, List
 from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 
+from matilda.commands.command_message_handler import CommandMessageHandler
 from matilda.messages.handler.message_handler import MessageHandler
 from matilda.messages.handler.message_handler_registration import MessageHandlerRegistration
 from matilda.messages.message import Message
+from matilda.generated.proto.message_pb2 import MessageType
 
 
 class MessageHandlerRegistry(Dependency):
@@ -29,5 +31,7 @@ class MessageHandlerRegistry(Dependency):
 
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'MessageHandlerRegistry':
-        return MessageHandlerRegistry()
-
+        message_handler_registry = MessageHandlerRegistry()
+        command_message_handler = dependency_container.get(CommandMessageHandler)
+        message_handler_registry.register(MessageType.COMMAND, command_message_handler.handle)
+        return message_handler_registry
