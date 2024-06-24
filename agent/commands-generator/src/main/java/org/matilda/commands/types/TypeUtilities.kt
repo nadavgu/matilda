@@ -18,5 +18,5 @@ class TypeUtilities @Inject constructor() {
     fun isSubtype(type: TypeMirror, parent: Class<*>) = mTypes.isSubtype(type, toTypeMirror(parent))
 
     fun isAnnotatedWith(type: TypeMirror, annotation: Class<out Annotation>) =
-        mTypes.asElement(type).getAnnotation(annotation) != null
+        mTypes.asElement(type) != null && mTypes.asElement(type).getAnnotation(annotation) != null
 }
