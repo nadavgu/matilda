@@ -2,13 +2,13 @@ package org.matilda.commands.python.writer
 
 data class PythonFunctionSpec(
     val name: String,
-    val parameters: List<PythonVariable>,
+    val parameters: List<PythonParameter>,
     val annotations: List<String>,
     val returnTypeHint: String?
 ) {
-    constructor(name: String, vararg parameters: PythonVariable) : this(
+    constructor(name: String, vararg parameters: PythonParameter) : this(
         name,
-        listOf<PythonVariable>(*parameters),
+        listOf<PythonParameter>(*parameters),
         listOf<String>(),
         null
     )
@@ -30,27 +30,27 @@ data class PythonFunctionSpec(
         Builder(name).addParameters(parameters).addAnnotations(annotations).returnTypeHint(returnTypeHint)
 
     class Builder(private val mName: String) {
-        private val mParameters = mutableListOf<PythonVariable>()
+        private val mParameters = mutableListOf<PythonParameter>()
         private val mAnnotations = mutableListOf<String>()
         private var mReturnTypeHint: String? = null
 
-        fun addParameters(parameters: List<PythonVariable>): Builder {
+        fun addParameters(parameters: List<PythonParameter>): Builder {
             mParameters.addAll(parameters)
             return this
         }
 
         fun addParameter(parameter: String): Builder {
-            mParameters.add(PythonVariable(parameter))
+            mParameters.add(PythonParameter(parameter))
             return this
         }
 
         fun addParameter(parameter: String, typeHint: String): Builder {
-            mParameters.add(PythonVariable(parameter, typeHint))
+            mParameters.add(PythonParameter(PythonVariable(parameter, typeHint)))
             return this
         }
 
         fun addParameterAtStart(parameter: String): Builder {
-            mParameters.add(0, PythonVariable(parameter))
+            mParameters.add(0, PythonParameter(parameter))
             return this
         }
 

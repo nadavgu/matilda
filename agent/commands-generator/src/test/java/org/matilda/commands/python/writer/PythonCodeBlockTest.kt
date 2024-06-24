@@ -12,13 +12,14 @@ internal class PythonCodeBlockTest  {
         pythonCodeBlock.newFunction(
             PythonFunctionSpec(
                 "func",
-                PythonVariable("var1"),
-                PythonVariable("var2", "type2")
+                PythonParameter("var1"),
+                PythonParameter(PythonVariable("var2", "type2")),
+                PythonParameter(PythonVariable("var3", "type3"), "defaultValue3"),
             )
         )
             .addStatement("statement")
         assertEquals(codeBlock.lines.toList(), listOf(
-            "def func(var1, var2: type2):",
+            "def func(var1, var2: type2, var3: type3 = defaultValue3):",
             "\tstatement"
         ))
     }
