@@ -5,16 +5,20 @@ import com.google.protobuf.Int32Value;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.matilda.commands.CommandRegistryFactory;
 import org.matilda.commands.CommandRepository;
+import org.matilda.commands.ServiceProxyFactory;
 
 public class DynamicServiceConverter<T> implements ProtobufConverter<T> {
     private final CommandRepository mCommandRepository;
     private final CommandRegistryFactory<T> mCommandRegistryFactory;
+    private final ServiceProxyFactory<T> mServiceProxyFactory;
     private final IntConverter mIntConverter;
 
     public DynamicServiceConverter(CommandRepository commandRepository,
-                                   CommandRegistryFactory<T> commandRegistryFactory) {
+                                   CommandRegistryFactory<T> commandRegistryFactory,
+                                   ServiceProxyFactory<T> serviceProxyFactory) {
         mCommandRepository = commandRepository;
         mCommandRegistryFactory = commandRegistryFactory;
+        mServiceProxyFactory = serviceProxyFactory;
         mIntConverter = new IntConverter();
     }
 
@@ -26,6 +30,7 @@ public class DynamicServiceConverter<T> implements ProtobufConverter<T> {
 
     @Override
     public T convertFromProtobuf(Any object) throws InvalidProtocolBufferException {
-        throw new RuntimeException();
+        int registryId = mIntConverter.convertFromProtobuf(object);
+        return mServiceProxyFactory.createServiceProxy(registryId);
     }
 }

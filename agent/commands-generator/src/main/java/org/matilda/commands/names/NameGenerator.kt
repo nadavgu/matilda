@@ -58,12 +58,20 @@ class NameGenerator @Inject internal constructor() {
             get() = joinPackages(COMMAND_REGISTRY_FACTORIES_PACKAGE, serviceRelativePackage).packageName
         val commandRegistryFactoryClassName: String
             get() = serviceClassName + "CommandRegistryFactory"
+        val commandRegistryFactoryTypeName: TypeName
+            get() = ClassName.get(commandRegistryFactoryPackageName, commandRegistryFactoryClassName)
         val javaServiceProxyPackageName: String
             get() = joinPackages(JAVA_SERVICE_PROXIES_PACKAGE, serviceRelativePackage).packageName
         val javaServiceProxyClassName: String
             get() = serviceClassName + "Proxy"
-        val commandRegistryFactoryTypeName: TypeName
-            get() = ClassName.get(commandRegistryFactoryPackageName, commandRegistryFactoryClassName)
+        val javaServiceProxyTypeName: TypeName
+            get() = ClassName.get(javaServiceProxyPackageName, javaServiceProxyClassName)
+        val javaServiceProxyFactoryPackageName: String
+            get() = joinPackages(JAVA_SERVICE_PROXIES_PACKAGE, serviceRelativePackage).packageName
+        val javaServiceProxyFactoryClassName: String
+            get() = serviceClassName + "ProxyFactory"
+        val javaServiceProxyFactoryTypeName: TypeName
+            get() = ClassName.get(javaServiceProxyFactoryPackageName, javaServiceProxyFactoryClassName)
 
         inner class CommandNameGenerator(private val mCommandInfo: CommandInfo) {
             val rawCommandClassName: String

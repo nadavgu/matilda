@@ -19,12 +19,15 @@ class DynamicServiceTypeConverter @Inject constructor() : TypeConverter {
     lateinit var mTypeUtilities: TypeUtilities
 
     override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): JavaTypeConverterInfo {
-        return JavaTypeConverterInfo("new \$T<>(\$L.\$L, \$L.\$L)",
+        return JavaTypeConverterInfo("new \$T<>(\$L.\$L, \$L.\$L, \$L.\$L)",
             listOf(TypeName.get(DynamicServiceConverter::class.java),
                 COMMAND_DEPENDENCIES_FIELD_NAME, COMMAND_REPOSITORY_VARIABLE_NAME,
-                COMMAND_DEPENDENCIES_FIELD_NAME, getCommandRegistryFactoryFieldName(type)),
+                COMMAND_DEPENDENCIES_FIELD_NAME, getCommandRegistryFactoryFieldName(type),
+                COMMAND_DEPENDENCIES_FIELD_NAME, getServiceProxyFactoryFieldName(type)),
             listOf(JavaDependencyInfo(TypeName.get(CommandRepository::class.java), COMMAND_REPOSITORY_VARIABLE_NAME),
-                JavaDependencyInfo(getCommandRegistryFactoryTypeName(type), getCommandRegistryFactoryFieldName(type)))
+                JavaDependencyInfo(getCommandRegistryFactoryTypeName(type), getCommandRegistryFactoryFieldName(type)),
+                JavaDependencyInfo(getServiceProxyFactoryTypeName(type), getServiceProxyFactoryFieldName(type))
+            )
         )
     }
 
@@ -32,8 +35,15 @@ class DynamicServiceTypeConverter @Inject constructor() : TypeConverter {
         StringUtils.uncapitalize(mNameGenerator.forService(TypeName.get(type).toString())
             .commandRegistryFactoryClassName)
 
+    private fun getServiceProxyFactoryFieldName(type: TypeMirror) =
+        StringUtils.uncapitalize(mNameGenerator.forService(TypeName.get(type).toString())
+            .javaServiceProxyFactoryClassName)
+
     private fun getCommandRegistryFactoryTypeName(type: TypeMirror) =
         mNameGenerator.forService(TypeName.get(type).toString()).commandRegistryFactoryTypeName
+
+    private fun getServiceProxyFactoryTypeName(type: TypeMirror) =
+        mNameGenerator.forService(TypeName.get(type).toString()).javaServiceProxyFactoryTypeName
 
     override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): PythonTypeConverterInfo {
         val proxyServiceType = mNameGenerator.forService(TypeName.get(type).toString()).serviceProxyFullClassName
