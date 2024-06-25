@@ -20,12 +20,16 @@ public class CommunicationCommandRunner implements CommandRunner {
     @Inject
     CommunicationCommandRunner() {}
 
-    public byte[] run(int registryId, int commandType, byte[] parameter) throws IOException, InterruptedException,
-            CommandFailedException {
+    public byte[] run(int registryId, int commandType, byte[] parameter) {
         int commandId = mCommandIdGenerator.generate();
         try (CommandResponseListeningInstance listeningInstance = mCommandResponseListener.listen(commandId)) {
             mCommandSender.send(registryId, commandType, commandId, parameter);
             return listeningInstance.waitForResponse();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

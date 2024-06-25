@@ -3,6 +3,7 @@ package org.matilda.commands.collectors
 import org.matilda.commands.MatildaDynamicService
 import org.matilda.commands.MatildaService
 import org.matilda.commands.exceptions.AnnotationProcessingException
+import org.matilda.commands.info.DynamicServiceInfo
 import org.matilda.commands.info.ProjectServices
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.info.StaticServiceInfo
@@ -26,7 +27,9 @@ class ServicesCollector @Inject constructor() {
     }
 
     private fun collectDynamicServices() = collectServices(MatildaDynamicService::class.java)
-        .map { (_, serviceInfo) -> serviceInfo }
+        .map { (element, serviceInfo) ->
+            DynamicServiceInfo(serviceInfo, element.kind == ElementKind.INTERFACE)
+        }
 
     private fun collectServices(annotation: Class<out Annotation>) =
         mRoundEnvironment.getElementsAnnotatedWith(annotation)
