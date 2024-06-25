@@ -1,24 +1,18 @@
 package org.matilda.commands.info
 
-data class ProjectServices(val services: List<StaticServiceInfo>, val dynamicServices: List<DynamicServiceInfo>) {
+data class ProjectServices(val services: List<StaticServiceInfo>, val dynamicServices: List<ServiceInfo>) {
     fun forEachService(action: (ServiceInfo) -> Unit) {
         forEachStaticService { action(it.serviceInfo) }
-        forEachDynamicService { action(it.serviceInfo) }
+        forEachDynamicService(action)
     }
 
     fun forEachStaticService(action: (StaticServiceInfo) -> Unit) {
         services.forEach(action)
     }
 
-    private fun forEachDynamicService(action: (DynamicServiceInfo) -> Unit) {
+    fun forEachDynamicService(action: (ServiceInfo) -> Unit) {
         dynamicServices.forEach(action)
     }
-
-    fun forEachDynamicInterface(action: (ServiceInfo) -> Unit) {
-        dynamicServices.filter { it.isInterface }.forEach { action(it.serviceInfo) }
-    }
-
-
 
     fun forEachCommand(action: (CommandInfo) -> Unit) {
         forEachService { it.commands.forEach(action) }

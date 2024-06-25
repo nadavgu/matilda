@@ -46,8 +46,8 @@ class ProcessorFactory @Inject constructor() {
             ProjectServicesProcessor(mPythonServiceInterfaceClassGenerator),
             OnlyRunOnceProcessor(mWasRun, mPythonServicesContainerClassGenerator),
             ProjectServicesProcessor(mCommandsRegistryFactoryClassGenerator),
-            ProjectDynamicInterfacesProcessor(mJavaServiceProxyClassGenerator),
-            ProjectDynamicInterfacesProcessor(mServiceProxyFactoryClassGenerator),
+            ProjectDynamicServicesProcessor(mJavaServiceProxyClassGenerator),
+            ProjectDynamicServicesProcessor(mServiceProxyFactoryClassGenerator),
         )
     )
 }
