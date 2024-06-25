@@ -14,7 +14,7 @@ import org.matilda.commands.utils.toSnakeCase
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
 
-class PythonServiceClassGenerator @Inject internal constructor() : Processor<ServiceInfo> {
+class PythonServiceProxyClassGenerator @Inject internal constructor() : Processor<ServiceInfo> {
     @Inject
     lateinit var mNameGenerator: NameGenerator
 
@@ -142,8 +142,7 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     private fun getClassName(service: ServiceInfo) = mNameGenerator.forService(service).serviceProxyClassName
 
     private fun PythonFile.addImports(service: ServiceInfo) = apply {
-        addFromImport(DEPENDENCY_CLASS)
-            .addFromImport(DEPENDENCY_CONTAINER_CLASS)
+        addFromImport(DEPENDENCY_CONTAINER_CLASS)
             .addFromImport(COMMAND_RUNNER_CLASS)
             .addFromImport(ANY_CLASS)
             .addFromImport(mNameGenerator.forService(service).serviceFullClassName)

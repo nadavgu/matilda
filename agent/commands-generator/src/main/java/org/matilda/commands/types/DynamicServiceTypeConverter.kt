@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils
 import org.matilda.commands.CommandRepository
 import org.matilda.commands.MatildaDynamicService
 import org.matilda.commands.names.NameGenerator
-import org.matilda.commands.processors.PythonServiceClassGenerator.Companion.COMMAND_RUNNER_FIELD_NAME
+import org.matilda.commands.processors.PythonServiceProxyClassGenerator.Companion.COMMAND_RUNNER_FIELD_NAME
 import org.matilda.commands.processors.RawCommandClassGenerator.Companion.COMMAND_DEPENDENCIES_FIELD_NAME
 import org.matilda.commands.python.PythonClassName
 import org.matilda.commands.python.PythonTypeName
