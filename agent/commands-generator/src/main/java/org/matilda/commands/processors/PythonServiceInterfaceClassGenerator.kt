@@ -3,14 +3,12 @@ package org.matilda.commands.processors
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.info.ServiceInfo
-import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.python.ABC_CLASS
 import org.matilda.commands.python.ABSTRACTMETHOD_FUNCTION
 import org.matilda.commands.python.DEPENDENCY_CLASS
 import org.matilda.commands.python.DEPENDENCY_CONTAINER_CLASS
 import org.matilda.commands.python.writer.*
-import org.matilda.commands.types.ProtobufTypeTranslator
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.pythonType
 import org.matilda.commands.utils.toSnakeCase
@@ -23,12 +21,6 @@ class PythonServiceInterfaceClassGenerator @Inject internal constructor() : Proc
 
     @Inject
     lateinit var mPythonFileWriter: PythonFileWriter
-
-    @Inject
-    lateinit var mCommandIdGenerator: CommandIdGenerator
-
-    @Inject
-    lateinit var mProtobufTypeTranslator: ProtobufTypeTranslator
 
     @Inject
     lateinit var mTypeConverter: TypeConverter
