@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 
-public class CommunicationCommandRunner implements CommandRunnerInterface {
+public class CommunicationCommandRunner implements CommandRunner {
     @Inject
     CommandSender mCommandSender;
 

@@ -22,5 +22,5 @@ public abstract class CommandsModule {
     }
 
     @Binds
-    abstract CommandRunnerInterface bindCommandRunner(CommunicationCommandRunner commandRunner);
+    abstract CommandRunner bindCommandRunner(CommunicationCommandRunner commandRunner);
 }
