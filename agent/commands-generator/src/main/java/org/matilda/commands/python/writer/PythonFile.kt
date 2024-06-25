@@ -1,6 +1,7 @@
 package org.matilda.commands.python.writer
 
 import org.matilda.commands.python.PythonClassName
+import org.matilda.commands.python.PythonGlobalElement
 import org.matilda.commands.python.PythonTypeName
 import org.matilda.commands.utils.Package
 import java.util.stream.Collectors
@@ -8,7 +9,7 @@ import java.util.stream.Stream
 
 class PythonFile(val packageName: Package) : PythonCodeBlock() {
     private val mImportsCodeBlock = CodeBlock()
-    private val mImportedTypes = mutableSetOf<PythonTypeName>()
+    private val mImportedTypes = mutableSetOf<PythonGlobalElement>()
 
     fun addImport(packageToImport: String): PythonFile {
         mImportsCodeBlock.addStatement("import %s", packageToImport)
@@ -23,10 +24,12 @@ class PythonFile(val packageName: Package) : PythonCodeBlock() {
         return this
     }
 
-    fun addFromImport(pythonTypeName: PythonClassName): PythonFile {
-        if (pythonTypeName !in mImportedTypes) {
-            mImportedTypes.add(pythonTypeName)
-            addFromImport(pythonTypeName.packageName, pythonTypeName.name)
+    fun addFromImport(className: PythonClassName) = addFromImport(className.element)
+
+    fun addFromImport(element: PythonGlobalElement): PythonFile {
+        if (element !in mImportedTypes) {
+            mImportedTypes.add(element)
+            addFromImport(element.packageName, element.name)
         }
         return this
     }

@@ -18,7 +18,13 @@ interface PythonTypeName {
     }
 }
 
-data class PythonClassName(val packageName: Package, override val name: String): PythonTypeName {
+data class PythonClassName(val element: PythonGlobalElement):
+    PythonTypeName {
+    constructor(packageName: Package, name: String) : this(PythonGlobalElement(packageName, name))
+    override val name: String
+        get() = element.name
+    val packageName: Package
+        get() = element.packageName
     override val requiredClasses: List<PythonClassName>
         get() = listOf(this)
 }

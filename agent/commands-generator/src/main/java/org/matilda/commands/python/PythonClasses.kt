@@ -6,3 +6,5 @@ val DEPENDENCY_CLASS = PythonClassName(Package("maddie", "dependency"), "Depende
 val DEPENDENCY_CONTAINER_CLASS = PythonClassName(Package("maddie", "dependency_container"), "DependencyContainer")
 val COMMAND_RUNNER_CLASS = PythonClassName(Package("matilda", "commands", "command_runner"), "CommandRunner")
 val ANY_CLASS = PythonClassName(Package("google", "protobuf", "any_pb2"), "Any")
+val ABC_CLASS = PythonClassName(Package("abc"), "ABC")
+val ABSTRACTMETHOD_FUNCTION = PythonGlobalElement(Package("abc"), "abstractmethod")
