@@ -11,8 +11,8 @@ T = TypeVar('T')
 
 
 class DynamicServiceConverter(ProtobufConverter[T]):
-    def __init__(self, dynamic_service_type: Type[T], command_runner: CommandRunner):
-        self.__dynamic_service_type = dynamic_service_type
+    def __init__(self, dynamic_service_proxy_type: Type[T], command_runner: CommandRunner):
+        self.__dynamic_service_proxy_type = dynamic_service_proxy_type
         self.__scalar_converter = ScalarConverter(Int32Value)
         self.__command_runner = command_runner
 
@@ -21,4 +21,4 @@ class DynamicServiceConverter(ProtobufConverter[T]):
 
     def from_protobuf(self, message: Any) -> T:
         registry_id = self.__scalar_converter.from_protobuf(message)
-        return self.__dynamic_service_type(self.__command_runner, command_registry_id=registry_id)
+        return self.__dynamic_service_proxy_type(self.__command_runner, command_registry_id=registry_id)

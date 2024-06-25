@@ -18,6 +18,8 @@ class NameGenerator @Inject internal constructor() {
     lateinit var mPythonProperties: PythonProperties
     val pythonGeneratedCommandsPackage: Package
         get() = mPythonProperties.pythonGeneratedPackage.subpackage("commands")
+    val pythonGeneratedCommandsProxiesPackage: Package
+        get() = pythonGeneratedCommandsPackage.subpackage("proxies")
 
     val pythonGeneratedServicesContainerPackage: Package
         get() = mPythonProperties.pythonGeneratedPackage.subpackage("services")
@@ -27,15 +29,26 @@ class NameGenerator @Inject internal constructor() {
             get() = fromString(mServiceFullName)
         val serviceClassName: String
             get() = fullNamePackage.lastPart
+        val serviceProxyClassName: String
+            get() = "${serviceClassName}Proxy"
 
         val serviceSnakeCaseName: String
             get() = serviceClassName.toSnakeCase()
 
+        private val serviceProxySnakeCaseName: String
+            get() = serviceProxyClassName.toSnakeCase()
+
         val pythonGeneratedServicePackage: Package
             get() = pythonGeneratedCommandsPackage.subpackage(serviceSnakeCaseName)
 
+        val pythonGeneratedServiceProxyPackage: Package
+            get() = pythonGeneratedCommandsProxiesPackage.subpackage(serviceProxySnakeCaseName)
+
         val serviceFullClassName: PythonClassName
             get() = PythonClassName(pythonGeneratedServicePackage, serviceClassName)
+
+        val serviceProxyFullClassName: PythonClassName
+            get() = PythonClassName(pythonGeneratedServiceProxyPackage, serviceProxyClassName)
 
         private val servicePackage: Package
             get() = fullNamePackage.withoutLastPart()

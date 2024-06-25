@@ -37,9 +37,9 @@ class DynamicServiceTypeConverter @Inject constructor() : TypeConverter {
         mNameGenerator.forService(TypeName.get(type).toString()).commandRegistryFactoryTypeName
 
     override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<PythonTypeName>> {
-        val pythonType = pythonType(type, outerConverter)
-        return Pair("${CONVERTER_CLASS.name}(${pythonType(type, outerConverter).name}, self.$COMMAND_RUNNER_FIELD_NAME)",
-            listOf(CONVERTER_CLASS, pythonType))
+        val proxyServiceType = mNameGenerator.forService(TypeName.get(type).toString()).serviceProxyFullClassName
+        return Pair("${CONVERTER_CLASS.name}(${proxyServiceType.name}, self.$COMMAND_RUNNER_FIELD_NAME)",
+            listOf(CONVERTER_CLASS, proxyServiceType))
     }
 
     override fun pythonType(type: TypeMirror, outerConverter: TypeConverter) =

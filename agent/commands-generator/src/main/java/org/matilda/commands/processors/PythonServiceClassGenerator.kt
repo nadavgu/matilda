@@ -31,14 +31,15 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
     lateinit var mTypeConverter: TypeConverter
 
     override fun process(instance: ServiceInfo) {
-        val pythonFile = PythonFile(mNameGenerator.forService(instance).pythonGeneratedServicePackage)
-            .addImports()
+        val pythonFile = PythonFile(mNameGenerator.forService(instance).pythonGeneratedServiceProxyPackage)
+            .addImports(instance)
             .addClass(instance)
         mPythonFileWriter.write(pythonFile)
     }
 
     private fun PythonFile.addClass(service: ServiceInfo) = apply {
-        val pythonClass = newClass(PythonClassSpec(getClassName(service), DEPENDENCY_CLASS.name))
+        val pythonClass = newClass(PythonClassSpec(getClassName(service),
+            mNameGenerator.forService(service).serviceFullClassName.name))
             .addConstructor()
             .addDICreator(service)
 
@@ -138,13 +139,14 @@ class PythonServiceClassGenerator @Inject internal constructor() : Processor<Ser
             addRequiredFromImports(it)
         }
     }
-    private fun getClassName(service: ServiceInfo) = mNameGenerator.forService(service).serviceClassName
+    private fun getClassName(service: ServiceInfo) = mNameGenerator.forService(service).serviceProxyClassName
 
-    private fun PythonFile.addImports() = apply {
+    private fun PythonFile.addImports(service: ServiceInfo) = apply {
         addFromImport(DEPENDENCY_CLASS)
             .addFromImport(DEPENDENCY_CONTAINER_CLASS)
             .addFromImport(COMMAND_RUNNER_CLASS)
             .addFromImport(ANY_CLASS)
+            .addFromImport(mNameGenerator.forService(service).serviceFullClassName)
             .addRequiredFromImports(pythonOptionalType(PythonTypeName.INT))
             .addFromImport(mProtobufTypeTranslator.toPythonType(ClassName.get(Some::class.java)))
     }

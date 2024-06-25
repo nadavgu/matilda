@@ -16,6 +16,9 @@ class ProcessorFactory @Inject constructor() {
     lateinit var mPythonServiceClassGenerator: PythonServiceClassGenerator
 
     @Inject
+    lateinit var mPythonServiceInterfaceClassGenerator: PythonServiceInterfaceClassGenerator
+
+    @Inject
     lateinit var mPythonServicesContainerClassGenerator: PythonServicesContainerClassGenerator
 
     @Inject
@@ -34,6 +37,7 @@ class ProcessorFactory @Inject constructor() {
             OnlyRunOnceProcessor(mWasRun, mCommandsModuleClassGenerator),
             OnlyRunOnceProcessor(mWasRun, mServicesModuleClassGenerator),
             ProjectServicesProcessor(mPythonServiceClassGenerator),
+            ProjectServicesProcessor(mPythonServiceInterfaceClassGenerator),
             OnlyRunOnceProcessor(mWasRun, mPythonServicesContainerClassGenerator),
             ProjectServicesProcessor(mCommandsRegistryFactoryClassGenerator),
         )
