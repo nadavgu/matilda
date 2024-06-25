@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 
-public class CommandRunner {
+public class CommunicationCommandRunner implements CommandRunnerInterface {
     @Inject
     CommandSender mCommandSender;
 
@@ -18,7 +18,7 @@ public class CommandRunner {
     CommandIdGenerator mCommandIdGenerator;
 
     @Inject
-    CommandRunner() {}
+    CommunicationCommandRunner() {}
 
     public byte[] run(int registryId, int commandType, byte[] parameter) throws IOException, InterruptedException,
             CommandFailedException {
