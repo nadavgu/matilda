@@ -35,7 +35,7 @@ class CommandMessageHandler(Dependency):
         self.__report_command_status(command_request, result, True)
 
     def __report_command_failure(self, command_request: CommandRequest, error: str):
-        self.__report_command_status(command_request, error.encode(), True)
+        self.__report_command_status(command_request, error.encode(), False)
 
     def __report_command_status(self, command_request: CommandRequest, result: bytes, success: bool):
         command_response = CommandResponse()
