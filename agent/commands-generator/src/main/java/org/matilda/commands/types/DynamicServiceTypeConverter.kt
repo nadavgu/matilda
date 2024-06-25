@@ -20,7 +20,7 @@ class DynamicServiceTypeConverter @Inject constructor() : TypeConverter {
     lateinit var mTypeUtilities: TypeUtilities
 
     override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): JavaTypeConverterInfo {
-        return JavaTypeConverterInfo("new \$T(\$L.\$L, \$L.\$L)",
+        return JavaTypeConverterInfo("new \$T<>(\$L.\$L, \$L.\$L)",
             listOf(TypeName.get(DynamicServiceConverter::class.java),
                 COMMAND_DEPENDENCIES_FIELD_NAME, COMMAND_REPOSITORY_VARIABLE_NAME,
                 COMMAND_DEPENDENCIES_FIELD_NAME, getCommandRegistryFactoryFieldName(type)),
