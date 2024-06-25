@@ -1,7 +1,6 @@
 package org.matilda.commands.types
 
 import org.matilda.commands.python.PythonClassName
-import org.matilda.commands.python.PythonTypeName
 import org.matilda.commands.utils.Package
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
@@ -11,10 +10,11 @@ class ScalarTypeConverter @Inject constructor() : TypeConverter {
         return JavaTypeConverterInfo("new \$T()", listOf(type.scalarJavaConverterType))
     }
 
-    override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<PythonTypeName>> {
+    override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): PythonTypeConverterInfo {
         val wrapperTypeName = type.scalarProtobufWrapperJavaType.simpleName
         val wrapperPythonType = PythonClassName(WRAPPERS_PACKAGE, wrapperTypeName)
-        return Pair("${CONVERTER_CLASS.name}(${wrapperPythonType.name})", listOf(CONVERTER_CLASS, wrapperPythonType))
+        return PythonTypeConverterInfo("${CONVERTER_CLASS.name}(${wrapperPythonType.name})",
+            listOf(CONVERTER_CLASS, wrapperPythonType))
     }
 
     override fun pythonType(type: TypeMirror, outerConverter: TypeConverter) = type.scalarPythonType

@@ -7,7 +7,7 @@ import javax.lang.model.type.TypeMirror
 interface TypeConverter {
     fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): JavaTypeConverterInfo
 
-    fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<PythonTypeName>>
+    fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): PythonTypeConverterInfo
 
     fun pythonType(type: TypeMirror, outerConverter: TypeConverter): PythonTypeName
 

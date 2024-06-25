@@ -8,7 +8,6 @@ import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.processors.PythonServiceProxyClassGenerator.Companion.COMMAND_RUNNER_FIELD_NAME
 import org.matilda.commands.processors.RawCommandClassGenerator.Companion.COMMAND_DEPENDENCIES_FIELD_NAME
 import org.matilda.commands.python.PythonClassName
-import org.matilda.commands.python.PythonTypeName
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
 
@@ -24,8 +23,8 @@ class DynamicServiceTypeConverter @Inject constructor() : TypeConverter {
             listOf(TypeName.get(DynamicServiceConverter::class.java),
                 COMMAND_DEPENDENCIES_FIELD_NAME, COMMAND_REPOSITORY_VARIABLE_NAME,
                 COMMAND_DEPENDENCIES_FIELD_NAME, getCommandRegistryFactoryFieldName(type)),
-            listOf(DependencyInfo(TypeName.get(CommandRepository::class.java), COMMAND_REPOSITORY_VARIABLE_NAME),
-                DependencyInfo(getCommandRegistryFactoryTypeName(type), getCommandRegistryFactoryFieldName(type)))
+            listOf(JavaDependencyInfo(TypeName.get(CommandRepository::class.java), COMMAND_REPOSITORY_VARIABLE_NAME),
+                JavaDependencyInfo(getCommandRegistryFactoryTypeName(type), getCommandRegistryFactoryFieldName(type)))
         )
     }
 
@@ -36,9 +35,10 @@ class DynamicServiceTypeConverter @Inject constructor() : TypeConverter {
     private fun getCommandRegistryFactoryTypeName(type: TypeMirror) =
         mNameGenerator.forService(TypeName.get(type).toString()).commandRegistryFactoryTypeName
 
-    override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<PythonTypeName>> {
+    override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): PythonTypeConverterInfo {
         val proxyServiceType = mNameGenerator.forService(TypeName.get(type).toString()).serviceProxyFullClassName
-        return Pair("${CONVERTER_CLASS.name}(${proxyServiceType.name}, self.$COMMAND_RUNNER_FIELD_NAME)",
+        return PythonTypeConverterInfo(
+            "${CONVERTER_CLASS.name}(${proxyServiceType.name}, self.$COMMAND_RUNNER_FIELD_NAME)",
             listOf(CONVERTER_CLASS, proxyServiceType))
     }
 

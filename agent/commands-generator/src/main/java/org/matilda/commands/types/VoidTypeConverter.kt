@@ -11,8 +11,8 @@ class VoidTypeConverter @Inject constructor() : TypeConverter {
         return JavaTypeConverterInfo("new \$T()", listOf(EmptyConverter::class.java))
     }
 
-    override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<PythonTypeName>> {
-        return Pair("${CONVERTER_CLASS.name}()", listOf(CONVERTER_CLASS))
+    override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): PythonTypeConverterInfo {
+        return PythonTypeConverterInfo("${CONVERTER_CLASS.name}()", listOf(CONVERTER_CLASS))
     }
 
     override fun pythonType(type: TypeMirror, outerConverter: TypeConverter) = PythonTypeName.NONE

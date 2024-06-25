@@ -6,7 +6,7 @@ import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.names.NameGenerator
-import org.matilda.commands.types.DependencyInfo
+import org.matilda.commands.types.JavaDependencyInfo
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.javaConverter
 import javax.annotation.processing.Filer
@@ -45,8 +45,8 @@ class CommandDependenciesClassGenerator @Inject constructor() : Processor<Comman
                 .build()
         }
 
-    private fun collectConverterDependencies(command: CommandInfo): Set<DependencyInfo> =
-        HashSet<DependencyInfo>().apply {
+    private fun collectConverterDependencies(command: CommandInfo): Set<JavaDependencyInfo> =
+        HashSet<JavaDependencyInfo>().apply {
             command.parameters.forEach {
                 addAll(collectConverterDependencies(it.type))
             }

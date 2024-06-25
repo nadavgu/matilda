@@ -4,7 +4,6 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import org.matilda.commands.python.PythonClassName
-import org.matilda.commands.python.PythonTypeName
 import org.matilda.commands.python.pythonListType
 import javax.inject.Inject
 import javax.lang.model.type.DeclaredType
@@ -17,9 +16,10 @@ class ListTypeConverter @Inject constructor() : TypeConverter {
             listOf(ListConverter::class.java, *innerArguments.toTypedArray()))
     }
 
-    override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): Pair<String, List<PythonTypeName>> {
+    override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): PythonTypeConverterInfo {
         val (innerConverter, innerRequiredTypes) = outerConverter.pythonConverter(type.typeArgument, outerConverter)
-        return Pair("${CONVERTER_CLASS.name}($innerConverter)", listOf(CONVERTER_CLASS) + innerRequiredTypes)
+        return PythonTypeConverterInfo("${CONVERTER_CLASS.name}($innerConverter)",
+            listOf(CONVERTER_CLASS) + innerRequiredTypes)
     }
 
     override fun pythonType(type: TypeMirror, outerConverter: TypeConverter) =
