@@ -7,6 +7,7 @@ val DEPENDENCY_CONTAINER_CLASS = PythonClassName(Package("maddie", "dependency_c
 val COMMAND_RUNNER_CLASS = PythonClassName(Package("matilda", "commands", "command_runner"), "CommandRunner")
 val COMMAND_REGISTRY_CLASS = PythonClassName(Package("matilda", "commands", "command_registry"), "CommandRegistry")
 val COMMAND_REGISTRY_FACTORY_CLASS = PythonClassName(Package("matilda", "commands", "command_registry_factory"), "CommandRegistryFactory")
+val SERVICE_PROXY_FACTORY_CLASS = PythonClassName(Package("matilda", "commands", "service_proxy_factory"), "ServiceProxyFactory")
 val ANY_CLASS = PythonClassName(Package("google", "protobuf", "any_pb2"), "Any")
 val ABC_CLASS = PythonClassName(Package("abc"), "ABC")
 val DATACLASS = PythonClassName(Package("dataclasses"), "dataclass")

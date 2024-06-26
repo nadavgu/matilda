@@ -33,12 +33,6 @@ class NameGenerator @Inject internal constructor() {
         val serviceFullClassName: PythonClassName
             get() = PythonClassName.createFromParentPackageAndClass(pythonGeneratedCommandsPackage, serviceClassName)
 
-        val serviceProxyClassName: PythonClassName
-            get() = PythonClassName.createFromParentPackageAndClass(
-                pythonGeneratedCommandsPackage.subpackage("proxies"),
-                "${serviceClassName}Proxy"
-            )
-
         private val servicePackage: Package
             get() = fullNamePackage.withoutLastPart()
         private val serviceRelativePackage: Package
@@ -58,9 +52,19 @@ class NameGenerator @Inject internal constructor() {
                 joinPackages(JAVA_SERVICE_PROXIES_PACKAGE, serviceRelativePackage).packageName,
                 serviceClassName + "Proxy"
             )
+        val serviceProxyClassName: PythonClassName
+            get() = PythonClassName.createFromParentPackageAndClass(
+                pythonGeneratedCommandsPackage.subpackage("proxies"),
+                "${serviceClassName}Proxy"
+            )
         val javaServiceProxyFactoryClassName: ClassName
             get() = ClassName.get(
                 joinPackages(JAVA_SERVICE_PROXIES_PACKAGE, serviceRelativePackage).packageName,
+                serviceClassName + "ProxyFactory"
+            )
+        val pythonServiceProxyFactoryClassName: PythonClassName
+            get() = PythonClassName.createFromParentPackageAndClass(
+                pythonGeneratedCommandsPackage.subpackage("proxies"),
                 serviceClassName + "ProxyFactory"
             )
         val dependenciesClassName: ClassName

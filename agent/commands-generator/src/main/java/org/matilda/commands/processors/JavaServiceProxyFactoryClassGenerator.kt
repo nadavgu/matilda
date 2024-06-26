@@ -10,7 +10,7 @@ import javax.annotation.processing.Filer
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
 
-class ServiceProxyFactoryClassGenerator @Inject constructor() : Processor<ServiceInfo> {
+class JavaServiceProxyFactoryClassGenerator @Inject constructor() : Processor<ServiceInfo> {
     @Inject
     lateinit var mFiler: Filer
 
