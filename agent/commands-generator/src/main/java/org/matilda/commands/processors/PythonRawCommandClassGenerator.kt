@@ -15,6 +15,7 @@ import org.matilda.commands.types.ProtobufTypeTranslator
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.pythonConverter
 import org.matilda.commands.types.pythonType
+import org.matilda.commands.utils.toSnakeCase
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
 
@@ -94,12 +95,13 @@ class PythonRawCommandClassGenerator @Inject constructor() : Processor<CommandIn
     private fun PythonCodeBlock.addParameterConversion(index: Int, parameterInfo: ParameterInfo) {
         val (converterFormat,) = mTypeConverter.pythonConverter(parameterInfo.type)
         addStatement("%s = $converterFormat.from_protobuf(%s.any[%d])",
-            parameterInfo.name, SOME_PARAMETER_VARIABLE_NAME, index)
+            parameterInfo.name.toSnakeCase(), SOME_PARAMETER_VARIABLE_NAME, index)
     }
 
     private fun PythonCodeBlock.addCommandInvocation(command: CommandInfo): PythonCodeBlock {
         addStatement("%s = self.%s.%s(%s)",
-            RETURN_VALUE_NAME, SERVICE_FIELD_NAME, command.name, command.parameters.joinToString { it.name })
+            RETURN_VALUE_NAME, SERVICE_FIELD_NAME, command.name.toSnakeCase(),
+            command.parameters.joinToString { it.name.toSnakeCase() })
         return this
     }
 
