@@ -13,6 +13,9 @@ class ProcessorFactory @Inject constructor() {
     lateinit var mServicesModuleClassGenerator: ServicesModuleClassGenerator
 
     @Inject
+    lateinit var mJavaServiceProxyClassGenerator: JavaServiceProxyClassGenerator
+
+    @Inject
     lateinit var mPythonServiceProxyClassGenerator: PythonServiceProxyClassGenerator
 
     @Inject
@@ -25,10 +28,10 @@ class ProcessorFactory @Inject constructor() {
     lateinit var mJavaServiceDependenciesClassGenerator: JavaServiceDependenciesClassGenerator
 
     @Inject
-    lateinit var mCommandsRegistryFactoryClassGenerator: CommandsRegistryFactoryClassGenerator
+    lateinit var mPythonServiceDependenciesClassGenerator: PythonServiceDependenciesClassGenerator
 
     @Inject
-    lateinit var mJavaServiceProxyClassGenerator: JavaServiceProxyClassGenerator
+    lateinit var mCommandsRegistryFactoryClassGenerator: CommandsRegistryFactoryClassGenerator
 
     @Inject
     lateinit var mServiceProxyFactoryClassGenerator: ServiceProxyFactoryClassGenerator
@@ -43,15 +46,16 @@ class ProcessorFactory @Inject constructor() {
         listOf(
             ProjectCommandsProcessor(mRawCommandClassGenerator),
             ProjectServicesProcessor(mJavaServiceDependenciesClassGenerator),
-            OnlyRunOnceProcessor(mWasRun, mCommandsModuleClassGenerator),
-            OnlyRunOnceProcessor(mWasRun, mServicesModuleClassGenerator),
+            ProjectServicesProcessor(mPythonServiceDependenciesClassGenerator),
+            ProjectDynamicServicesProcessor(mJavaServiceProxyClassGenerator),
             ProjectServicesProcessor(mPythonServiceProxyClassGenerator),
             ProjectServicesProcessor(mPythonServiceInterfaceClassGenerator),
-            OnlyRunOnceProcessor(mWasRun, mPythonServicesContainerClassGenerator),
             ProjectServicesProcessor(mCommandsRegistryFactoryClassGenerator),
-            ProjectDynamicServicesProcessor(mJavaServiceProxyClassGenerator),
             ProjectDynamicServicesProcessor(mServiceProxyFactoryClassGenerator),
             ProjectDynamicServicesProcessor(mDynamicServiceConverterClassGenerator),
+            OnlyRunOnceProcessor(mWasRun, mCommandsModuleClassGenerator),
+            OnlyRunOnceProcessor(mWasRun, mServicesModuleClassGenerator),
+            OnlyRunOnceProcessor(mWasRun, mPythonServicesContainerClassGenerator),
         )
     )
 }

@@ -63,6 +63,13 @@ class NameGenerator @Inject internal constructor() {
                 joinPackages(DEPENDENCIES_CLASSES_PACKAGE, serviceRelativePackage).packageName,
                 serviceClassName + "Dependencies"
             )
+
+        val dependenciesPythonClassName: PythonClassName
+            get() = PythonClassName.createFromParentPackageAndClass(
+                pythonGeneratedCommandsPackage.subpackage("dependencies"),
+                "${serviceClassName}Dependencies"
+            )
+
         val dynamicServiceConverterClassName: ClassName
             get() = ClassName.get(
                 joinPackages(DYNAMIC_SERVICE_CONVERTERS_CLASSES_PACKAGE, serviceRelativePackage).packageName,

@@ -50,7 +50,7 @@ class JavaServiceDependenciesClassGenerator @Inject constructor() : Processor<Se
     private fun collectDependencies(service: ServiceInfo): Set<JavaDependencyInfo> =
         service.commands.flatMapTo(mutableSetOf()) { collectDependencies(it) }
     private fun collectDependencies(command: CommandInfo): Set<JavaDependencyInfo> =
-        HashSet<JavaDependencyInfo>().apply {
+        LinkedHashSet<JavaDependencyInfo>().apply {
             command.parameters.forEach {
                 addAll(collectConverterDependencies(it.type))
             }
