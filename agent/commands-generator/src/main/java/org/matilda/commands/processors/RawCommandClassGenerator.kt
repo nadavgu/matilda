@@ -37,7 +37,7 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .addModifiers(Modifier.PUBLIC)
             .addSuperinterface(Command::class.java)
             .addField(createServiceField(command))
-            .addField(createCommandDependenciesField(command))
+            .addField(createDependenciesField(command))
             .addMethod(createInjectConstructor(command))
             .addMethod(createRunMethod(command))
             .build()
@@ -47,7 +47,7 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             .build()
 
-    private fun createCommandDependenciesField(command: CommandInfo) =
+    private fun createDependenciesField(command: CommandInfo) =
         FieldSpec.builder(mNameGenerator.forService(command.service).dependenciesTypeName,
             DEPENDENCIES_FIELD_NAME)
             .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
@@ -59,9 +59,9 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .addModifiers(Modifier.PUBLIC)
             .addParameter(ParameterSpec.builder(TypeName.get(command.service.type), SERVICE_PARAMETER_NAME).build())
             .addParameter(ParameterSpec.builder(mNameGenerator.forService(command.service).dependenciesTypeName,
-                COMMAND_DEPENDENCIES_PARAMETER_NAME).build())
+                DEPENDENCIES_PARAMETER_NAME).build())
             .addStatement("\$L = \$L", SERVICE_FIELD_NAME, SERVICE_PARAMETER_NAME)
-            .addStatement("\$L = \$L", DEPENDENCIES_FIELD_NAME, COMMAND_DEPENDENCIES_PARAMETER_NAME)
+            .addStatement("\$L = \$L", DEPENDENCIES_FIELD_NAME, DEPENDENCIES_PARAMETER_NAME)
             .build()
 
     private fun createRunMethod(command: CommandInfo) =
@@ -119,6 +119,6 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
         private const val RETURN_VALUE_NAME = "returnValue"
         private const val EXCEPTION_NAME = "exception"
         private const val SOME_PARAMETER_VARIABLE_NAME = "someParameter"
-        const val COMMAND_DEPENDENCIES_PARAMETER_NAME = "commandDependencies"
+        private const val DEPENDENCIES_PARAMETER_NAME = "dependencies"
     }
 }

@@ -9,6 +9,7 @@ import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
+import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.DEPENDENCIES_FIELD_NAME
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.javaConverter
 import java.io.IOException
@@ -42,7 +43,8 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
             .addSuperinterface(TypeName.get(service.type))
             .addField(createCommandRunnerField())
             .addField(createCommandRegistryIdField())
-            .addMethod(createConstructor())
+            .addField(createDependenciesField(service))
+            .addMethod(createConstructor(service))
             .apply {
                 service.commands.forEach { command ->
                     addMethod(createCommandMethod(command))
@@ -60,13 +62,22 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
         .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
         .build()
 
-    private fun createConstructor() =
+    private fun createDependenciesField(service: ServiceInfo) =
+        FieldSpec.builder(mNameGenerator.forService(service).dependenciesTypeName,
+            DEPENDENCIES_FIELD_NAME)
+            .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+            .build()
+
+    private fun createConstructor(service: ServiceInfo) =
         MethodSpec.constructorBuilder()
         .addModifiers(Modifier.PUBLIC)
             .addParameter(ParameterSpec.builder(CommandRunner::class.java, COMMAND_RUNNER_PARAMETER_NAME).build())
             .addParameter(ParameterSpec.builder(TypeName.INT, COMMAND_REGISTRY_ID_PARAMETER_NAME).build())
+            .addParameter(ParameterSpec.builder(mNameGenerator.forService(service).dependenciesTypeName,
+                DEPENDENCIES_PARAMETER_NAME).build())
             .addStatement("\$L = \$L", COMMAND_RUNNER_FIELD_NAME, COMMAND_RUNNER_PARAMETER_NAME)
             .addStatement("\$L = \$L", COMMAND_REGISTRY_ID_FIELD_NAME, COMMAND_REGISTRY_ID_PARAMETER_NAME)
+            .addStatement("\$L = \$L", DEPENDENCIES_FIELD_NAME, DEPENDENCIES_PARAMETER_NAME)
             .build()
 
     private fun createCommandMethod(command: CommandInfo) =
@@ -119,5 +130,6 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
         private const val SOME_PARAMETER_VARIABLE_NAME = "someParameter"
         private const val RETURN_VALUE_VARIABLE_NAME = "returnValue"
         private const val EXCEPTION_NAME = "exception"
+        private const val DEPENDENCIES_PARAMETER_NAME = "dependencies"
     }
 }
