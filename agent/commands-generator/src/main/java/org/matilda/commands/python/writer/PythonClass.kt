@@ -11,6 +11,8 @@ class PythonClass internal constructor(codeBlock: CodeBlock) : PythonCodeBlock(c
         return newFunction(methodSpec)
     }
 
+    fun addField(field: PythonParameter) = addStatement(field.declaration)
+
     companion object {
         private const val CLASS_EMPTY_LINES = 1
     }

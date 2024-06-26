@@ -29,6 +29,7 @@ open class PythonCodeBlock protected constructor(
 
     fun newClass(classSpec: PythonClassSpec): PythonClass {
         addSeparatorBeforeBlock()
+        addAnnotations(classSpec.annotations)
         mCodeBlock.addStatement("%s:", classSpec.declaration)
         return PythonClass(createNewCodeBlockWithIndentation())
     }
