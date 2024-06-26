@@ -16,7 +16,7 @@ import javax.annotation.processing.Filer
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
 
-class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
+class JavaRawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
     @Inject
     lateinit var mFiler: Filer
 

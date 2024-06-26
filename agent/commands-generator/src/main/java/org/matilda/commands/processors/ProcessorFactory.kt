@@ -4,7 +4,9 @@ import javax.inject.Inject
 
 class ProcessorFactory @Inject constructor() {
     @Inject
-    lateinit var mRawCommandClassGenerator: RawCommandClassGenerator
+    lateinit var mJavaRawCommandClassGenerator: JavaRawCommandClassGenerator
+    @Inject
+    lateinit var mPythonRawCommandClassGenerator: PythonRawCommandClassGenerator
 
     @Inject
     lateinit var mCommandsModuleClassGenerator: CommandsModuleClassGenerator
@@ -44,7 +46,8 @@ class ProcessorFactory @Inject constructor() {
 
     fun createProcessor() = CompoundProcessor(
         listOf(
-            ProjectCommandsProcessor(mRawCommandClassGenerator),
+            ProjectCommandsProcessor(mJavaRawCommandClassGenerator),
+            ProjectCommandsProcessor(mPythonRawCommandClassGenerator),
             ProjectServicesProcessor(mJavaServiceDependenciesClassGenerator),
             ProjectServicesProcessor(mPythonServiceDependenciesClassGenerator),
             ProjectDynamicServicesProcessor(mJavaServiceProxyClassGenerator),

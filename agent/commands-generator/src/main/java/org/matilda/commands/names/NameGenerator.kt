@@ -82,6 +82,11 @@ class NameGenerator @Inject internal constructor() {
                     joinPackages(RAW_COMMAND_CLASSES_PACKAGE, serviceRelativePackage).packageName,
                     serviceClassName + StringUtils.capitalize(mCommandInfo.name) + "Command"
                 )
+            val rawCommandPythonClassName: PythonClassName
+                get() = PythonClassName.createFromParentPackageAndClass(
+                    pythonGeneratedCommandsPackage.subpackage("raw"),
+                    rawCommandClassName.simpleName()
+                )
             val fullCommandName: String
                 get() = serviceRelativePackage.parts.joinToString(separator = "") {
                     str -> StringUtils.capitalize(str)
