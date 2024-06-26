@@ -3,10 +3,10 @@ package org.matilda.commands.processors
 import com.squareup.javapoet.*
 import org.matilda.commands.CommandRegistry
 import org.matilda.commands.CommandRegistryFactory
-import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
+import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.DEPENDENCIES_FIELD_NAME
 import javax.annotation.processing.Filer
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
@@ -34,22 +34,15 @@ class CommandsRegistryFactoryClassGenerator @Inject constructor() : Processor<Se
             .addSuperinterface(ParameterizedTypeName.get(ClassName.get(CommandRegistryFactory::class.java),
                 TypeName.get(service.type)))
             .addMethod(createInjectConstructor())
-            .addFields(createCommandDependenciesFields(service))
+            .addField(createDependenciesField(service))
             .addMethod(createRegisterCommandsMethod(service))
             .addMethod(createCommandRegistryMethod(service))
             .build()
 
-    private fun createCommandDependenciesFields(service: ServiceInfo) =
-        service.commands.map(this::createCommandDependenciesField)
-
-    private fun createCommandDependenciesField(command: CommandInfo) =
-        FieldSpec.builder(mNameGenerator.forCommand(command).commandDependenciesTypeName,
-            getCommandDependenciesFieldName(command))
+    private fun createDependenciesField(service: ServiceInfo) =
+        FieldSpec.builder(mNameGenerator.forService(service).dependenciesTypeName, DEPENDENCIES_FIELD_NAME)
             .addAnnotation(Inject::class.java)
             .build()
-
-    private fun getCommandDependenciesFieldName(command: CommandInfo) =
-        "m${mNameGenerator.forCommand(command).commandDependenciesClassName}"
     private fun createRegisterCommandsMethod(service: ServiceInfo): MethodSpec {
         val commandRegistryParameter =
             ParameterSpec.builder(TypeName.get(CommandRegistry::class.java), COMMAND_REGISTRY_PARAMETER_NAME).build()
@@ -61,7 +54,7 @@ class CommandsRegistryFactoryClassGenerator @Inject constructor() : Processor<Se
         service.commands.forEach { command ->
             builder.addStatement("\$L.addCommand(\$L, new \$T(\$L, \$L))", COMMAND_REGISTRY_PARAMETER_NAME,
                 mCommandIdGenerator.generate(command), mNameGenerator.forCommand(command).rawCommandTypeName,
-                SERVICE_PARAMETER_NAME, getCommandDependenciesFieldName(command))
+                SERVICE_PARAMETER_NAME, DEPENDENCIES_FIELD_NAME)
         }
         return builder.build()
     }

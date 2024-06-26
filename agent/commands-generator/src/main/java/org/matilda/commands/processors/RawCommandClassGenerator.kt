@@ -8,6 +8,7 @@ import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.info.hasReturnValue
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
+import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.DEPENDENCIES_FIELD_NAME
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.javaConverter
 import java.io.IOException
@@ -47,8 +48,8 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .build()
 
     private fun createCommandDependenciesField(command: CommandInfo) =
-        FieldSpec.builder(mNameGenerator.forCommand(command).commandDependenciesTypeName,
-            COMMAND_DEPENDENCIES_FIELD_NAME)
+        FieldSpec.builder(mNameGenerator.forService(command.service).dependenciesTypeName,
+            DEPENDENCIES_FIELD_NAME)
             .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             .build()
 
@@ -57,10 +58,10 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .addAnnotation(Inject::class.java)
             .addModifiers(Modifier.PUBLIC)
             .addParameter(ParameterSpec.builder(TypeName.get(command.service.type), SERVICE_PARAMETER_NAME).build())
-            .addParameter(ParameterSpec.builder(mNameGenerator.forCommand(command).commandDependenciesTypeName,
+            .addParameter(ParameterSpec.builder(mNameGenerator.forService(command.service).dependenciesTypeName,
                 COMMAND_DEPENDENCIES_PARAMETER_NAME).build())
             .addStatement("\$L = \$L", SERVICE_FIELD_NAME, SERVICE_PARAMETER_NAME)
-            .addStatement("\$L = \$L", COMMAND_DEPENDENCIES_FIELD_NAME, COMMAND_DEPENDENCIES_PARAMETER_NAME)
+            .addStatement("\$L = \$L", DEPENDENCIES_FIELD_NAME, COMMAND_DEPENDENCIES_PARAMETER_NAME)
             .build()
 
     private fun createRunMethod(command: CommandInfo) =
@@ -118,7 +119,6 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
         private const val RETURN_VALUE_NAME = "returnValue"
         private const val EXCEPTION_NAME = "exception"
         private const val SOME_PARAMETER_VARIABLE_NAME = "someParameter"
-        const val COMMAND_DEPENDENCIES_FIELD_NAME = "mCommandDependencies"
         const val COMMAND_DEPENDENCIES_PARAMETER_NAME = "commandDependencies"
     }
 }

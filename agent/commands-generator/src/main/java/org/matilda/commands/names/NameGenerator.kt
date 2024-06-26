@@ -72,20 +72,21 @@ class NameGenerator @Inject internal constructor() {
             get() = serviceClassName + "ProxyFactory"
         val javaServiceProxyFactoryTypeName: TypeName
             get() = ClassName.get(javaServiceProxyFactoryPackageName, javaServiceProxyFactoryClassName)
+        val dependenciesClassName: String
+            get() = serviceClassName + "Dependencies"
+        val dependenciesPackageName: String
+            get() = joinPackages(DEPENDENCIES_CLASSES_PACKAGE, serviceRelativePackage).packageName
+
+        val dependenciesTypeName: TypeName
+            get() = ClassName.get(dependenciesPackageName, dependenciesClassName)
 
         inner class CommandNameGenerator(private val mCommandInfo: CommandInfo) {
             val rawCommandClassName: String
                 get() = serviceClassName + StringUtils.capitalize(mCommandInfo.name) + "Command"
-            val commandDependenciesClassName: String
-                get() = serviceClassName + StringUtils.capitalize(mCommandInfo.name) + "CommandDependencies"
             val rawCommandPackageName: String
                 get() = joinPackages(RAW_COMMAND_CLASSES_PACKAGE, serviceRelativePackage).packageName
-            val commandDependenciesPackageName: String
-                get() = joinPackages(COMMAND_DEPENDENCIES_CLASSES_PACKAGE, serviceRelativePackage).packageName
             val rawCommandTypeName: TypeName
                 get() = ClassName.get(rawCommandPackageName, rawCommandClassName)
-            val commandDependenciesTypeName: TypeName
-                get() = ClassName.get(commandDependenciesPackageName, commandDependenciesClassName)
             val fullCommandName: String
                 get() = serviceRelativePackage.parts.joinToString(separator = "") {
                     str -> StringUtils.capitalize(str)
@@ -105,7 +106,7 @@ class NameGenerator @Inject internal constructor() {
         private val MAIN_GENERATED_PACKAGE = fromString("org.matilda.generated")
         val COMMANDS_GENERATED_PACKAGE = MAIN_GENERATED_PACKAGE.subpackage("commands")
         val RAW_COMMAND_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("raw")
-        val COMMAND_DEPENDENCIES_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("dependencies")
+        val DEPENDENCIES_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("dependencies")
         val COMMAND_REGISTRY_FACTORIES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("registryFactories")
         val JAVA_SERVICE_PROXIES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("proxies")
         const val COMMAND_REGISTRY_MODULE_CLASS_NAME = "CommandRegistryModule"

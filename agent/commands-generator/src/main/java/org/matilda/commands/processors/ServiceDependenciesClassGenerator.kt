@@ -5,6 +5,7 @@ import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
 import org.matilda.commands.info.CommandInfo
+import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.types.JavaDependencyInfo
 import org.matilda.commands.types.TypeConverter
@@ -14,7 +15,7 @@ import javax.inject.Inject
 import javax.lang.model.element.Modifier
 import javax.lang.model.type.TypeMirror
 
-class CommandDependenciesClassGenerator @Inject constructor() : Processor<CommandInfo> {
+class ServiceDependenciesClassGenerator @Inject constructor() : Processor<ServiceInfo> {
     @Inject
     lateinit var mFiler: Filer
 
@@ -24,20 +25,20 @@ class CommandDependenciesClassGenerator @Inject constructor() : Processor<Comman
     @Inject
     lateinit var mTypeConverter: TypeConverter
 
-    override fun process(instance: CommandInfo) {
-        JavaFile.builder(mNameGenerator.forCommand(instance).commandDependenciesPackageName, createClassSpec(instance))
+    override fun process(instance: ServiceInfo) {
+        JavaFile.builder(mNameGenerator.forService(instance).dependenciesPackageName, createClassSpec(instance))
             .build()
             .writeTo(mFiler)
     }
 
-    private fun createClassSpec(command: CommandInfo) =
-        TypeSpec.classBuilder(mNameGenerator.forCommand(command).commandDependenciesClassName)
+    private fun createClassSpec(service: ServiceInfo) =
+        TypeSpec.classBuilder(mNameGenerator.forService(service).dependenciesClassName)
             .addModifiers(Modifier.PUBLIC)
-            .addFields(createConverterDependenciesFields(command))
+            .addFields(createDependenciesFields(service))
             .addMethod(createInjectConstructor())
             .build()
 
-    private fun createConverterDependenciesFields(command: CommandInfo) = collectConverterDependencies(command)
+    private fun createDependenciesFields(service: ServiceInfo) = collectDependencies(service)
         .map { dependencyInfo ->
             FieldSpec.builder(dependencyInfo.typeName, dependencyInfo.variableName)
                 .addModifiers(Modifier.PUBLIC)
@@ -45,7 +46,9 @@ class CommandDependenciesClassGenerator @Inject constructor() : Processor<Comman
                 .build()
         }
 
-    private fun collectConverterDependencies(command: CommandInfo): Set<JavaDependencyInfo> =
+    private fun collectDependencies(service: ServiceInfo): Set<JavaDependencyInfo> =
+        service.commands.flatMapTo(mutableSetOf()) { collectDependencies(it) }
+    private fun collectDependencies(command: CommandInfo): Set<JavaDependencyInfo> =
         HashSet<JavaDependencyInfo>().apply {
             command.parameters.forEach {
                 addAll(collectConverterDependencies(it.type))
