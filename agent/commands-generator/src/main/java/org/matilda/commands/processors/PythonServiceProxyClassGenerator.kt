@@ -31,7 +31,7 @@ class PythonServiceProxyClassGenerator @Inject internal constructor() : Processo
     lateinit var mTypeConverter: TypeConverter
 
     override fun process(instance: ServiceInfo) {
-        val pythonFile = PythonFile(mNameGenerator.forService(instance).pythonGeneratedServiceProxyPackage)
+        val pythonFile = PythonFile(mNameGenerator.forService(instance).serviceProxyClassName.packageName)
             .addImports(instance)
             .addClass(instance)
         mPythonFileWriter.write(pythonFile)
@@ -139,7 +139,7 @@ class PythonServiceProxyClassGenerator @Inject internal constructor() : Processo
             addRequiredFromImports(it)
         }
     }
-    private fun getClassName(service: ServiceInfo) = mNameGenerator.forService(service).serviceProxyClassName
+    private fun getClassName(service: ServiceInfo) = mNameGenerator.forService(service).serviceProxyClassName.name
 
     private fun PythonFile.addImports(service: ServiceInfo) = apply {
         addFromImport(DEPENDENCY_CONTAINER_CLASS)

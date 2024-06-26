@@ -30,7 +30,7 @@ class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServ
     }
 
     private fun createClassSpec(services: ProjectServices): TypeSpec {
-        val builder = TypeSpec.classBuilder(NameGenerator.COMMAND_REGISTRY_MODULE_CLASS_NAME)
+        val builder = TypeSpec.classBuilder(NameGenerator.COMMANDS_MODULE_CLASS_NAME)
             .addAnnotation(createModuleAnnotation())
             .addModifiers(Modifier.PUBLIC)
         services.forEachStaticCommand { command -> builder.addField(createCommandField(command)) }
@@ -42,7 +42,7 @@ class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServ
 
     private fun createModuleAnnotation() =
         AnnotationSpec.builder(Module::class.java)
-            .addMember("includes", "\$T.class", NameGenerator.SERVICES_MODULE_TYPE_NAME)
+            .addMember("includes", "\$T.class", NameGenerator.SERVICES_MODULE_CLASS_NAME)
             .build()
 
     private fun createCommandField(command: CommandInfo) =
@@ -74,7 +74,7 @@ class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServ
         MethodSpec.methodBuilder("commandRegistry")
             .addAnnotation(Provides::class.java)
             .addAnnotation(Singleton::class.java)
-            .addParameter(ParameterSpec.builder(NameGenerator.COMMANDS_MODULE_TYPE_NAME,
+            .addParameter(ParameterSpec.builder(NameGenerator.COMMANDS_MODULE_CLASS_NAME,
                 COMMANDS_MODULE_PARAMETER_NAME).build())
             .addStatement("\$T \$L = new \$T()", CommandRegistry::class.java, COMMAND_REGISTRY_VARIABLE_NAME,
                 CommandRegistry::class.java)
@@ -84,7 +84,7 @@ class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServ
             .returns(CommandRegistry::class.java)
             .build()
 
-    private fun getCommandTypeName(command: CommandInfo) = mNameGenerator.forCommand(command).rawCommandTypeName
+    private fun getCommandTypeName(command: CommandInfo) = mNameGenerator.forCommand(command).rawCommandClassName
 
     companion object {
         private const val REGISTER_COMMANDS_METHOD_NAME = "registerCommands"

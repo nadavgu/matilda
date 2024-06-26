@@ -22,7 +22,7 @@ class CommandsRegistryFactoryClassGenerator @Inject constructor() : Processor<Se
     lateinit var mCommandIdGenerator: CommandIdGenerator
 
     override fun process(instance: ServiceInfo) {
-        JavaFile.builder(mNameGenerator.forService(instance).commandRegistryFactoryPackageName,
+        JavaFile.builder(mNameGenerator.forService(instance).commandRegistryFactoryClassName.packageName(),
             createClassSpec(instance))
             .build()
             .writeTo(mFiler)
@@ -40,7 +40,7 @@ class CommandsRegistryFactoryClassGenerator @Inject constructor() : Processor<Se
             .build()
 
     private fun createDependenciesField(service: ServiceInfo) =
-        FieldSpec.builder(mNameGenerator.forService(service).dependenciesTypeName, DEPENDENCIES_FIELD_NAME)
+        FieldSpec.builder(mNameGenerator.forService(service).dependenciesClassName, DEPENDENCIES_FIELD_NAME)
             .addAnnotation(Inject::class.java)
             .build()
     private fun createRegisterCommandsMethod(service: ServiceInfo): MethodSpec {
@@ -53,7 +53,7 @@ class CommandsRegistryFactoryClassGenerator @Inject constructor() : Processor<Se
             .addParameter(serviceParameter)
         service.commands.forEach { command ->
             builder.addStatement("\$L.addCommand(\$L, new \$T(\$L, \$L))", COMMAND_REGISTRY_PARAMETER_NAME,
-                mCommandIdGenerator.generate(command), mNameGenerator.forCommand(command).rawCommandTypeName,
+                mCommandIdGenerator.generate(command), mNameGenerator.forCommand(command).rawCommandClassName,
                 SERVICE_PARAMETER_NAME, DEPENDENCIES_FIELD_NAME)
         }
         return builder.build()

@@ -18,7 +18,7 @@ class ServiceProxyFactoryClassGenerator @Inject constructor() : Processor<Servic
     lateinit var mNameGenerator: NameGenerator
 
     override fun process(instance: ServiceInfo) {
-        JavaFile.builder(mNameGenerator.forService(instance).javaServiceProxyFactoryPackageName,
+        JavaFile.builder(mNameGenerator.forService(instance).javaServiceProxyFactoryClassName.packageName(),
             createClassSpec(instance))
             .build()
             .writeTo(mFiler)
@@ -42,7 +42,7 @@ class ServiceProxyFactoryClassGenerator @Inject constructor() : Processor<Servic
 
 
     private fun createDependenciesField(service: ServiceInfo) =
-        FieldSpec.builder(mNameGenerator.forService(service).dependenciesTypeName, DEPENDENCIES_FIELD_NAME)
+        FieldSpec.builder(mNameGenerator.forService(service).dependenciesClassName, DEPENDENCIES_FIELD_NAME)
             .addAnnotation(Inject::class.java)
             .build()
 
@@ -57,7 +57,7 @@ class ServiceProxyFactoryClassGenerator @Inject constructor() : Processor<Servic
             .returns(TypeName.get(service.type))
             .addModifiers(Modifier.PUBLIC)
             .addParameter(ParameterSpec.builder(TypeName.INT, COMMAND_REGISTRY_ID_PARAMETER_NAME).build())
-            .addStatement("return new \$T(\$L, \$L, \$L)", mNameGenerator.forService(service).javaServiceProxyTypeName,
+            .addStatement("return new \$T(\$L, \$L, \$L)", mNameGenerator.forService(service).javaServiceProxyClassName,
                 COMMAND_RUNNER_FIELD_NAME, COMMAND_REGISTRY_ID_PARAMETER_NAME, DEPENDENCIES_FIELD_NAME)
             .build()
 

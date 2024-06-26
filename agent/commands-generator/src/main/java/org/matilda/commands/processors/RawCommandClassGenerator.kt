@@ -27,7 +27,8 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
     lateinit var mTypeConverter: TypeConverter
 
     override fun process(instance: CommandInfo) {
-        JavaFile.builder(mNameGenerator.forCommand(instance).rawCommandPackageName, createClassSpec(instance))
+        JavaFile.builder(mNameGenerator.forCommand(instance).rawCommandClassName.packageName(),
+            createClassSpec(instance))
             .build()
             .writeTo(mFiler)
     }
@@ -48,7 +49,7 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .build()
 
     private fun createDependenciesField(command: CommandInfo) =
-        FieldSpec.builder(mNameGenerator.forService(command.service).dependenciesTypeName,
+        FieldSpec.builder(mNameGenerator.forService(command.service).dependenciesClassName,
             DEPENDENCIES_FIELD_NAME)
             .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             .build()
@@ -58,7 +59,7 @@ class RawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
             .addAnnotation(Inject::class.java)
             .addModifiers(Modifier.PUBLIC)
             .addParameter(ParameterSpec.builder(TypeName.get(command.service.type), SERVICE_PARAMETER_NAME).build())
-            .addParameter(ParameterSpec.builder(mNameGenerator.forService(command.service).dependenciesTypeName,
+            .addParameter(ParameterSpec.builder(mNameGenerator.forService(command.service).dependenciesClassName,
                 DEPENDENCIES_PARAMETER_NAME).build())
             .addStatement("\$L = \$L", SERVICE_FIELD_NAME, SERVICE_PARAMETER_NAME)
             .addStatement("\$L = \$L", DEPENDENCIES_FIELD_NAME, DEPENDENCIES_PARAMETER_NAME)

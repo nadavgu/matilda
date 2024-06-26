@@ -24,13 +24,12 @@ class DynamicServiceTypeConverter @Inject constructor() : TypeConverter {
     }
 
     private val TypeMirror.dynamicServiceConverterFieldName
-        get() = StringUtils.uncapitalize(mNameGenerator.forService(TypeName.get(this).toString())
-            .dynamicServiceConverterClassName)
+        get() = StringUtils.uncapitalize(dynamicServiceConverterTypeName.simpleName())
 
     private val TypeMirror.dynamicServiceConverterTypeName
-        get() = mNameGenerator.forService(TypeName.get(this).toString()).dynamicServiceConverterTypeName
+        get() = mNameGenerator.forService(TypeName.get(this).toString()).dynamicServiceConverterClassName
     override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): PythonTypeConverterInfo {
-        val proxyServiceType = mNameGenerator.forService(TypeName.get(type).toString()).serviceProxyFullClassName
+        val proxyServiceType = mNameGenerator.forService(TypeName.get(type).toString()).serviceProxyClassName
         return PythonTypeConverterInfo(
             "${CONVERTER_CLASS.name}(${proxyServiceType.name}, self.$COMMAND_RUNNER_FIELD_NAME)",
             listOf(CONVERTER_CLASS, proxyServiceType))

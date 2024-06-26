@@ -15,7 +15,7 @@ import javax.inject.Inject
 import javax.lang.model.element.Modifier
 import javax.lang.model.type.TypeMirror
 
-class ServiceDependenciesClassGenerator @Inject constructor() : Processor<ServiceInfo> {
+class JavaServiceDependenciesClassGenerator @Inject constructor() : Processor<ServiceInfo> {
     @Inject
     lateinit var mFiler: Filer
 
@@ -26,7 +26,8 @@ class ServiceDependenciesClassGenerator @Inject constructor() : Processor<Servic
     lateinit var mTypeConverter: TypeConverter
 
     override fun process(instance: ServiceInfo) {
-        JavaFile.builder(mNameGenerator.forService(instance).dependenciesPackageName, createClassSpec(instance))
+        JavaFile.builder(mNameGenerator.forService(instance).dependenciesClassName.packageName(),
+            createClassSpec(instance))
             .build()
             .writeTo(mFiler)
     }

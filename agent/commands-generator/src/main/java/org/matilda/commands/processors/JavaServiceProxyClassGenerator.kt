@@ -32,7 +32,8 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
     lateinit var mTypeConverter: TypeConverter
 
     override fun process(instance: ServiceInfo) {
-        JavaFile.builder(mNameGenerator.forService(instance).javaServiceProxyPackageName, createClassSpec(instance))
+        JavaFile.builder(mNameGenerator.forService(instance).javaServiceProxyClassName.packageName(),
+            createClassSpec(instance))
             .build()
             .writeTo(mFiler)
     }
@@ -63,7 +64,7 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
         .build()
 
     private fun createDependenciesField(service: ServiceInfo) =
-        FieldSpec.builder(mNameGenerator.forService(service).dependenciesTypeName,
+        FieldSpec.builder(mNameGenerator.forService(service).dependenciesClassName,
             DEPENDENCIES_FIELD_NAME)
             .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             .build()
@@ -73,7 +74,7 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
         .addModifiers(Modifier.PUBLIC)
             .addParameter(ParameterSpec.builder(CommandRunner::class.java, COMMAND_RUNNER_PARAMETER_NAME).build())
             .addParameter(ParameterSpec.builder(TypeName.INT, COMMAND_REGISTRY_ID_PARAMETER_NAME).build())
-            .addParameter(ParameterSpec.builder(mNameGenerator.forService(service).dependenciesTypeName,
+            .addParameter(ParameterSpec.builder(mNameGenerator.forService(service).dependenciesClassName,
                 DEPENDENCIES_PARAMETER_NAME).build())
             .addStatement("\$L = \$L", COMMAND_RUNNER_FIELD_NAME, COMMAND_RUNNER_PARAMETER_NAME)
             .addStatement("\$L = \$L", COMMAND_REGISTRY_ID_FIELD_NAME, COMMAND_REGISTRY_ID_PARAMETER_NAME)

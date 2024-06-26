@@ -1,6 +1,7 @@
 package org.matilda.commands.python
 
 import org.matilda.commands.utils.Package
+import org.matilda.commands.utils.toSnakeCase
 
 interface PythonTypeName {
     val name: String
@@ -27,6 +28,11 @@ data class PythonClassName(val element: PythonGlobalElement):
         get() = element.packageName
     override val requiredClasses: List<PythonClassName>
         get() = listOf(this)
+
+    companion object {
+        fun createFromParentPackageAndClass(parentPackage: Package, name: String) =
+            PythonClassName(parentPackage.subpackage(name.toSnakeCase()), name)
+    }
 }
 
 data class PrimitiveTypeName(override val name: String): PythonTypeName {

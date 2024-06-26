@@ -1,7 +1,6 @@
 package org.matilda.commands.names
 
 import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.TypeName
 import org.apache.commons.lang3.StringUtils
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ServiceInfo
@@ -18,8 +17,6 @@ class NameGenerator @Inject internal constructor() {
     lateinit var mPythonProperties: PythonProperties
     val pythonGeneratedCommandsPackage: Package
         get() = mPythonProperties.pythonGeneratedPackage.subpackage("commands")
-    val pythonGeneratedCommandsProxiesPackage: Package
-        get() = pythonGeneratedCommandsPackage.subpackage("proxies")
 
     val pythonGeneratedServicesContainerPackage: Package
         get() = mPythonProperties.pythonGeneratedPackage.subpackage("services")
@@ -29,73 +26,59 @@ class NameGenerator @Inject internal constructor() {
             get() = fromString(mServiceFullName)
         val serviceClassName: String
             get() = fullNamePackage.lastPart
-        val serviceProxyClassName: String
-            get() = "${serviceClassName}Proxy"
 
         val serviceSnakeCaseName: String
             get() = serviceClassName.toSnakeCase()
 
-        private val serviceProxySnakeCaseName: String
-            get() = serviceProxyClassName.toSnakeCase()
-
-        val pythonGeneratedServicePackage: Package
-            get() = pythonGeneratedCommandsPackage.subpackage(serviceSnakeCaseName)
-
-        val pythonGeneratedServiceProxyPackage: Package
-            get() = pythonGeneratedCommandsProxiesPackage.subpackage(serviceProxySnakeCaseName)
-
         val serviceFullClassName: PythonClassName
-            get() = PythonClassName(pythonGeneratedServicePackage, serviceClassName)
+            get() = PythonClassName.createFromParentPackageAndClass(pythonGeneratedCommandsPackage, serviceClassName)
 
-        val serviceProxyFullClassName: PythonClassName
-            get() = PythonClassName(pythonGeneratedServiceProxyPackage, serviceProxyClassName)
+        val serviceProxyClassName: PythonClassName
+            get() = PythonClassName.createFromParentPackageAndClass(
+                pythonGeneratedCommandsPackage.subpackage("proxies"),
+                "${serviceClassName}Proxy"
+            )
 
         private val servicePackage: Package
             get() = fullNamePackage.withoutLastPart()
         private val serviceRelativePackage: Package
             get() = servicePackage.removeCommonPrefixFrom(ORIGINAL_PACKAGE)
-        val commandRegistryFactoryPackageName: String
-            get() = joinPackages(COMMAND_REGISTRY_FACTORIES_PACKAGE, serviceRelativePackage).packageName
-        val commandRegistryFactoryClassName: String
-            get() = serviceClassName + "CommandRegistryFactory"
-        val commandRegistryFactoryTypeName: TypeName
-            get() = ClassName.get(commandRegistryFactoryPackageName, commandRegistryFactoryClassName)
-        val javaServiceProxyPackageName: String
-            get() = joinPackages(JAVA_SERVICE_PROXIES_PACKAGE, serviceRelativePackage).packageName
-        val javaServiceProxyClassName: String
-            get() = serviceClassName + "Proxy"
-        val javaServiceProxyTypeName: TypeName
-            get() = ClassName.get(javaServiceProxyPackageName, javaServiceProxyClassName)
-        val javaServiceProxyFactoryPackageName: String
-            get() = joinPackages(JAVA_SERVICE_PROXIES_PACKAGE, serviceRelativePackage).packageName
-        val javaServiceProxyFactoryClassName: String
-            get() = serviceClassName + "ProxyFactory"
-        val javaServiceProxyFactoryTypeName: TypeName
-            get() = ClassName.get(javaServiceProxyFactoryPackageName, javaServiceProxyFactoryClassName)
-        val dependenciesClassName: String
-            get() = serviceClassName + "Dependencies"
-        val dependenciesPackageName: String
-            get() = joinPackages(DEPENDENCIES_CLASSES_PACKAGE, serviceRelativePackage).packageName
-        val dependenciesTypeName: TypeName
-            get() = ClassName.get(dependenciesPackageName, dependenciesClassName)
-        val dynamicServiceConverterClassName: String
-            get() = serviceClassName + "Converter"
-        val dynamicServiceConverterPackageName: String
-            get() = joinPackages(DYNAMIC_SERVICE_CONVERTERS_CLASSES_PACKAGE, serviceRelativePackage).packageName
-        val dynamicServiceConverterTypeName: TypeName
-            get() = ClassName.get(dynamicServiceConverterPackageName, dynamicServiceConverterClassName)
+        val commandRegistryFactoryClassName: ClassName
+            get() = ClassName.get(
+                joinPackages(COMMAND_REGISTRY_FACTORIES_PACKAGE, serviceRelativePackage).packageName,
+                serviceClassName + "CommandRegistryFactory"
+            )
+        val javaServiceProxyClassName: ClassName
+            get() = ClassName.get(
+                joinPackages(JAVA_SERVICE_PROXIES_PACKAGE, serviceRelativePackage).packageName,
+                serviceClassName + "Proxy"
+            )
+        val javaServiceProxyFactoryClassName: ClassName
+            get() = ClassName.get(
+                joinPackages(JAVA_SERVICE_PROXIES_PACKAGE, serviceRelativePackage).packageName,
+                serviceClassName + "ProxyFactory"
+            )
+        val dependenciesClassName: ClassName
+            get() = ClassName.get(
+                joinPackages(DEPENDENCIES_CLASSES_PACKAGE, serviceRelativePackage).packageName,
+                serviceClassName + "Dependencies"
+            )
+        val dynamicServiceConverterClassName: ClassName
+            get() = ClassName.get(
+                joinPackages(DYNAMIC_SERVICE_CONVERTERS_CLASSES_PACKAGE, serviceRelativePackage).packageName,
+                serviceClassName + "Converter"
+            )
 
         inner class CommandNameGenerator(private val mCommandInfo: CommandInfo) {
-            val rawCommandClassName: String
-                get() = serviceClassName + StringUtils.capitalize(mCommandInfo.name) + "Command"
-            val rawCommandPackageName: String
-                get() = joinPackages(RAW_COMMAND_CLASSES_PACKAGE, serviceRelativePackage).packageName
-            val rawCommandTypeName: TypeName
-                get() = ClassName.get(rawCommandPackageName, rawCommandClassName)
+            val rawCommandClassName: ClassName
+                get() = ClassName.get(
+                    joinPackages(RAW_COMMAND_CLASSES_PACKAGE, serviceRelativePackage).packageName,
+                    serviceClassName + StringUtils.capitalize(mCommandInfo.name) + "Command"
+                )
             val fullCommandName: String
                 get() = serviceRelativePackage.parts.joinToString(separator = "") {
                     str -> StringUtils.capitalize(str)
-                } + rawCommandClassName
+                } + rawCommandClassName.simpleName()
 
             val snakeCaseName: String
                 get() = mCommandInfo.name.toSnakeCase()
@@ -115,15 +98,13 @@ class NameGenerator @Inject internal constructor() {
         val DYNAMIC_SERVICE_CONVERTERS_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("converters")
         val COMMAND_REGISTRY_FACTORIES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("registryFactories")
         val JAVA_SERVICE_PROXIES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("proxies")
-        const val COMMAND_REGISTRY_MODULE_CLASS_NAME = "CommandRegistryModule"
-        val COMMANDS_MODULE_TYPE_NAME: TypeName = ClassName.get(
+        val COMMANDS_MODULE_CLASS_NAME: ClassName = ClassName.get(
             COMMANDS_GENERATED_PACKAGE.packageName,
-            COMMAND_REGISTRY_MODULE_CLASS_NAME
+            "CommandRegistryModule"
         )
-        const val SERVICES_MODULE_CLASS_NAME = "ServicesModule"
-        val SERVICES_MODULE_TYPE_NAME: TypeName = ClassName.get(
+        val SERVICES_MODULE_CLASS_NAME: ClassName = ClassName.get(
             COMMANDS_GENERATED_PACKAGE.packageName,
-            SERVICES_MODULE_CLASS_NAME
+            "ServicesModule"
         )
         val ORIGINAL_PACKAGE = Package("org", "matilda", "commands")
         const val SERVICES_CONTAINER_CLASS_NAME = "Services"

@@ -22,7 +22,7 @@ class ProcessorFactory @Inject constructor() {
     lateinit var mPythonServicesContainerClassGenerator: PythonServicesContainerClassGenerator
 
     @Inject
-    lateinit var mServiceDependenciesClassGenerator: ServiceDependenciesClassGenerator
+    lateinit var mJavaServiceDependenciesClassGenerator: JavaServiceDependenciesClassGenerator
 
     @Inject
     lateinit var mCommandsRegistryFactoryClassGenerator: CommandsRegistryFactoryClassGenerator
@@ -42,7 +42,7 @@ class ProcessorFactory @Inject constructor() {
     fun createProcessor() = CompoundProcessor(
         listOf(
             ProjectCommandsProcessor(mRawCommandClassGenerator),
-            ProjectServicesProcessor(mServiceDependenciesClassGenerator),
+            ProjectServicesProcessor(mJavaServiceDependenciesClassGenerator),
             OnlyRunOnceProcessor(mWasRun, mCommandsModuleClassGenerator),
             OnlyRunOnceProcessor(mWasRun, mServicesModuleClassGenerator),
             ProjectServicesProcessor(mPythonServiceProxyClassGenerator),

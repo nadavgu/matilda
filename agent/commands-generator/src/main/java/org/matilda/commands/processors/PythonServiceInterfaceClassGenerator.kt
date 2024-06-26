@@ -26,7 +26,7 @@ class PythonServiceInterfaceClassGenerator @Inject internal constructor() : Proc
     lateinit var mTypeConverter: TypeConverter
 
     override fun process(instance: ServiceInfo) {
-        val pythonFile = PythonFile(mNameGenerator.forService(instance).pythonGeneratedServicePackage)
+        val pythonFile = PythonFile(mNameGenerator.forService(instance).serviceFullClassName.packageName)
             .addImports()
             .addClass(instance)
         mPythonFileWriter.write(pythonFile)
@@ -43,7 +43,7 @@ class PythonServiceInterfaceClassGenerator @Inject internal constructor() : Proc
     }
 
     private fun PythonClass.addDICreator(service: ServiceInfo) = apply {
-        val proxyClassName = mNameGenerator.forService(service).serviceProxyFullClassName
+        val proxyClassName = mNameGenerator.forService(service).serviceProxyClassName
 
         addStaticMethod(
             PythonFunctionSpec.functionBuilder("create")

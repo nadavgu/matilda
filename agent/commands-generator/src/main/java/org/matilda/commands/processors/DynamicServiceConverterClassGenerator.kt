@@ -18,7 +18,7 @@ class DynamicServiceConverterClassGenerator @Inject constructor() : Processor<Se
     lateinit var mNameGenerator: NameGenerator
 
     override fun process(instance: ServiceInfo) {
-        JavaFile.builder(mNameGenerator.forService(instance).dynamicServiceConverterPackageName,
+        JavaFile.builder(mNameGenerator.forService(instance).dynamicServiceConverterClassName.packageName(),
             createClassSpec(instance))
             .build()
             .writeTo(mFiler)
@@ -46,16 +46,16 @@ class DynamicServiceConverterClassGenerator @Inject constructor() : Processor<Se
             .build()
 
     private val ServiceInfo.commandRegistryFactoryParameterName
-        get() = StringUtils.uncapitalize(mNameGenerator.forService(this).commandRegistryFactoryClassName)
+        get() = StringUtils.uncapitalize(commandRegistryFactoryTypeName.simpleName())
 
     private val ServiceInfo.serviceProxyFactoryParameterName
-        get() = StringUtils.uncapitalize(mNameGenerator.forService(this).javaServiceProxyClassName)
+        get() = StringUtils.uncapitalize(serviceProxyFactoryTypeName.simpleName())
 
     private val ServiceInfo.commandRegistryFactoryTypeName
-        get() = mNameGenerator.forService(this).commandRegistryFactoryTypeName
+        get() = mNameGenerator.forService(this).commandRegistryFactoryClassName
 
     private val ServiceInfo.serviceProxyFactoryTypeName
-        get() = mNameGenerator.forService(this).javaServiceProxyFactoryTypeName
+        get() = mNameGenerator.forService(this).javaServiceProxyFactoryClassName
 
     companion object {
         private const val COMMAND_REPOSITORY_VARIABLE_NAME = "commandRepository"
