@@ -58,8 +58,8 @@ class PythonServiceDependenciesClassGenerator @Inject constructor() : Processor<
     private fun PythonClass.addDependencyField(dependency: PythonDependencyInfo) =
         addField(PythonParameter(PythonVariable(dependency.variableName, dependency.typeName.name)))
     private fun PythonClass.addDICreator(service: ServiceInfo, dependencies: Set<PythonDependencyInfo>) = apply {
-        val dependenciesInvocationList = dependencies.joinToString(", ") {
-            "${DEPENDENCY_CONTAINER_PARAMETER_NAME}.get(${it.typeName.name}"
+        val dependenciesInvocationList = dependencies.joinToString {
+            "${DEPENDENCY_CONTAINER_PARAMETER_NAME}.get(${it.typeName.name})"
         }
 
         addStaticMethod(PythonFunctionSpec.functionBuilder("create")
