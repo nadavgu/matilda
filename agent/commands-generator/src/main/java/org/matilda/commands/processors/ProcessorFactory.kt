@@ -33,6 +33,9 @@ class ProcessorFactory @Inject constructor() {
     @Inject
     lateinit var mServiceProxyFactoryClassGenerator: ServiceProxyFactoryClassGenerator
 
+    @Inject
+    lateinit var mDynamicServiceConverterClassGenerator: DynamicServiceConverterClassGenerator
+
     @set: Inject
     var mWasRun: Boolean = false
 
@@ -48,6 +51,7 @@ class ProcessorFactory @Inject constructor() {
             ProjectServicesProcessor(mCommandsRegistryFactoryClassGenerator),
             ProjectDynamicServicesProcessor(mJavaServiceProxyClassGenerator),
             ProjectDynamicServicesProcessor(mServiceProxyFactoryClassGenerator),
+            ProjectDynamicServicesProcessor(mDynamicServiceConverterClassGenerator),
         )
     )
 }

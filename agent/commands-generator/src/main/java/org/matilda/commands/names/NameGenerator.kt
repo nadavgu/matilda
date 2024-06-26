@@ -76,9 +76,14 @@ class NameGenerator @Inject internal constructor() {
             get() = serviceClassName + "Dependencies"
         val dependenciesPackageName: String
             get() = joinPackages(DEPENDENCIES_CLASSES_PACKAGE, serviceRelativePackage).packageName
-
         val dependenciesTypeName: TypeName
             get() = ClassName.get(dependenciesPackageName, dependenciesClassName)
+        val dynamicServiceConverterClassName: String
+            get() = serviceClassName + "Converter"
+        val dynamicServiceConverterPackageName: String
+            get() = joinPackages(DYNAMIC_SERVICE_CONVERTERS_CLASSES_PACKAGE, serviceRelativePackage).packageName
+        val dynamicServiceConverterTypeName: TypeName
+            get() = ClassName.get(dynamicServiceConverterPackageName, dynamicServiceConverterClassName)
 
         inner class CommandNameGenerator(private val mCommandInfo: CommandInfo) {
             val rawCommandClassName: String
@@ -107,6 +112,7 @@ class NameGenerator @Inject internal constructor() {
         val COMMANDS_GENERATED_PACKAGE = MAIN_GENERATED_PACKAGE.subpackage("commands")
         val RAW_COMMAND_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("raw")
         val DEPENDENCIES_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("dependencies")
+        val DYNAMIC_SERVICE_CONVERTERS_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("converters")
         val COMMAND_REGISTRY_FACTORIES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("registryFactories")
         val JAVA_SERVICE_PROXIES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("proxies")
         const val COMMAND_REGISTRY_MODULE_CLASS_NAME = "CommandRegistryModule"

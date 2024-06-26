@@ -4,7 +4,6 @@ import com.squareup.javapoet.*
 import org.matilda.commands.CommandRunner
 import org.matilda.commands.ServiceProxyFactory
 import org.matilda.commands.info.ServiceInfo
-import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.DEPENDENCIES_FIELD_NAME
 import javax.annotation.processing.Filer
@@ -17,9 +16,6 @@ class ServiceProxyFactoryClassGenerator @Inject constructor() : Processor<Servic
 
     @Inject
     lateinit var mNameGenerator: NameGenerator
-
-    @Inject
-    lateinit var mCommandIdGenerator: CommandIdGenerator
 
     override fun process(instance: ServiceInfo) {
         JavaFile.builder(mNameGenerator.forService(instance).javaServiceProxyFactoryPackageName,
