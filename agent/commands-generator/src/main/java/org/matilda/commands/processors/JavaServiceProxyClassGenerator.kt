@@ -6,6 +6,7 @@ import org.matilda.commands.CommandRunner
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.info.ServiceInfo
+import org.matilda.commands.info.hasReturnValue
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
@@ -16,7 +17,6 @@ import java.io.IOException
 import javax.annotation.processing.Filer
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
-import javax.lang.model.type.TypeMirror
 
 class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<ServiceInfo> {
     @Inject
@@ -55,13 +55,13 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
 
     private fun createCommandRunnerField() =
         FieldSpec.builder(CommandRunner::class.java, COMMAND_RUNNER_FIELD_NAME)
-        .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-        .build()
+            .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+            .build()
 
     private fun createCommandRegistryIdField() =
         FieldSpec.builder(TypeName.INT, COMMAND_REGISTRY_ID_FIELD_NAME)
-        .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-        .build()
+            .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+            .build()
 
     private fun createDependenciesField(service: ServiceInfo) =
         FieldSpec.builder(mNameGenerator.forService(service).dependenciesClassName,
@@ -71,7 +71,7 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
 
     private fun createConstructor(service: ServiceInfo) =
         MethodSpec.constructorBuilder()
-        .addModifiers(Modifier.PUBLIC)
+            .addModifiers(Modifier.PUBLIC)
             .addParameter(ParameterSpec.builder(CommandRunner::class.java, COMMAND_RUNNER_PARAMETER_NAME).build())
             .addParameter(ParameterSpec.builder(TypeName.INT, COMMAND_REGISTRY_ID_PARAMETER_NAME).build())
             .addParameter(ParameterSpec.builder(mNameGenerator.forService(service).dependenciesClassName,
@@ -103,7 +103,7 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
                 BYTE_ARRAY_TYPE_NAME, RETURN_VALUE_VARIABLE_NAME, COMMAND_RUNNER_FIELD_NAME,
                 COMMAND_REGISTRY_ID_FIELD_NAME, mCommandIdGenerator.generate(command),
                 SOME_PARAMETER_VARIABLE_NAME)
-            .addReturnStatement(command.returnType)
+            .addReturnStatement(command)
             .nextControlFlow("catch (\$T \$L)", IOException::class.java, EXCEPTION_NAME)
             .addStatement("throw new \$T(\$L)", RuntimeException::class.java, EXCEPTION_NAME)
             .endControlFlow()
@@ -115,10 +115,15 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
             SOME_PARAMETER_VARIABLE_NAME, Any::class.java, *converterArgs.toTypedArray(), parameterInfo.name)
     }
 
-    private fun MethodSpec.Builder.addReturnStatement(returnType: TypeMirror): MethodSpec.Builder {
-        val (converterFormat, converterArgs) = mTypeConverter.javaConverter(returnType)
-        addStatement("return $converterFormat.convertFromProtobuf(\$T.parseFrom(\$L))", *converterArgs.toTypedArray(),
-            Any::class.java, RETURN_VALUE_VARIABLE_NAME)
+    private fun MethodSpec.Builder.addReturnStatement(command: CommandInfo): MethodSpec.Builder {
+        val (converterFormat, converterArgs) = mTypeConverter.javaConverter(command.returnType)
+        if (command.hasReturnValue()) {
+            addStatement("return $converterFormat.convertFromProtobuf(\$T.parseFrom(\$L))",
+                *converterArgs.toTypedArray(), Any::class.java, RETURN_VALUE_VARIABLE_NAME)
+        } else {
+            addStatement("$converterFormat.convertFromProtobuf(\$T.parseFrom(\$L))",
+                *converterArgs.toTypedArray(), Any::class.java, RETURN_VALUE_VARIABLE_NAME)
+        }
         return this
     }
 
