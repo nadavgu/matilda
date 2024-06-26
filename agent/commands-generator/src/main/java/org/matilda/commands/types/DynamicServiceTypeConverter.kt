@@ -18,7 +18,7 @@ class DynamicServiceTypeConverter @Inject constructor() : TypeConverter {
 
     override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): JavaTypeConverterInfo {
         return JavaTypeConverterInfo("\$L.\$L",
-            listOf(DEPENDENCIES_FIELD_NAME, type.dynamicServiceConverterFieldName),
+            listOf(JAVA_DEPENDENCIES_FIELD_NAME, type.dynamicServiceConverterFieldName),
             listOf(JavaDependencyInfo(type.dynamicServiceConverterTypeName, type.dynamicServiceConverterFieldName))
         )
     }
@@ -49,6 +49,7 @@ class DynamicServiceTypeConverter @Inject constructor() : TypeConverter {
         private val CONVERTER_CLASS = PythonClassName(
             TypeConverter.MAIN_CONVERTERS_PACKAGE.subpackage("dynamic_service_converter"),
             "DynamicServiceConverter")
-        const val DEPENDENCIES_FIELD_NAME = "mDependencies"
+        const val JAVA_DEPENDENCIES_FIELD_NAME = "mDependencies"
+        const val PYTHON_DEPENDENCIES_FIELD_NAME = "__dependencies"
     }
 }

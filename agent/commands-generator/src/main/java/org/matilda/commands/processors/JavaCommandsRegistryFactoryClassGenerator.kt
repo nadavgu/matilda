@@ -6,12 +6,12 @@ import org.matilda.commands.CommandRegistryFactory
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
-import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.DEPENDENCIES_FIELD_NAME
+import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.JAVA_DEPENDENCIES_FIELD_NAME
 import javax.annotation.processing.Filer
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
 
-class CommandsRegistryFactoryClassGenerator @Inject constructor() : Processor<ServiceInfo> {
+class JavaCommandsRegistryFactoryClassGenerator @Inject constructor() : Processor<ServiceInfo> {
     @Inject
     lateinit var mFiler: Filer
 
@@ -40,7 +40,7 @@ class CommandsRegistryFactoryClassGenerator @Inject constructor() : Processor<Se
             .build()
 
     private fun createDependenciesField(service: ServiceInfo) =
-        FieldSpec.builder(mNameGenerator.forService(service).dependenciesClassName, DEPENDENCIES_FIELD_NAME)
+        FieldSpec.builder(mNameGenerator.forService(service).dependenciesClassName, JAVA_DEPENDENCIES_FIELD_NAME)
             .addAnnotation(Inject::class.java)
             .build()
     private fun createRegisterCommandsMethod(service: ServiceInfo): MethodSpec {
@@ -54,7 +54,7 @@ class CommandsRegistryFactoryClassGenerator @Inject constructor() : Processor<Se
         service.commands.forEach { command ->
             builder.addStatement("\$L.addCommand(\$L, new \$T(\$L, \$L))", COMMAND_REGISTRY_PARAMETER_NAME,
                 mCommandIdGenerator.generate(command), mNameGenerator.forCommand(command).rawCommandClassName,
-                SERVICE_PARAMETER_NAME, DEPENDENCIES_FIELD_NAME)
+                SERVICE_PARAMETER_NAME, JAVA_DEPENDENCIES_FIELD_NAME)
         }
         return builder.build()
     }

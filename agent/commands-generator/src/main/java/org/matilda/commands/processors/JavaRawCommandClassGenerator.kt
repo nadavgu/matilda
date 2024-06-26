@@ -8,7 +8,7 @@ import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.info.hasReturnValue
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
-import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.DEPENDENCIES_FIELD_NAME
+import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.JAVA_DEPENDENCIES_FIELD_NAME
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.javaConverter
 import java.io.IOException
@@ -50,7 +50,7 @@ class JavaRawCommandClassGenerator @Inject constructor() : Processor<CommandInfo
 
     private fun createDependenciesField(command: CommandInfo) =
         FieldSpec.builder(mNameGenerator.forService(command.service).dependenciesClassName,
-            DEPENDENCIES_FIELD_NAME)
+            JAVA_DEPENDENCIES_FIELD_NAME)
             .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             .build()
 
@@ -62,7 +62,7 @@ class JavaRawCommandClassGenerator @Inject constructor() : Processor<CommandInfo
             .addParameter(ParameterSpec.builder(mNameGenerator.forService(command.service).dependenciesClassName,
                 DEPENDENCIES_PARAMETER_NAME).build())
             .addStatement("\$L = \$L", SERVICE_FIELD_NAME, SERVICE_PARAMETER_NAME)
-            .addStatement("\$L = \$L", DEPENDENCIES_FIELD_NAME, DEPENDENCIES_PARAMETER_NAME)
+            .addStatement("\$L = \$L", JAVA_DEPENDENCIES_FIELD_NAME, DEPENDENCIES_PARAMETER_NAME)
             .build()
 
     private fun createRunMethod(command: CommandInfo) =

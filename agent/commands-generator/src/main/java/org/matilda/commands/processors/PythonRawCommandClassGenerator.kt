@@ -10,7 +10,7 @@ import org.matilda.commands.python.PythonTypeName
 import org.matilda.commands.python.writer.*
 import org.matilda.commands.python.writer.PythonFunctionSpec.Companion.constructorBuilder
 import org.matilda.commands.python.writer.PythonFunctionSpec.Companion.functionBuilder
-import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.DEPENDENCIES_FIELD_NAME
+import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.PYTHON_DEPENDENCIES_FIELD_NAME
 import org.matilda.commands.types.ProtobufTypeTranslator
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.pythonConverter
@@ -72,7 +72,7 @@ class PythonRawCommandClassGenerator @Inject constructor() : Processor<CommandIn
             .addParameter(DEPENDENCIES_PARAMETER_NAME, serviceNameGenerator.dependenciesPythonClassName.name)
             .build())
             .addStatement("self.%s = %s", SERVICE_FIELD_NAME, SERVICE_PARAMETER_NAME)
-            .addStatement("self.%s = %s", DEPENDENCIES_FIELD_NAME, DEPENDENCIES_PARAMETER_NAME)
+            .addStatement("self.%s = %s", PYTHON_DEPENDENCIES_FIELD_NAME, DEPENDENCIES_PARAMETER_NAME)
     }
 
     private fun PythonClass.addRunMethod(command: CommandInfo) = apply {

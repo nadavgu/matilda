@@ -5,7 +5,7 @@ import org.matilda.commands.CommandRunner
 import org.matilda.commands.ServiceProxyFactory
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.NameGenerator
-import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.DEPENDENCIES_FIELD_NAME
+import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.JAVA_DEPENDENCIES_FIELD_NAME
 import javax.annotation.processing.Filer
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
@@ -42,7 +42,7 @@ class ServiceProxyFactoryClassGenerator @Inject constructor() : Processor<Servic
 
 
     private fun createDependenciesField(service: ServiceInfo) =
-        FieldSpec.builder(mNameGenerator.forService(service).dependenciesClassName, DEPENDENCIES_FIELD_NAME)
+        FieldSpec.builder(mNameGenerator.forService(service).dependenciesClassName, JAVA_DEPENDENCIES_FIELD_NAME)
             .addAnnotation(Inject::class.java)
             .build()
 
@@ -58,7 +58,7 @@ class ServiceProxyFactoryClassGenerator @Inject constructor() : Processor<Servic
             .addModifiers(Modifier.PUBLIC)
             .addParameter(ParameterSpec.builder(TypeName.INT, COMMAND_REGISTRY_ID_PARAMETER_NAME).build())
             .addStatement("return new \$T(\$L, \$L, \$L)", mNameGenerator.forService(service).javaServiceProxyClassName,
-                COMMAND_RUNNER_FIELD_NAME, COMMAND_REGISTRY_ID_PARAMETER_NAME, DEPENDENCIES_FIELD_NAME)
+                COMMAND_RUNNER_FIELD_NAME, COMMAND_REGISTRY_ID_PARAMETER_NAME, JAVA_DEPENDENCIES_FIELD_NAME)
             .build()
 
     companion object {

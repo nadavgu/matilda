@@ -48,6 +48,11 @@ class NameGenerator @Inject internal constructor() {
                 joinPackages(COMMAND_REGISTRY_FACTORIES_PACKAGE, serviceRelativePackage).packageName,
                 serviceClassName + "CommandRegistryFactory"
             )
+        val commandRegistryFactoryPythonClassName: PythonClassName
+            get() = PythonClassName.createFromParentPackageAndClass(
+                pythonGeneratedCommandsPackage.subpackage("registry_factories"),
+                "${serviceClassName}CommandRegistryFactory"
+            )
         val javaServiceProxyClassName: ClassName
             get() = ClassName.get(
                 joinPackages(JAVA_SERVICE_PROXIES_PACKAGE, serviceRelativePackage).packageName,

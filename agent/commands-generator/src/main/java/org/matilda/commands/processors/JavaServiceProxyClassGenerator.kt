@@ -9,7 +9,7 @@ import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
-import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.DEPENDENCIES_FIELD_NAME
+import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.JAVA_DEPENDENCIES_FIELD_NAME
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.javaConverter
 import java.io.IOException
@@ -65,7 +65,7 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
 
     private fun createDependenciesField(service: ServiceInfo) =
         FieldSpec.builder(mNameGenerator.forService(service).dependenciesClassName,
-            DEPENDENCIES_FIELD_NAME)
+            JAVA_DEPENDENCIES_FIELD_NAME)
             .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             .build()
 
@@ -78,7 +78,7 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
                 DEPENDENCIES_PARAMETER_NAME).build())
             .addStatement("\$L = \$L", COMMAND_RUNNER_FIELD_NAME, COMMAND_RUNNER_PARAMETER_NAME)
             .addStatement("\$L = \$L", COMMAND_REGISTRY_ID_FIELD_NAME, COMMAND_REGISTRY_ID_PARAMETER_NAME)
-            .addStatement("\$L = \$L", DEPENDENCIES_FIELD_NAME, DEPENDENCIES_PARAMETER_NAME)
+            .addStatement("\$L = \$L", JAVA_DEPENDENCIES_FIELD_NAME, DEPENDENCIES_PARAMETER_NAME)
             .build()
 
     private fun createCommandMethod(command: CommandInfo) =
