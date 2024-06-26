@@ -10,7 +10,7 @@ import javax.annotation.processing.Filer
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
 
-class DynamicServiceConverterClassGenerator @Inject constructor() : Processor<ServiceInfo> {
+class JavaDynamicServiceConverterClassGenerator @Inject constructor() : Processor<ServiceInfo> {
     @Inject
     lateinit var mFiler: Filer
 

@@ -4,8 +4,8 @@ import com.squareup.javapoet.TypeName
 import org.apache.commons.lang3.StringUtils
 import org.matilda.commands.MatildaDynamicService
 import org.matilda.commands.names.NameGenerator
-import org.matilda.commands.processors.PythonServiceProxyClassGenerator.Companion.COMMAND_RUNNER_FIELD_NAME
 import org.matilda.commands.python.PythonClassName
+import org.matilda.commands.utils.toSnakeCase
 import javax.inject.Inject
 import javax.lang.model.type.TypeMirror
 
@@ -18,23 +18,28 @@ class DynamicServiceTypeConverter @Inject constructor() : TypeConverter {
 
     override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): JavaTypeConverterInfo {
         return JavaTypeConverterInfo("\$L.\$L",
-            listOf(JAVA_DEPENDENCIES_FIELD_NAME, type.dynamicServiceConverterFieldName),
-            listOf(JavaDependencyInfo(type.dynamicServiceConverterTypeName, type.dynamicServiceConverterFieldName))
+            listOf(JAVA_DEPENDENCIES_FIELD_NAME, type.javaDynamicServiceConverterFieldName),
+            listOf(JavaDependencyInfo(type.javaDynamicServiceConverterTypeName, type.javaDynamicServiceConverterFieldName))
         )
     }
 
-    private val TypeMirror.dynamicServiceConverterFieldName
-        get() = StringUtils.uncapitalize(dynamicServiceConverterTypeName.simpleName())
+    private val TypeMirror.javaDynamicServiceConverterFieldName
+        get() = StringUtils.uncapitalize(javaDynamicServiceConverterTypeName.simpleName())
 
-    private val TypeMirror.dynamicServiceConverterTypeName
+    private val TypeMirror.javaDynamicServiceConverterTypeName
         get() = mNameGenerator.forService(TypeName.get(this).toString()).dynamicServiceConverterClassName
     override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): PythonTypeConverterInfo {
-        val proxyServiceType = mNameGenerator.forService(TypeName.get(type).toString()).serviceProxyClassName
         return PythonTypeConverterInfo(
-            "${CONVERTER_CLASS.name}(${proxyServiceType.name}, self.$COMMAND_RUNNER_FIELD_NAME)",
-            listOf(CONVERTER_CLASS, proxyServiceType))
+            "self.$PYTHON_DEPENDENCIES_FIELD_NAME.${type.pythonDynamicServiceConverterFieldName}",
+            emptyList(),
+            listOf(PythonDependencyInfo(type.pythonDynamicServiceConverterTypeName,
+                type.pythonDynamicServiceConverterFieldName)))
     }
 
+    private val TypeMirror.pythonDynamicServiceConverterFieldName
+        get() = pythonDynamicServiceConverterTypeName.name.toSnakeCase()
+    private val TypeMirror.pythonDynamicServiceConverterTypeName
+        get() = mNameGenerator.forService(TypeName.get(this).toString()).dynamicServiceConverterPythonClassName
     override fun pythonType(type: TypeMirror, outerConverter: TypeConverter) =
         mNameGenerator.forService(TypeName.get(type).toString()).serviceFullClassName
 
@@ -46,7 +51,7 @@ class DynamicServiceTypeConverter @Inject constructor() : TypeConverter {
 
 
     companion object {
-        private val CONVERTER_CLASS = PythonClassName(
+        val DYNAMIC_CONVERTER_CLASS = PythonClassName(
             TypeConverter.MAIN_CONVERTERS_PACKAGE.subpackage("dynamic_service_converter"),
             "DynamicServiceConverter")
         const val JAVA_DEPENDENCIES_FIELD_NAME = "mDependencies"

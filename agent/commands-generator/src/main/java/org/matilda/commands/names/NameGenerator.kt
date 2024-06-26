@@ -85,6 +85,12 @@ class NameGenerator @Inject internal constructor() {
                 serviceClassName + "Converter"
             )
 
+        val dynamicServiceConverterPythonClassName: PythonClassName
+            get() = PythonClassName.createFromParentPackageAndClass(
+                pythonGeneratedCommandsPackage.subpackage("converters"),
+                serviceClassName + "Converter"
+            )
+
         inner class CommandNameGenerator(private val mCommandInfo: CommandInfo) {
             val rawCommandClassName: ClassName
                 get() = ClassName.get(
