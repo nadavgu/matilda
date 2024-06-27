@@ -2,8 +2,8 @@ package org.matilda.services.reflection;
 
 import org.matilda.commands.MatildaCommand;
 import org.matilda.commands.MatildaService;
-import org.matilda.services.reflection.protobuf.JavaValue;
 import org.matilda.services.reflection.protobuf.JavaType;
+import org.matilda.services.reflection.protobuf.JavaValue;
 
 import javax.inject.Inject;
 import java.lang.reflect.*;
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @MatildaService
 public class ReflectionService {
@@ -170,5 +169,12 @@ public class ReflectionService {
         Field field = mReflectionUtils.getField(fieldId);
         field.setAccessible(true);
         field.set(object, mReflectionUtils.fromJavaValue(field.getType(), newValue));
+    }
+
+    @MatildaCommand
+    public long newProxyInstance(List<Long> interfaceIds, ProxyHandlerService proxyHandler) {
+        return mReflectionUtils.register(Proxy.newProxyInstance(getClass().getClassLoader(),
+                interfaceIds.stream().map(mReflectionUtils::getClass).toArray(Class[]::new),
+                new ProxyServiceInvocationHandler(proxyHandler, mReflectionUtils)));
     }
 }
