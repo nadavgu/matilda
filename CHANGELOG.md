@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Callback API from java to python in matilda
+- API to create a java proxy object from a list of interfaces and a callback
+
 ### Fixed
 
 - Indicative error when for some reason a command doesn't exist on the java side
