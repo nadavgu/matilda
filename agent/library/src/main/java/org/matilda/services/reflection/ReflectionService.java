@@ -44,6 +44,13 @@ public class ReflectionService {
     }
 
     @MatildaCommand
+    public List<Long> getClassConstructors(long id) {
+        Class<?> clazz = mReflectionUtils.getClass(id);
+        return Arrays.stream(clazz.getDeclaredConstructors()).map(mReflectionUtils::register)
+                .collect(Collectors.toList());
+    }
+
+    @MatildaCommand
     public long getSuperclass(long classId) {
         Class<?> superClass = mReflectionUtils.getClass(classId).getSuperclass();
         return mReflectionUtils.register(superClass);
@@ -56,14 +63,14 @@ public class ReflectionService {
     }
 
     @MatildaCommand
-    public String getMethodName(long id) {
-        return mReflectionUtils.getMethod(id).getName();
+    public String getExecutableName(long id) {
+        return mReflectionUtils.getExecutable(id).getName();
     }
 
     @MatildaCommand
-    public List<JavaType> getMethodParameterTypes(long id) {
-        Method method = mReflectionUtils.getMethod(id);
-        return Arrays.stream(method.getParameters())
+    public List<JavaType> getExecutableParameterTypes(long id) {
+        Executable executable = mReflectionUtils.getExecutable(id);
+        return Arrays.stream(executable.getParameters())
                 .map(Parameter::getType)
                 .map(mReflectionUtils::toJavaType)
                 .collect(Collectors.toList());
@@ -73,12 +80,25 @@ public class ReflectionService {
     public long getMethod(long classId, String methodName, List<JavaType> parameterTypes)
             throws NoSuchMethodException, ClassNotFoundException {
         Class<?> clazz = mReflectionUtils.getClass(classId);
+        List<Class<?>> list = convertTypes(parameterTypes);
+        return mReflectionUtils.register(clazz.getDeclaredMethod(methodName, list.toArray(new Class<?>[0])));
+    }
+
+    @MatildaCommand
+    public long getConstructor(long classId, List<JavaType> parameterTypes)
+            throws ClassNotFoundException, NoSuchMethodException {
+        Class<?> clazz = mReflectionUtils.getClass(classId);
+        List<Class<?>> list = convertTypes(parameterTypes);
+        return mReflectionUtils.register(clazz.getDeclaredConstructor(list.toArray(new Class<?>[0])));
+    }
+
+    private List<Class<?>> convertTypes(List<JavaType> parameterTypes) throws ClassNotFoundException {
         List<Class<?>> list = new ArrayList<>();
         for (JavaType parameterType : parameterTypes) {
             Class<?> parameterClass = mReflectionUtils.fromJavaType(parameterType);
             list.add(parameterClass);
         }
-        return mReflectionUtils.register(clazz.getDeclaredMethod(methodName, list.toArray(new Class<?>[0])));
+        return list;
     }
 
     @MatildaCommand
@@ -100,7 +120,19 @@ public class ReflectionService {
 
     private JavaValue invokeMethod(Object receiver, long methodId, List<JavaValue> arguments) throws InvocationTargetException, IllegalAccessException {
         Method method = mReflectionUtils.getMethod(methodId);
-        Parameter[] parameters = method.getParameters();
+        Object[] objectArguments = convertMethodArguments(method, arguments);
+        return mReflectionUtils.toJavaValue(method.getReturnType(), method.invoke(receiver, objectArguments));
+    }
+
+    @MatildaCommand
+    public long createNewInstance(long constructorId, List<JavaValue> arguments) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+        Constructor<?> constructor = mReflectionUtils.getConstructor(constructorId);
+        Object[] objectArguments = convertMethodArguments(constructor, arguments);
+        return mReflectionUtils.register(constructor.newInstance(objectArguments));
+    }
+
+    private Object[] convertMethodArguments(Executable executable, List<JavaValue> arguments) {
+        Parameter[] parameters = executable.getParameters();
         if (parameters.length != arguments.size()) {
             throw new IllegalArgumentException();
         }
@@ -109,8 +141,7 @@ public class ReflectionService {
         for (int i = 0; i < parameters.length; i++) {
             objectArguments[i] = mReflectionUtils.fromJavaValue(parameters[i].getType(), arguments.get(i));
         }
-
-        return mReflectionUtils.toJavaValue(method.getReturnType(), method.invoke(receiver, objectArguments));
+        return objectArguments;
     }
 
     @MatildaCommand

@@ -6,6 +6,7 @@ from matilda.java.java_object import JavaObject
 
 if TYPE_CHECKING:
     from matilda.java.java_method import JavaMethod
+    from matilda.java.java_constructor import JavaConstructor
     from matilda.java.java_field import JavaField
     from matilda.java.java_type import JavaType
 
@@ -41,6 +42,19 @@ class JavaClass(JavaObject):
                                                  [convert_type_to_protobuf(param) for param in parameters]),
             self.__reflection_service)
 
+    def get_constructors(self) -> List['JavaConstructor']:
+        from matilda.java.java_constructor import JavaConstructor
+        return [JavaConstructor(constructor_id, self.__reflection_service) for constructor_id in
+                self.__reflection_service.get_class_constructors(self.object_id)]
+
+    def get_constructor(self, *parameters: 'JavaType') -> 'JavaConstructor':
+        from matilda.java.java_constructor import JavaConstructor
+        from matilda.java.java_type import convert_type_to_protobuf
+        return JavaConstructor(
+            self.__reflection_service.get_constructor(self.object_id,
+                                                      [convert_type_to_protobuf(param) for param in parameters]),
+            self.__reflection_service)
+
     def get_fields(self) -> List['JavaField']:
         from matilda.java.java_field import JavaField
         return [JavaField(field_id, self.__reflection_service) for field_id in
@@ -55,4 +69,3 @@ class JavaClass(JavaObject):
 
     def __repr__(self):
         return f"JavaClass({self.name})"
-

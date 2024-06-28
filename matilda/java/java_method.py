@@ -2,14 +2,15 @@ from functools import cached_property
 from typing import List
 
 from matilda.generated.commands.reflection_service import ReflectionService
+from matilda.java.java_executable import JavaExecutable
 from matilda.java.java_object import JavaObject
 from matilda.java.java_type import JavaType
 from matilda.java.java_value import JavaValue, convert_value_to_protobuf, get_value_from_protobuf
 
 
-class JavaMethod(JavaObject):
+class JavaMethod(JavaExecutable):
     def __init__(self, method_id: int, reflection_service: ReflectionService):
-        super().__init__(reflection_service, method_id)
+        super().__init__(method_id, reflection_service)
         self.__reflection_service = reflection_service
 
     def __str__(self):
@@ -18,16 +19,6 @@ class JavaMethod(JavaObject):
 
     def __repr__(self):
         return f"JavaMethod({str(self)})"
-
-    @cached_property
-    def name(self) -> str:
-        return self.__reflection_service.get_method_name(self.object_id)
-
-    @cached_property
-    def parameter_types(self) -> List[JavaType]:
-        from matilda.java.java_type import get_type_from_protobuf
-        return [get_type_from_protobuf(self.__reflection_service, protobuf) for protobuf
-                in self.__reflection_service.get_method_parameter_types(self.object_id)]
 
     @cached_property
     def is_static(self) -> bool:

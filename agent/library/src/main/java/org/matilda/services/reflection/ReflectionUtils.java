@@ -4,6 +4,8 @@ import org.matilda.services.reflection.protobuf.JavaType;
 import org.matilda.services.reflection.protobuf.JavaValue;
 
 import javax.inject.Inject;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -23,12 +25,20 @@ public class ReflectionUtils {
         return (Class<?>) mObjectRepository.get(classId);
     }
 
+    Executable getExecutable(long id) {
+        return (Executable) mObjectRepository.get(id);
+    }
+
     Method getMethod(long methodId) {
         return (Method) mObjectRepository.get(methodId);
     }
 
-    Field getField(long methodId) {
-        return (Field) mObjectRepository.get(methodId);
+    Constructor<?> getConstructor(long constructorId) {
+        return (Constructor<?>) mObjectRepository.get(constructorId);
+    }
+
+    Field getField(long fieldId) {
+        return (Field) mObjectRepository.get(fieldId);
     }
 
     Object getObject(long objectId) {
