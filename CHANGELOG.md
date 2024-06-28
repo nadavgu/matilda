@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 
+## [0.2.1] - 2024-06-28
+
+### Fixed
+
+- Fix maddie dependency link in setup.py
+
+
 ## [0.2.0] - 2024-06-28
 
 ### Added
@@ -42,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - python API to access java classes, methods, and fields using reflection
 - command generator annotation processor that allows to easily create commands between python side & java side
 
-[unreleased]: https://github.com/nadavgu/matilda/compare/0.2.0...dev
+[unreleased]: https://github.com/nadavgu/matilda/compare/0.2.1...dev
+[0.2.1]: https://github.com/nadavgu/matilda/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/nadavgu/matilda/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/nadavgu/matilda/releases/tag/0.1.0
