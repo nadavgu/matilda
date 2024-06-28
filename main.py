@@ -20,7 +20,11 @@ if __name__ == '__main__':
             else:
                 print(f"What is this: {method.name}({args})")
 
-        proxy = (matilda_process.java.new_proxy_instance([runnable_class], handler))
+        proxy = matilda_process.java.new_proxy_instance([runnable_class], handler)
+        print(proxy)
+        print(proxy.get_class())
+        print(proxy.get_class().superclass)
+        print(proxy.get_class().interfaces)
         thread = thread_class.get_constructor(runnable_class).new_instance(proxy)
         print(f"Created thread! new thread id: {thread_getid_method.invoke(thread)}")
         thread_class.get_method("start").invoke(thread)

@@ -108,3 +108,50 @@ with Matilda().run_in_java_process() as matilda_process:
     integer_class = matilda_process.java.find_class("java.lang.Integer")
     print(integer_class.get_field("value").get(integer_object))
 ```
+
+
+### Using constructors
+
+Likewise, you can also use java constructors.
+`JavaClass`'s `get_constructor` function allows you to get a `JavaConstructor` corresponding to a constructor of that
+class. The function receives the types of the parameters of the constructor.
+You can also use `JavaClass`'s `get_constructors` to get all the class' constructors.
+
+Then, one can invoke the constructor using `new_instance`, which receives the constructor's arguments
+and returns a new `JavaObject`
+
+``` python 
+from matilda.java.java_primitive_type import JavaPrimitiveType
+from matilda.matilda import Matilda
+
+with Matilda().run_in_java_process() as matilda_process:
+    integer_class = matilda_process.java.find_class("java.lang.Integer")
+    integer_object = integer_class.get_constructor(JavaPrimitiveType.INT).new_instance(12)
+    print(integer_object.get_class())
+```
+
+### Creating Proxy objects
+
+Use the `new_proxy_instance` function to create a new dynamic java object that implements a set of java interfaces,
+with a custom implementation given by a callback you pass. (Similar to the `java.lang.reflect.Proxy` class in java)
+
+``` python 
+from matilda.java.java_primitive_type import JavaPrimitiveType
+from matilda.matilda import Matilda
+
+with Matilda().run_in_java_process() as matilda_process:
+    runnable_class = matilda_process.java.find_class("java.lang.Runnable")
+    
+    def handler(method: JavaMethod, args: List[JavaValue]):
+        if method.name == 'run':
+            print("Running from runnable!")
+
+    proxy = matilda_process.java.new_proxy_instance([runnable_class], handler)
+    print(proxy)
+    print(proxy.get_class())
+    print(proxy.get_class().superclass)
+    print(proxy.get_class().interfaces)
+```
+
+The callback you pass to `new_proxy_instance` will be called on every method invocation on the new object, and it
+receives as arguments the `JavaMethod` corresponding to the called method, and the list of arguments to the method.

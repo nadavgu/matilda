@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Callback API from java to python in matilda
 - API to create a java proxy object from a list of interfaces and a callback
+- API to access java constructors
 
 ### Fixed
 
