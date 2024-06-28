@@ -43,5 +43,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - command generator annotation processor that allows to easily create commands between python side & java side
 
 [unreleased]: https://github.com/nadavgu/matilda/compare/0.2.0...dev
-[0.2.0]: https://github.com/nadavgu/matilda/releases/tag/0.1.0...0.2.0
+[0.2.0]: https://github.com/nadavgu/matilda/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/nadavgu/matilda/releases/tag/0.1.0
