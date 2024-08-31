@@ -1,10 +1,11 @@
 plugins {
     java
     id("com.google.protobuf") version "0.9.4"
+    `maven-publish`
 }
 
 group = "org.matilda"
-version = "unspecified"
+version = providers.gradleProperty("VERSION").get()
 
 repositories {
     mavenCentral()
@@ -53,5 +54,17 @@ protobuf {
                 }
             }
         }
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+        }
+    }
+
+    repositories {
+        mavenLocal()
     }
 }
