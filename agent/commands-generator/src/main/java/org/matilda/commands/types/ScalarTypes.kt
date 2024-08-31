@@ -1,6 +1,7 @@
 package org.matilda.commands.types
 
 import com.google.protobuf.*
+import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import org.matilda.commands.python.PrimitiveTypeName
@@ -32,6 +33,9 @@ val SCALAR_TYPE_MAP = mapOf(
         PythonTypeName.STR),
     ClassName.get(ByteString::class.java) to ScalarTypeInfo(BytesValue::class.java,
         ByteStringConverter::class.java,
+        PythonTypeName.BYTES),
+    ArrayTypeName.of(TypeName.BYTE) to ScalarTypeInfo(BytesValue::class.java,
+        ByteArrayConverter::class.java,
         PythonTypeName.BYTES),
 )
 
