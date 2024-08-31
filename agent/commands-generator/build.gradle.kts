@@ -4,10 +4,11 @@ plugins {
     id("java")
     kotlin("jvm") version "1.9.0"
     kotlin("kapt") version "1.9.0"
+    `maven-publish`
 }
 
 group = "org.matilda"
-version = "unspecified"
+version = providers.gradleProperty("VERSION").get()
 
 repositories {
     mavenCentral()
@@ -36,4 +37,16 @@ compileKotlin.kotlinOptions {
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+        }
+    }
+
+    repositories {
+        mavenLocal()
+    }
 }
