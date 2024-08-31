@@ -7,7 +7,7 @@ from matilda.commands.command_message_handler import CommandMessageHandler
 from matilda.messages.handler.message_handler import MessageHandler
 from matilda.messages.handler.message_handler_registration import MessageHandlerRegistration
 from matilda.messages.message import Message
-from matilda.generated.proto.message_pb2 import MessageType
+from matilda.protos.message_pb2 import MessageType
 
 
 class MessageHandlerRegistry(Dependency):

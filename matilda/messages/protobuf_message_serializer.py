@@ -1,7 +1,7 @@
 from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 
-from matilda.generated.proto.message_pb2 import ProtobufMessage
+from matilda.protos.message_pb2 import ProtobufMessage
 from matilda.messages.message import Message
 from matilda.messages.message_serializer import MessageSerializer
 

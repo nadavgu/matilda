@@ -16,10 +16,7 @@ import javax.tools.Diagnostic
 @SupportedOptions(
     PythonProperties.PYTHON_ROOT_DIR_OPTION,
     PythonProperties.PYTHON_GENERATED_PACKAGE_OPTION,
-    PythonProperties.GENERATED_PROTO_SUBPACKAGE_OPTION,
-    ProtobufLocations.PROJECT_PROTOBUF_DIR_OPTION,
-    ProtobufLocations.API_PROTOBUF_DIR_OPTION,
-    ProtobufLocations.GOOGLE_PROTOBUF_DIR_OPTION,
+    ProtobufLocations.PROTOBUF_DIRS_OPTION,
 )
 class CommandsGeneratingAnnotationProcessor : AbstractProcessor() {
     private var mProcessingEnvironment: ProcessingEnvironment? = null

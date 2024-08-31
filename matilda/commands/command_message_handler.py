@@ -6,9 +6,9 @@ from maddie.dependency_container import DependencyContainer
 from matilda.commands.command_repository import CommandRepository
 from matilda.messages.message import Message
 from matilda.messages.message_sender import MessageSender
-from matilda.generated.proto.command_pb2 import CommandRequest
-from matilda.generated.proto.command_pb2 import CommandResponse
-from matilda.generated.proto.message_pb2 import MessageType
+from matilda.protos.command_pb2 import CommandRequest
+from matilda.protos.command_pb2 import CommandResponse
+from matilda.protos.message_pb2 import MessageType
 
 
 class CommandMessageHandler(Dependency):

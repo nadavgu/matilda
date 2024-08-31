@@ -13,7 +13,7 @@ class TypeUtilities @Inject constructor() {
     lateinit var mElements: Elements
 
     private fun toTypeMirror(type: Class<*>): TypeMirror =
-        mTypes.getDeclaredType(mElements.getTypeElement(type.canonicalName))
+        mTypes.getDeclaredType(mElements.getTypeElement(type.canonicalName) ?: throw RuntimeException(type.canonicalName))
 
     fun isSubtype(type: TypeMirror, parent: Class<*>) = mTypes.isSubtype(type, toTypeMirror(parent))
 

@@ -2,7 +2,7 @@ from typing import Union, Optional
 
 from matilda.generated.commands.reflection_service import ReflectionService
 from matilda.java.java_object import JavaObject
-from matilda.generated.proto import reflection_pb2
+from matilda.protos import reflection_pb2
 
 JavaPrimitive = Union[int, float, bool]
 JavaValue = Union[JavaObject, JavaPrimitive]

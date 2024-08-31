@@ -5,7 +5,7 @@ from matilda.generated.commands.reflection_service import ReflectionService
 from matilda.java.java_method import JavaMethod
 from matilda.java.java_value import get_value_from_protobuf, convert_value_to_protobuf
 from matilda.java.proxy_handler import ProxyHandler
-from matilda.generated.proto.reflection_pb2 import JavaValue
+from matilda.protos.reflection_pb2 import JavaValue
 
 
 class ProxyHandlerServiceImpl(ProxyHandlerService):

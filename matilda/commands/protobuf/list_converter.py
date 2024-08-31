@@ -3,7 +3,7 @@ from typing import TypeVar, List
 from google.protobuf.any_pb2 import Any
 
 from matilda.commands.protobuf.protobuf_converter import ProtobufConverter
-from matilda.generated.proto.some_pb2 import Some
+from matilda.protos.some_pb2 import Some
 
 T = TypeVar('T')
 
