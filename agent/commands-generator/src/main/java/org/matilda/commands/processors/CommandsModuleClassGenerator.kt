@@ -24,13 +24,13 @@ class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServ
     lateinit var mCommandIdGenerator: CommandIdGenerator
 
     override fun process(instance: ProjectServices) {
-        JavaFile.builder(NameGenerator.COMMANDS_GENERATED_PACKAGE.packageName, createClassSpec(instance))
+        JavaFile.builder(mNameGenerator.commandsGeneratedPackage.packageName, createClassSpec(instance))
             .build()
             .writeTo(mFiler)
     }
 
     private fun createClassSpec(services: ProjectServices): TypeSpec {
-        val builder = TypeSpec.classBuilder(NameGenerator.COMMANDS_MODULE_CLASS_NAME)
+        val builder = TypeSpec.classBuilder(mNameGenerator.commandsModuleClassName)
             .addAnnotation(createModuleAnnotation())
             .addModifiers(Modifier.PUBLIC)
         services.forEachStaticCommand { command -> builder.addField(createCommandField(command)) }
@@ -42,7 +42,7 @@ class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServ
 
     private fun createModuleAnnotation() =
         AnnotationSpec.builder(Module::class.java)
-            .addMember("includes", "\$T.class", NameGenerator.SERVICES_MODULE_CLASS_NAME)
+            .addMember("includes", "\$T.class", mNameGenerator.servicesModuleClassName)
             .build()
 
     private fun createCommandField(command: CommandInfo) =
@@ -74,7 +74,7 @@ class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServ
         MethodSpec.methodBuilder("commandRegistry")
             .addAnnotation(Provides::class.java)
             .addAnnotation(Singleton::class.java)
-            .addParameter(ParameterSpec.builder(NameGenerator.COMMANDS_MODULE_CLASS_NAME,
+            .addParameter(ParameterSpec.builder(mNameGenerator.commandsModuleClassName,
                 COMMANDS_MODULE_PARAMETER_NAME).build())
             .addStatement("\$T \$L = new \$T()", CommandRegistry::class.java, COMMAND_REGISTRY_VARIABLE_NAME,
                 CommandRegistry::class.java)

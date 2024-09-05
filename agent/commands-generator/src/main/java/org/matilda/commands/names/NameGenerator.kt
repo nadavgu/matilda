@@ -4,6 +4,7 @@ import com.squareup.javapoet.ClassName
 import org.apache.commons.lang3.StringUtils
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ServiceInfo
+import org.matilda.commands.java.JavaProperties
 import org.matilda.commands.python.PythonClassName
 import org.matilda.commands.python.PythonProperties
 import org.matilda.commands.utils.Package
@@ -15,6 +16,36 @@ import javax.inject.Inject
 class NameGenerator @Inject internal constructor() {
     @Inject
     lateinit var mPythonProperties: PythonProperties
+
+    @Inject
+    lateinit var mJavaProperties: JavaProperties
+
+    private val javaMainPackage
+        get() = mJavaProperties.javaMainPackage
+
+    private val javaMainGeneratedPackage
+        get() = javaMainPackage.subpackage("generated")
+
+    val commandsGeneratedPackage
+        get() = javaMainGeneratedPackage.subpackage("commands")
+
+    val rawCommandClassesPackage
+        get() = commandsGeneratedPackage.subpackage("raw")
+    val dependenciesClassesPackage
+        get() = commandsGeneratedPackage.subpackage("dependencies")
+    val dynamicServiceConvertersClassesPackage
+        get() = commandsGeneratedPackage.subpackage("converters")
+    val commandRegistryFactoriesPackage
+        get() = commandsGeneratedPackage.subpackage("registryFactories")
+    val javaServiceProxiesPackage
+        get() = commandsGeneratedPackage.subpackage("proxies")
+
+    val commandsModuleClassName: ClassName
+        get() = ClassName.get(commandsGeneratedPackage.packageName, "CommandRegistryModule")
+
+    val servicesModuleClassName: ClassName
+        get() = ClassName.get(commandsGeneratedPackage.packageName, "ServicesModule")
+
     val pythonGeneratedCommandsPackage: Package
         get() = mPythonProperties.pythonGeneratedPackage.subpackage("commands")
 
@@ -36,10 +67,10 @@ class NameGenerator @Inject internal constructor() {
         private val servicePackage: Package
             get() = fullNamePackage.withoutLastPart()
         private val serviceRelativePackage: Package
-            get() = servicePackage.removeCommonPrefixFrom(ORIGINAL_PACKAGE)
+            get() = servicePackage.removeCommonPrefixFrom(javaMainPackage)
         val commandRegistryFactoryClassName: ClassName
             get() = ClassName.get(
-                joinPackages(COMMAND_REGISTRY_FACTORIES_PACKAGE, serviceRelativePackage).packageName,
+                joinPackages(commandRegistryFactoriesPackage, serviceRelativePackage).packageName,
                 serviceClassName + "CommandRegistryFactory"
             )
         val commandRegistryFactoryPythonClassName: PythonClassName
@@ -49,7 +80,7 @@ class NameGenerator @Inject internal constructor() {
             )
         val javaServiceProxyClassName: ClassName
             get() = ClassName.get(
-                joinPackages(JAVA_SERVICE_PROXIES_PACKAGE, serviceRelativePackage).packageName,
+                joinPackages(javaServiceProxiesPackage, serviceRelativePackage).packageName,
                 serviceClassName + "Proxy"
             )
         val serviceProxyClassName: PythonClassName
@@ -59,7 +90,7 @@ class NameGenerator @Inject internal constructor() {
             )
         val javaServiceProxyFactoryClassName: ClassName
             get() = ClassName.get(
-                joinPackages(JAVA_SERVICE_PROXIES_PACKAGE, serviceRelativePackage).packageName,
+                joinPackages(javaServiceProxiesPackage, serviceRelativePackage).packageName,
                 serviceClassName + "ProxyFactory"
             )
         val pythonServiceProxyFactoryClassName: PythonClassName
@@ -69,7 +100,7 @@ class NameGenerator @Inject internal constructor() {
             )
         val dependenciesClassName: ClassName
             get() = ClassName.get(
-                joinPackages(DEPENDENCIES_CLASSES_PACKAGE, serviceRelativePackage).packageName,
+                joinPackages(dependenciesClassesPackage, serviceRelativePackage).packageName,
                 serviceClassName + "Dependencies"
             )
 
@@ -81,7 +112,7 @@ class NameGenerator @Inject internal constructor() {
 
         val dynamicServiceConverterClassName: ClassName
             get() = ClassName.get(
-                joinPackages(DYNAMIC_SERVICE_CONVERTERS_CLASSES_PACKAGE, serviceRelativePackage).packageName,
+                joinPackages(dynamicServiceConvertersClassesPackage, serviceRelativePackage).packageName,
                 serviceClassName + "Converter"
             )
 
@@ -94,7 +125,7 @@ class NameGenerator @Inject internal constructor() {
         inner class CommandNameGenerator(private val mCommandInfo: CommandInfo) {
             val rawCommandClassName: ClassName
                 get() = ClassName.get(
-                    joinPackages(RAW_COMMAND_CLASSES_PACKAGE, serviceRelativePackage).packageName,
+                    joinPackages(rawCommandClassesPackage, serviceRelativePackage).packageName,
                     serviceClassName + StringUtils.capitalize(mCommandInfo.name) + "Command"
                 )
             val rawCommandPythonClassName: PythonClassName
@@ -118,22 +149,6 @@ class NameGenerator @Inject internal constructor() {
     fun forCommand(commandInfo: CommandInfo) = forService(commandInfo.service).CommandNameGenerator(commandInfo)
 
     companion object {
-        private val MAIN_GENERATED_PACKAGE = fromString("org.matilda.generated")
-        val COMMANDS_GENERATED_PACKAGE = MAIN_GENERATED_PACKAGE.subpackage("commands")
-        val RAW_COMMAND_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("raw")
-        val DEPENDENCIES_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("dependencies")
-        val DYNAMIC_SERVICE_CONVERTERS_CLASSES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("converters")
-        val COMMAND_REGISTRY_FACTORIES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("registryFactories")
-        val JAVA_SERVICE_PROXIES_PACKAGE = COMMANDS_GENERATED_PACKAGE.subpackage("proxies")
-        val COMMANDS_MODULE_CLASS_NAME: ClassName = ClassName.get(
-            COMMANDS_GENERATED_PACKAGE.packageName,
-            "CommandRegistryModule"
-        )
-        val SERVICES_MODULE_CLASS_NAME: ClassName = ClassName.get(
-            COMMANDS_GENERATED_PACKAGE.packageName,
-            "ServicesModule"
-        )
-        val ORIGINAL_PACKAGE = Package("org", "matilda", "commands")
         const val SERVICES_CONTAINER_CLASS_NAME = "Services"
     }
 }

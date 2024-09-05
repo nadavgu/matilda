@@ -23,6 +23,7 @@ tasks.compileJava {
     options.compilerArgs.add("-ApythonGeneratedPackage=$pythonGeneratedPackage")
     options.compilerArgs.add("-AprotobufDirs=${File(buildDir, "extracted-include-protos/main/").absolutePath}" +
             ":${File(projectDir, "src/main/proto/").absolutePath}")
+    options.compilerArgs.add("-AjavaMainPackage=org.matilda")
 }
 
 dependencies {

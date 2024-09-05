@@ -4,7 +4,7 @@ import dagger.Component
 import org.matilda.commands.CommandsGenerator
 
 @Component(modules = [AnnotationProcessorModule::class, ProcessorsModule::class,
-    PythonModule::class, ProtobufModule::class])
+    PythonModule::class, ProtobufModule::class, JavaModule::class])
 interface CommandsGeneratorComponent {
     fun commandsGenerator(): CommandsGenerator
 }

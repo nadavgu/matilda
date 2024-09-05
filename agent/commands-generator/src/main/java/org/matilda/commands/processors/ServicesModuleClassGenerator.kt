@@ -26,13 +26,13 @@ class ServicesModuleClassGenerator @Inject constructor() : Processor<ProjectServ
     lateinit var mCommandIdGenerator: CommandIdGenerator
 
     override fun process(instance: ProjectServices) {
-        JavaFile.builder(NameGenerator.COMMANDS_GENERATED_PACKAGE.packageName, createClassSpec(instance))
+        JavaFile.builder(mNameGenerator.commandsGeneratedPackage.packageName, createClassSpec(instance))
             .build()
             .writeTo(mFiler)
     }
 
     private fun createClassSpec(services: ProjectServices): TypeSpec {
-        val builder = TypeSpec.classBuilder(NameGenerator.SERVICES_MODULE_CLASS_NAME)
+        val builder = TypeSpec.classBuilder(mNameGenerator.servicesModuleClassName)
             .addAnnotation(Module::class.java)
             .addModifiers(Modifier.PUBLIC)
         services.forEachStaticService { service ->

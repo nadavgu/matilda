@@ -3,6 +3,7 @@ package org.matilda.commands
 import org.matilda.commands.di.AnnotationProcessorModule
 import org.matilda.commands.di.DaggerCommandsGeneratorComponent
 import org.matilda.commands.exceptions.AnnotationProcessingException
+import org.matilda.commands.java.JavaProperties
 import org.matilda.commands.protobuf.ProtobufLocations
 import org.matilda.commands.python.PythonProperties
 import javax.annotation.processing.*
@@ -17,6 +18,7 @@ import javax.tools.Diagnostic
     PythonProperties.PYTHON_ROOT_DIR_OPTION,
     PythonProperties.PYTHON_GENERATED_PACKAGE_OPTION,
     ProtobufLocations.PROTOBUF_DIRS_OPTION,
+    JavaProperties.JAVA_MAIN_PACKAGE_OPTION,
 )
 class CommandsGeneratingAnnotationProcessor : AbstractProcessor() {
     private var mProcessingEnvironment: ProcessingEnvironment? = null
