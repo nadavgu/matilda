@@ -23,4 +23,7 @@ public abstract class CommandsModule {
 
     @Binds
     abstract CommandRunner bindCommandRunner(CommunicationCommandRunner commandRunner);
+
+    @Binds
+    abstract CommandRegistryManager bindCommandRegistryManager(CommandRepository commandRepository);
 }

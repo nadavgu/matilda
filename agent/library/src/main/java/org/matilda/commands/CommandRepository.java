@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Singleton
-public class CommandRepository {
+public class CommandRepository implements CommandRegistryManager {
     private static final int DEFAULT_PROVIDER_ID = 0;
     private final Map<Integer, CommandRegistry> mCommandsRegistries;
 
@@ -18,6 +18,7 @@ public class CommandRepository {
         mCommandsRegistries = new HashMap<>();
     }
 
+    @Override
     public int addCommandRegistry(CommandRegistry commandRegistry) {
         int id = mCommandRegistryIdGenerator.generate();
         mCommandsRegistries.put(id, commandRegistry);

@@ -21,6 +21,7 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     api("com.google.protobuf:protobuf-java:3.23.0")
+    annotationProcessor("com.google.dagger:dagger-compiler:2.47")
 }
 
 tasks.test {

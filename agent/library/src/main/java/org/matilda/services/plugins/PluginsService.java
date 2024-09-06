@@ -1,9 +1,6 @@
 package org.matilda.services.plugins;
 
-import org.matilda.commands.CommandRegistry;
-import org.matilda.commands.CommandRepository;
-import org.matilda.commands.MatildaCommand;
-import org.matilda.commands.MatildaService;
+import org.matilda.commands.*;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -19,6 +16,9 @@ public class PluginsService {
     CommandRepository mCommandRepository;
 
     @Inject
+    PluginDependencies mPluginDependencies;
+
+    @Inject
     PluginsService() {}
 
     @MatildaCommand
@@ -26,8 +26,10 @@ public class PluginsService {
             InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         ClassLoader classLoader = mJavaLoader.load(jarBytes);
         Class<?> entryPointClass = Class.forName(className, true, classLoader);
-        Method commandRegistryMethod = entryPointClass.getDeclaredMethod("createCommandRegistry");
-        CommandRegistry commandRegistry = (CommandRegistry) commandRegistryMethod.invoke(null);
+        Method commandRegistryMethod = entryPointClass.getDeclaredMethod("createCommandRegistry",
+                PluginDependenciesModule.class);
+        CommandRegistry commandRegistry =
+                (CommandRegistry) commandRegistryMethod.invoke(null, new PluginDependenciesModule(mPluginDependencies));
         return mCommandRepository.addCommandRegistry(commandRegistry);
     }
 }

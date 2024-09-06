@@ -2,7 +2,7 @@ package org.matilda.commands.processors
 
 import com.squareup.javapoet.*
 import org.apache.commons.lang3.StringUtils
-import org.matilda.commands.CommandRepository
+import org.matilda.commands.CommandRegistryManager
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.types.DynamicServiceConverter
@@ -35,13 +35,13 @@ class JavaDynamicServiceConverterClassGenerator @Inject constructor() : Processo
     private fun createInjectConstructor(service: ServiceInfo) =
         MethodSpec.constructorBuilder()
             .addAnnotation(Inject::class.java)
-            .addParameter(ParameterSpec.builder(CommandRepository::class.java,
-                COMMAND_REPOSITORY_VARIABLE_NAME).build())
+            .addParameter(ParameterSpec.builder(CommandRegistryManager::class.java,
+                COMMAND_REGISTRY_MANAGER_VARIABLE_NAME).build())
             .addParameter(ParameterSpec.builder(service.commandRegistryFactoryTypeName,
                 service.commandRegistryFactoryParameterName).build())
             .addParameter(ParameterSpec.builder(service.serviceProxyFactoryTypeName,
                 service.serviceProxyFactoryParameterName).build())
-            .addStatement("super(\$L, \$L, \$L)", COMMAND_REPOSITORY_VARIABLE_NAME,
+            .addStatement("super(\$L, \$L, \$L)", COMMAND_REGISTRY_MANAGER_VARIABLE_NAME,
                 service.commandRegistryFactoryParameterName, service.serviceProxyFactoryParameterName)
             .build()
 
@@ -58,6 +58,6 @@ class JavaDynamicServiceConverterClassGenerator @Inject constructor() : Processo
         get() = mNameGenerator.forService(this).javaServiceProxyFactoryClassName
 
     companion object {
-        private const val COMMAND_REPOSITORY_VARIABLE_NAME = "commandRepository"
+        private const val COMMAND_REGISTRY_MANAGER_VARIABLE_NAME = "commandRegistryManager"
     }
 }
