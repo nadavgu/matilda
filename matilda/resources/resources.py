@@ -15,6 +15,6 @@ def open_resource(name: str) -> IO:
     return open(get_resource_path(name), "rb")
 
 
-def get_resource(name, str) -> bytes:
+def get_resource(name: str) -> bytes:
     with open_resource(name) as f:
         return f.read()
