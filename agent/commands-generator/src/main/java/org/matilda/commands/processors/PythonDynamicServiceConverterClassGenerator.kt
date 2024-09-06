@@ -1,6 +1,5 @@
 package org.matilda.commands.processors
 
-import org.apache.commons.lang3.StringUtils
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.python.*
@@ -11,7 +10,6 @@ import org.matilda.commands.python.writer.PythonFileWriter
 import org.matilda.commands.python.writer.PythonFunctionSpec.Companion.constructorBuilder
 import org.matilda.commands.python.writer.PythonFunctionSpec.Companion.functionBuilder
 import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.DYNAMIC_CONVERTER_CLASS
-import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.PYTHON_DEPENDENCIES_FIELD_NAME
 import org.matilda.commands.utils.toSnakeCase
 import javax.inject.Inject
 
@@ -38,7 +36,7 @@ class PythonDynamicServiceConverterClassGenerator @Inject constructor() : Proces
         addRequiredFromImports(superclassType(service))
         addFromImport(DEPENDENCY_CLASS)
         addFromImport(DEPENDENCY_CONTAINER_CLASS)
-        addFromImport(COMMAND_REPOSITORY_CLASS)
+        addFromImport(COMMAND_REGISTRY_MANAGER_CLASS)
     }
 
     private fun PythonFile.addClass(service: ServiceInfo) = apply {
@@ -55,13 +53,13 @@ class PythonDynamicServiceConverterClassGenerator @Inject constructor() : Proces
 
     private fun PythonClass.addConstructor(service: ServiceInfo) = apply {
         addInstanceMethod(constructorBuilder()
-            .addParameter(COMMAND_REPOSITORY_PARAMETER_NAME, COMMAND_REPOSITORY_CLASS.name)
+            .addParameter(COMMAND_REGISTRY_MANAGER_PARAMETER_NAME, COMMAND_REGISTRY_MANAGER_CLASS.name)
             .addParameter(service.commandRegistryFactoryParameterName, service.commandRegistryFactoryTypeName.name)
             .addParameter(service.serviceProxyFactoryParameterName, service.serviceProxyFactoryTypeName.name)
             .build())
             .addStatement("super(%s, self).__init__(%s, %s, %s)",
                 mNameGenerator.forService(service).dynamicServiceConverterPythonClassName.name,
-                COMMAND_REPOSITORY_PARAMETER_NAME, service.commandRegistryFactoryParameterName,
+                COMMAND_REGISTRY_MANAGER_PARAMETER_NAME, service.commandRegistryFactoryParameterName,
                 service.serviceProxyFactoryParameterName)
     }
 
@@ -72,7 +70,7 @@ class PythonDynamicServiceConverterClassGenerator @Inject constructor() : Proces
             .returnTypeHint("'${className}'")
             .build())
             .addStatement("return %s(%s.get(%s), %s.get(%s), %s.get(%s))", className,
-                DEPENDENCY_CONTAINER_PARAMETER_NAME, COMMAND_REPOSITORY_CLASS.name,
+                DEPENDENCY_CONTAINER_PARAMETER_NAME, COMMAND_REGISTRY_MANAGER_CLASS.name,
                 DEPENDENCY_CONTAINER_PARAMETER_NAME, service.commandRegistryFactoryTypeName.name,
                 DEPENDENCY_CONTAINER_PARAMETER_NAME, service.serviceProxyFactoryTypeName.name)
     }
@@ -93,8 +91,7 @@ class PythonDynamicServiceConverterClassGenerator @Inject constructor() : Proces
     private fun pythonTypeName(service: ServiceInfo) = mNameGenerator.forService(service).serviceFullClassName
 
     companion object {
-        private const val PYTHON_DEPENDENCIES_PARAMETER_NAME = "dependencies"
         private const val DEPENDENCY_CONTAINER_PARAMETER_NAME = "dependency_container"
-        private const val COMMAND_REPOSITORY_PARAMETER_NAME = "command_repository"
+        private const val COMMAND_REGISTRY_MANAGER_PARAMETER_NAME = "command_registry_manager"
     }
 }

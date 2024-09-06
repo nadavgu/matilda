@@ -6,9 +6,10 @@ from maddie.dependency_container import DependencyContainer
 from matilda.commands.command import Command
 from matilda.commands.command_registry import CommandRegistry
 from matilda.commands.command_registry_id_generator import CommandRegistryIdGenerator
+from matilda.commands.command_registry_manager import CommandRegistryManager
 
 
-class CommandRepository(Dependency):
+class CommandRepository(CommandRegistryManager):
     def __init__(self, command_registry_id_generator: CommandRegistryIdGenerator):
         self.__command_registry_id_generator = command_registry_id_generator
         self.__command_registries: Dict[int, CommandRegistry] = {}
