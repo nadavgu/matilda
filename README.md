@@ -155,3 +155,92 @@ with Matilda().run_in_java_process() as matilda_process:
 
 The callback you pass to `new_proxy_instance` will be called on every method invocation on the new object, and it
 receives as arguments the `JavaMethod` corresponding to the called method, and the list of arguments to the method.
+
+
+## Creating plugins for Matilda
+
+Matilda supports dynamic plugins that implement additional information.
+
+To create a plugin for matilda, check out the 
+[matilda plugin template on GitHub](https://github.com/nadavgu/matilda-plugin-template)
+and/or read this documentation.
+
+A plugin for matilda is made out of two parts, a java part and a python part, both need to be implemented
+
+
+### The Java part of a plugin
+
+The java part of a matilda plugin implements commands that are called by the python side. It contains a main entry point
+function called `createCommandRegistry`, which returns a `CommandRegistry` object (that supplies to the python side 
+all the commands it can call). 
+
+Do not create the `CommandRegistry` yourself! matilda's annotation processor will create the command registry
+for you as a `Dagger` dependency
+
+``` java
+public class TemplatePlugin {
+    public static CommandRegistry createCommandRegistry(PluginDependenciesModule pluginDependenciesModule) {
+        return DaggerTemplatePluginComponent.builder()
+                .pluginDependenciesModule(pluginDependenciesModule)
+                .build()
+                .commandRegistry();
+    }
+}
+```
+
+The `createCommandRegistry` also receives a `PluginDependenciesModule` which contains all the dependencies matilda's RPC
+infrastructure needs in your plugin.
+
+For more information on matilda's RPC infrastructure and annotation processing, see 
+[the documentation](docs/matilda_rpc.md)
+
+
+### The Python part of a plugin
+
+The python part of a matilda plugin contains all the code and API that's exported to users
+of the plugin.
+
+First, your plugin's pyproject.toml file should specify the plugin's entry point file
+
+```toml
+[project.entry-points.'matilda.plugins']
+template = 'template.template_plugin'
+```
+
+The key ("template" here) specifies the name of the plugin, and the value specifies the file that implements it.
+
+The file should contain the following:
+1. an attribute called `PLUGIN_ENTRY_POINT_CLASS_NAME` that holds the full name of the java class that implements the
+`createCommandRegistry()` method
+2. a function called `load_plugins()` that receives a `DependencyContainer` object with all the generated services from
+matilda's RPC as dependencies. The function return value will then be exported as the plugin's API: 
+`process.plugins.[plugin_name]`
+3. (optional) an attribute called `jar_path` that contains the path to the jar file of the java part of the plugin.
+If not specified, the jar will be taken from "resources/plugin.jar".
+
+```python
+from maddie.dependency import Dependency
+from maddie.dependency_container import DependencyContainer
+from template.generated.commands.math_service import MathService
+
+PLUGIN_ENTRY_POINT_CLASS_NAME = "org.matilda.template.TemplatePlugin"
+
+
+def load_plugin(dependencies_container: DependencyContainer):
+    return dependencies_container.get(TemplatePlugin)
+
+
+class TemplatePlugin(Dependency):
+    def __init__(self, math_service: MathService):
+        self.__math_service = math_service
+
+    @property
+    def math(self) -> MathService:
+        return self.__math_service
+
+    @staticmethod
+    def create(dependency_container: DependencyContainer) -> 'TemplatePlugin':
+        return TemplatePlugin(dependency_container.get(MathService))
+
+```
+
