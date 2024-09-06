@@ -19,5 +19,16 @@ class PythonFileWriter(private val mBaseFile: File) {
                 throw IOException("Failed to ensure that directory exists: $parentFile")
             }
         }
+
+        generateInitFiles(file)
+    }
+
+    private fun generateInitFiles(file: File) {
+        var parentDir = file.parentFile
+        while (parentDir != mBaseFile) {
+            val initFile = File(parentDir, "__init__.py")
+            initFile.createNewFile()
+            parentDir = parentDir.parentFile
+        }
     }
 }
