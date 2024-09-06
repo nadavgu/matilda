@@ -5,6 +5,7 @@ import org.matilda.commands.utils.Package
 val DEPENDENCY_CLASS = PythonClassName(Package("maddie", "dependency"), "Dependency")
 val DEPENDENCY_CONTAINER_CLASS = PythonClassName(Package("maddie", "dependency_container"), "DependencyContainer")
 val COMMAND_RUNNER_CLASS = PythonClassName(Package("matilda", "commands", "command_runner"), "CommandRunner")
+val COMMAND_ID_HOLDER_CLASS = PythonClassName(Package("matilda", "commands", "command_id_holder"), "CommandIdHolder")
 val COMMAND_REGISTRY_CLASS = PythonClassName(Package("matilda", "commands", "command_registry"), "CommandRegistry")
 val COMMAND_REGISTRY_FACTORY_CLASS = PythonClassName(Package("matilda", "commands", "command_registry_factory"), "CommandRegistryFactory")
 val COMMAND_REPOSITORY_CLASS = PythonClassName(Package("matilda", "commands", "command_repository"), "CommandRepository")

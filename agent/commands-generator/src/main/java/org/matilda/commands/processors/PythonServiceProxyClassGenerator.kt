@@ -71,9 +71,10 @@ class PythonServiceProxyClassGenerator @Inject internal constructor() : Processo
                 .returnTypeHint("'" + getClassName(service) + "'").build()
         )
             .addStatement(
-                "return %s(%s.get(%s), %s.get(%s))", getClassName(service),
+                "return %s(%s.get(%s), %s.get(%s), %s.get(%s).command_id)", getClassName(service),
                 DEPENDENCY_CONTAINER_PARAMETER_NAME, COMMAND_RUNNER_CLASS.name,
                 DEPENDENCY_CONTAINER_PARAMETER_NAME, dependenciesPythonClassName(service).name,
+                DEPENDENCY_CONTAINER_PARAMETER_NAME, COMMAND_ID_HOLDER_CLASS.name,
             )
     }
 
@@ -148,6 +149,7 @@ class PythonServiceProxyClassGenerator @Inject internal constructor() : Processo
     private fun PythonFile.addImports(service: ServiceInfo) = apply {
         addFromImport(DEPENDENCY_CONTAINER_CLASS)
             .addFromImport(COMMAND_RUNNER_CLASS)
+            .addFromImport(COMMAND_ID_HOLDER_CLASS)
             .addFromImport(ANY_CLASS)
             .addFromImport(mNameGenerator.forService(service).serviceFullClassName)
             .addRequiredFromImports(pythonOptionalType(PythonTypeName.INT))
