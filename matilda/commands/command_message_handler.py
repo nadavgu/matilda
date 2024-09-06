@@ -18,8 +18,8 @@ class CommandMessageHandler(Dependency):
 
     def handle(self, message: Message):
         command_request = self.__parse_command_request(message.data)
-        command = self.__command_repository.get_command(command_request.registry_id, command_request.type)
         try:
+            command = self.__command_repository.get_command(command_request.registry_id, command_request.type)
             result = command(command_request.param)
             self.__report_command_success(command_request, result)
         except (Exception,):
