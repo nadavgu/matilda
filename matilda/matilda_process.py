@@ -5,7 +5,6 @@ from maddie.dependency_container import DependencyContainer
 
 from matilda.di.destructors.destruction_manager import DestructionManager
 from matilda.generated.services import Services
-from matilda.java.java_module import JavaModule
 from matilda.plugins.plugins_module import PluginsModule
 
 
@@ -19,10 +18,6 @@ class MatildaProcess(Dependency):
     @cached_property
     def services(self) -> Services:
         return self.__dependency_container.get(Services)
-
-    @cached_property
-    def java(self) -> JavaModule:
-        return self.__dependency_container.get(JavaModule)
 
     @cached_property
     def plugins(self) -> PluginsModule:

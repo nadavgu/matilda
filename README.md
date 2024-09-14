@@ -18,7 +18,7 @@ in a context manager
 from matilda.matilda import Matilda
 
 with Matilda().run_in_java_process() as matilda_process:
-    integer_class = matilda_process.java.find_class("java.lang.Integer")
+    integer_class = matilda_process.plugins.java.find_class("java.lang.Integer")
 ```
 
 ### Running the agent in a custom way
@@ -43,7 +43,7 @@ from matilda.matilda import Matilda
 from matilda.java_process_matilda_runner import JavaProcessMatildaRunner
 
 with Matilda().run(JavaProcessMatildaRunner()) as matilda_process:
-    integer_class = matilda_process.java.find_class("java.lang.Integer")
+    integer_class = matilda_process.plugins.java.find_class("java.lang.Integer")
 ```
 
 
@@ -57,7 +57,7 @@ from matilda.matilda import Matilda
 from matilda.java_process_matilda_runner import JavaProcessMatildaRunner
 
 with Matilda().run(JavaProcessMatildaRunner()) as matilda_process:
-    integer_class = matilda_process.java.find_class("java.lang.Integer")
+    integer_class = matilda_process.plugins.java.find_class("java.lang.Integer")
     print(integer_class.name) # java.lang.Integer
     print(integer_class.superclass) # java.lang.Number
     print(integer_class.interfaces) # [JavaClass(java.lang.Comparable)]
@@ -79,7 +79,7 @@ from matilda.java.java_primitive_type import JavaPrimitiveType
 from matilda.matilda import Matilda
 
 with Matilda().run_in_java_process() as matilda_process:
-    integer_class = matilda_process.java.find_class("java.lang.Integer")
+    integer_class = matilda_process.plugins.java.find_class("java.lang.Integer")
     integer_object = integer_class.get_method("valueOf", JavaPrimitiveType.INT).invoke_static(12)
     print(integer_object.get_class())
 ```
@@ -105,7 +105,7 @@ from matilda.java.java_primitive_type import JavaPrimitiveType
 from matilda.matilda import Matilda
 
 with Matilda().run_in_java_process() as matilda_process:
-    integer_class = matilda_process.java.find_class("java.lang.Integer")
+    integer_class = matilda_process.plugins.java.find_class("java.lang.Integer")
     print(integer_class.get_field("value").get(integer_object))
 ```
 
@@ -125,7 +125,7 @@ from matilda.java.java_primitive_type import JavaPrimitiveType
 from matilda.matilda import Matilda
 
 with Matilda().run_in_java_process() as matilda_process:
-    integer_class = matilda_process.java.find_class("java.lang.Integer")
+    integer_class = matilda_process.plugins.java.find_class("java.lang.Integer")
     integer_object = integer_class.get_constructor(JavaPrimitiveType.INT).new_instance(12)
     print(integer_object.get_class())
 ```
@@ -140,13 +140,13 @@ from matilda.java.java_primitive_type import JavaPrimitiveType
 from matilda.matilda import Matilda
 
 with Matilda().run_in_java_process() as matilda_process:
-    runnable_class = matilda_process.java.find_class("java.lang.Runnable")
+    runnable_class = matilda_process.plugins.java.find_class("java.lang.Runnable")
     
     def handler(method: JavaMethod, args: List[JavaValue]):
         if method.name == 'run':
             print("Running from runnable!")
 
-    proxy = matilda_process.java.new_proxy_instance([runnable_class], handler)
+    proxy = matilda_process.plugins.java.new_proxy_instance([runnable_class], handler)
     print(proxy)
     print(proxy.get_class())
     print(proxy.get_class().superclass)
