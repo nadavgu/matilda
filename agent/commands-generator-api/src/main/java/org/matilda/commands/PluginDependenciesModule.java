@@ -3,6 +3,8 @@ package org.matilda.commands;
 import dagger.Module;
 import dagger.Provides;
 
+import java.util.Random;
+
 @Module
 public class PluginDependenciesModule {
     private final PluginDependencies mPluginDependencies;
@@ -19,5 +21,10 @@ public class PluginDependenciesModule {
     @Provides
     CommandRunner commandRunner() {
         return mPluginDependencies.commandRunner;
+    }
+
+    @Provides
+    Random random() {
+        return mPluginDependencies.random;
     }
 }
