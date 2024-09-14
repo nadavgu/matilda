@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.4.0]
+
+### Added
+
+- Random object now exported to plugins
+
+### Changed
+
+- Java reflection functionality exported to plugin
+
 ## [0.3.0] - 2024-09-07
 
 ### Added
@@ -55,7 +65,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - python API to access java classes, methods, and fields using reflection
 - command generator annotation processor that allows to easily create commands between python side & java side
 
-[unreleased]: https://github.com/nadavgu/matilda/compare/0.3.0...dev
+[unreleased]: https://github.com/nadavgu/matilda/compare/0.4.0...dev
+[0.4.0]: https://github.com/nadavgu/matilda/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/nadavgu/matilda/compare/0.2.1...0.3.0
 [0.2.1]: https://github.com/nadavgu/matilda/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/nadavgu/matilda/compare/0.1.0...0.2.0
