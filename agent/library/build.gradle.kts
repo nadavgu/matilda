@@ -29,8 +29,8 @@ tasks.compileJava {
 
 dependencies {
     implementation("com.google.protobuf:protobuf-java:3.23.0")
-    implementation("com.google.dagger:dagger:2.47")
-    annotationProcessor("com.google.dagger:dagger-compiler:2.47")
+    implementation("com.google.dagger:dagger:2.52")
+    annotationProcessor("com.google.dagger:dagger-compiler:2.52")
     annotationProcessor(project(":commands-generator"))
     implementation(project(":commands-generator-api"))
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
