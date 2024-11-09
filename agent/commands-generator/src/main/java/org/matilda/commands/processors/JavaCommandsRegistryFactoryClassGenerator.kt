@@ -1,5 +1,7 @@
 package org.matilda.commands.processors
 
+import androidx.room.compiler.processing.XFiler
+import androidx.room.compiler.processing.writeTo
 import com.squareup.javapoet.*
 import org.matilda.commands.CommandRegistry
 import org.matilda.commands.CommandRegistryFactory
@@ -7,13 +9,12 @@ import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.JAVA_DEPENDENCIES_FIELD_NAME
-import javax.annotation.processing.Filer
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
 
 class JavaCommandsRegistryFactoryClassGenerator @Inject constructor() : Processor<ServiceInfo> {
     @Inject
-    lateinit var mFiler: Filer
+    lateinit var mFiler: XFiler
 
     @Inject
     lateinit var mNameGenerator: NameGenerator
@@ -32,7 +33,7 @@ class JavaCommandsRegistryFactoryClassGenerator @Inject constructor() : Processo
         TypeSpec.classBuilder(mNameGenerator.forService(service).commandRegistryFactoryClassName)
             .addModifiers(Modifier.PUBLIC)
             .addSuperinterface(ParameterizedTypeName.get(ClassName.get(CommandRegistryFactory::class.java),
-                TypeName.get(service.type)))
+                service.type.typeName))
             .addMethod(createInjectConstructor())
             .addField(createDependenciesField(service))
             .addMethod(createRegisterCommandsMethod(service))
@@ -47,7 +48,7 @@ class JavaCommandsRegistryFactoryClassGenerator @Inject constructor() : Processo
         val commandRegistryParameter =
             ParameterSpec.builder(TypeName.get(CommandRegistry::class.java), COMMAND_REGISTRY_PARAMETER_NAME).build()
         val serviceParameter =
-            ParameterSpec.builder(TypeName.get(service.type), SERVICE_PARAMETER_NAME).build()
+            ParameterSpec.builder(service.type.typeName, SERVICE_PARAMETER_NAME).build()
         val builder = MethodSpec.methodBuilder(REGISTER_COMMANDS_METHOD_NAME)
             .addParameter(commandRegistryParameter)
             .addParameter(serviceParameter)
@@ -68,7 +69,7 @@ class JavaCommandsRegistryFactoryClassGenerator @Inject constructor() : Processo
         MethodSpec.methodBuilder("createCommandRegistry")
             .addAnnotation(Override::class.java)
             .addModifiers(Modifier.PUBLIC)
-            .addParameter(ParameterSpec.builder(TypeName.get(service.type), SERVICE_PARAMETER_NAME).build())
+            .addParameter(ParameterSpec.builder(service.type.typeName, SERVICE_PARAMETER_NAME).build())
             .addStatement("\$T \$L = new \$T()", CommandRegistry::class.java, COMMAND_REGISTRY_VARIABLE_NAME,
                 CommandRegistry::class.java)
             .addStatement("\$L(\$L, \$L)", REGISTER_COMMANDS_METHOD_NAME, COMMAND_REGISTRY_VARIABLE_NAME,

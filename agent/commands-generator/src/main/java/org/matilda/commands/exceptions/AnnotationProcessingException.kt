@@ -1,5 +1,5 @@
 package org.matilda.commands.exceptions
 
-import javax.lang.model.element.Element
+import androidx.room.compiler.processing.XElement
 
-class AnnotationProcessingException(message: String, val element: Element) : RuntimeException(message)
+class AnnotationProcessingException(message: String, val element: XElement) : RuntimeException(message)

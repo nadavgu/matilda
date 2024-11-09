@@ -6,13 +6,14 @@ import org.matilda.commands.CommandRegistryManager
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.types.DynamicServiceConverter
-import javax.annotation.processing.Filer
+import androidx.room.compiler.processing.XFiler
+import androidx.room.compiler.processing.writeTo
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
 
 class JavaDynamicServiceConverterClassGenerator @Inject constructor() : Processor<ServiceInfo> {
     @Inject
-    lateinit var mFiler: Filer
+    lateinit var mFiler: XFiler
 
     @Inject
     lateinit var mNameGenerator: NameGenerator
@@ -28,7 +29,7 @@ class JavaDynamicServiceConverterClassGenerator @Inject constructor() : Processo
         TypeSpec.classBuilder(mNameGenerator.forService(service).dynamicServiceConverterClassName)
             .addModifiers(Modifier.PUBLIC)
             .superclass(ParameterizedTypeName.get(ClassName.get(DynamicServiceConverter::class.java),
-                TypeName.get(service.type)))
+                service.type.typeName))
             .addMethod(createInjectConstructor(service))
             .build()
 

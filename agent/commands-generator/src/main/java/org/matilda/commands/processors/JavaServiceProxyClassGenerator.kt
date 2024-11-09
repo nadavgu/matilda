@@ -1,5 +1,7 @@
 package org.matilda.commands.processors
 
+import androidx.room.compiler.processing.XFiler
+import androidx.room.compiler.processing.writeTo
 import com.google.protobuf.Any
 import com.squareup.javapoet.*
 import org.matilda.commands.CommandRunner
@@ -14,13 +16,12 @@ import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.JAVA_DEP
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.javaConverter
 import java.io.IOException
-import javax.annotation.processing.Filer
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
 
 class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<ServiceInfo> {
     @Inject
-    lateinit var mFiler: Filer
+    lateinit var mFiler: XFiler
 
     @Inject
     lateinit var mNameGenerator: NameGenerator
@@ -41,7 +42,7 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
     private fun createClassSpec(service: ServiceInfo) =
         TypeSpec.classBuilder(mNameGenerator.forService(service).javaServiceProxyClassName)
             .addModifiers(Modifier.PUBLIC)
-            .addSuperinterface(TypeName.get(service.type))
+            .addSuperinterface(service.type.typeName)
             .addField(createCommandRunnerField())
             .addField(createCommandRegistryIdField())
             .addField(createDependenciesField(service))
@@ -85,10 +86,10 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
         MethodSpec.methodBuilder(command.name)
             .addAnnotation(Override::class.java)
             .addModifiers(Modifier.PUBLIC)
-            .returns(TypeName.get(command.returnType))
+            .returns(command.returnType.typeName)
             .apply {
                 command.parameters.forEach { parameter ->
-                    addParameter(ParameterSpec.builder(TypeName.get(parameter.type), parameter.name).build())
+                    addParameter(ParameterSpec.builder(parameter.type.typeName, parameter.name).build())
                 }
             }
             .beginControlFlow("try")

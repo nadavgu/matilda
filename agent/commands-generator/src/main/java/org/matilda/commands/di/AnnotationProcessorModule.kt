@@ -1,22 +1,19 @@
 package org.matilda.commands.di
 
+import androidx.room.compiler.processing.ExperimentalProcessingApi
+import androidx.room.compiler.processing.XFiler
+import androidx.room.compiler.processing.XProcessingEnv
+import androidx.room.compiler.processing.XRoundEnv
 import dagger.Module
 import dagger.Provides
-import javax.annotation.processing.Filer
-import javax.annotation.processing.ProcessingEnvironment
-import javax.annotation.processing.RoundEnvironment
-import javax.lang.model.element.TypeElement
-import javax.lang.model.util.Elements
-import javax.lang.model.util.Types
 
+@ExperimentalProcessingApi
 @Module
 class AnnotationProcessorModule(
-    private val mAnnotations: Set<TypeElement>, private val mRoundEnvironment: RoundEnvironment,
-    private val mProcessingEnvironment: ProcessingEnvironment, private val mWasRun: Boolean
+    private val mProcessingEnvironment: XProcessingEnv,
+    private val mRoundEnvironment: XRoundEnv,
+    private val mWasRun: Boolean
 ) {
-    @Provides
-    fun annotations() = mAnnotations
-
     @Provides
     fun roundEnvironment() = mRoundEnvironment
 
@@ -24,13 +21,7 @@ class AnnotationProcessorModule(
     fun processingEnvironment() = mProcessingEnvironment
 
     @Provides
-    fun filer(): Filer = mProcessingEnvironment.filer
-
-    @Provides
-    fun types(): Types = mProcessingEnvironment.typeUtils
-
-    @Provides
-    fun elements(): Elements = mProcessingEnvironment.elementUtils
+    fun filer(): XFiler = mProcessingEnvironment.filer
 
     @Provides
     fun wasRun() = mWasRun

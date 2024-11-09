@@ -1,19 +1,19 @@
 package org.matilda.commands.types
 
-import javax.lang.model.type.TypeMirror
+import androidx.room.compiler.processing.XType
 
 class CompoundTypeConverter(private val converters: List<TypeConverter>) : TypeConverter {
 
-    override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter) =
+    override fun javaConverter(type: XType, outerConverter: TypeConverter) =
         converters.first { it.isSupported(type, outerConverter) }.javaConverter(type, outerConverter)
 
-    override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter) =
+    override fun pythonConverter(type: XType, outerConverter: TypeConverter) =
         converters.first { it.isSupported(type, outerConverter) }.pythonConverter(type, outerConverter)
 
-    override fun pythonType(type: TypeMirror, outerConverter: TypeConverter) =
+    override fun pythonType(type: XType, outerConverter: TypeConverter) =
         converters.first { it.isSupported(type, outerConverter) }.pythonType(type, outerConverter)
 
-    override fun isSupported(type: TypeMirror, outerConverter: TypeConverter) =
+    override fun isSupported(type: XType, outerConverter: TypeConverter) =
         converters.any { it.isSupported(type, outerConverter) }
 
     override val supportedTypesDescription: String

@@ -1,17 +1,19 @@
 package org.matilda.commands.di
 
+import androidx.room.compiler.processing.ExperimentalProcessingApi
+import androidx.room.compiler.processing.XProcessingEnv
 import dagger.Module
 import dagger.Provides
 import org.matilda.commands.protobuf.*
 import org.matilda.commands.types.*
 import org.matilda.commands.utils.option
 import java.io.File
-import javax.annotation.processing.ProcessingEnvironment
 
+@OptIn(ExperimentalProcessingApi::class)
 @Module
 class ProtobufModule {
     @Provides
-    fun protobufLocations(processingEnvironment: ProcessingEnvironment) =
+    fun protobufLocations(processingEnvironment: XProcessingEnv) =
         ProtobufLocations(processingEnvironment.option(ProtobufLocations.PROTOBUF_DIRS_OPTION)
             .split(":")
             .map { File(it) }
@@ -27,7 +29,6 @@ class ProtobufModule {
     @Provides
     fun typeConverter(messageTypeConverter: MessageTypeConverter,
                       scalarTypeConverter: ScalarTypeConverter,
-                      boxedTypeConverter: BoxedTypeConverter,
                       listTypeConverter: ListTypeConverter,
                       voidTypeConverter: VoidTypeConverter,
                       dynamicServiceTypeConverter: DynamicServiceTypeConverter,
@@ -35,7 +36,6 @@ class ProtobufModule {
         return CompoundTypeConverter(listOf(
             messageTypeConverter,
             scalarTypeConverter,
-            boxedTypeConverter,
             listTypeConverter,
             voidTypeConverter,
             dynamicServiceTypeConverter,

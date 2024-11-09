@@ -6,13 +6,14 @@ import org.matilda.commands.ServiceProxyFactory
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.JAVA_DEPENDENCIES_FIELD_NAME
-import javax.annotation.processing.Filer
+import androidx.room.compiler.processing.XFiler
+import androidx.room.compiler.processing.writeTo
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
 
 class JavaServiceProxyFactoryClassGenerator @Inject constructor() : Processor<ServiceInfo> {
     @Inject
-    lateinit var mFiler: Filer
+    lateinit var mFiler: XFiler
 
     @Inject
     lateinit var mNameGenerator: NameGenerator
@@ -28,7 +29,7 @@ class JavaServiceProxyFactoryClassGenerator @Inject constructor() : Processor<Se
         TypeSpec.classBuilder(mNameGenerator.forService(service).javaServiceProxyFactoryClassName)
             .addModifiers(Modifier.PUBLIC)
             .addSuperinterface(ParameterizedTypeName.get(ClassName.get(ServiceProxyFactory::class.java),
-                TypeName.get(service.type)))
+                service.type.typeName))
             .addMethod(createInjectConstructor())
             .addField(createCommandRunnerField())
             .addField(createDependenciesField(service))
@@ -54,7 +55,7 @@ class JavaServiceProxyFactoryClassGenerator @Inject constructor() : Processor<Se
     private fun createServiceProxyMethod(service: ServiceInfo) =
         MethodSpec.methodBuilder("createServiceProxy")
             .addAnnotation(Override::class.java)
-            .returns(TypeName.get(service.type))
+            .returns(service.type.typeName)
             .addModifiers(Modifier.PUBLIC)
             .addParameter(ParameterSpec.builder(TypeName.INT, COMMAND_REGISTRY_ID_PARAMETER_NAME).build())
             .addStatement("return new \$T(\$L, \$L, \$L)", mNameGenerator.forService(service).javaServiceProxyClassName,

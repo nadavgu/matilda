@@ -1,5 +1,6 @@
 package org.matilda.commands.processors
 
+import androidx.room.compiler.processing.XType
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.NameGenerator
@@ -11,7 +12,6 @@ import org.matilda.commands.types.PythonDependencyInfo
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.pythonConverter
 import javax.inject.Inject
-import javax.lang.model.type.TypeMirror
 
 class PythonServiceDependenciesClassGenerator @Inject constructor() : Processor<ServiceInfo> {
     @Inject
@@ -84,7 +84,7 @@ class PythonServiceDependenciesClassGenerator @Inject constructor() : Processor<
             addAll(collectConverterDependencies(command.returnType))
         }
 
-    private fun collectConverterDependencies(type: TypeMirror) = mTypeConverter.pythonConverter(type).dependencies
+    private fun collectConverterDependencies(type: XType) = mTypeConverter.pythonConverter(type).dependencies
 
     companion object {
         private const val DEPENDENCY_CONTAINER_PARAMETER_NAME = "dependency_container"

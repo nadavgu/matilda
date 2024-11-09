@@ -1,10 +1,10 @@
 package org.matilda.commands.protobuf
 
-import com.squareup.javapoet.ClassName
+import androidx.room.compiler.codegen.XClassName
 
 class CachingTypeLocator(private val mInternalLocator: ProtobufTypeLocator) : ProtobufTypeLocator {
-    private val mCache = mutableMapOf<ClassName, ProtobufType?>()
-    override fun locate(className: ClassName): ProtobufType? {
+    private val mCache = mutableMapOf<XClassName, ProtobufType?>()
+    override fun locate(className: XClassName): ProtobufType? {
         return mCache.getOrPut(className) {
             mInternalLocator.locate(className)
         }

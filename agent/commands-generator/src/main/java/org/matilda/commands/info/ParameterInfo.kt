@@ -1,5 +1,5 @@
 package org.matilda.commands.info
 
-import javax.lang.model.type.TypeMirror
+import androidx.room.compiler.processing.XType
 
-data class ParameterInfo(val name: String, val type: TypeMirror)
+data class ParameterInfo(val name: String, val type: XType)

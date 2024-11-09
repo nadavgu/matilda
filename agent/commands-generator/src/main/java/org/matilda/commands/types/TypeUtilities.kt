@@ -1,22 +1,21 @@
 package org.matilda.commands.types
 
+import androidx.room.compiler.processing.ExperimentalProcessingApi
+import androidx.room.compiler.processing.XProcessingEnv
+import androidx.room.compiler.processing.XType
 import javax.inject.Inject
-import javax.lang.model.type.TypeMirror
-import javax.lang.model.util.Elements
-import javax.lang.model.util.Types
+import kotlin.reflect.KClass
 
+@OptIn(ExperimentalProcessingApi::class)
 class TypeUtilities @Inject constructor() {
     @Inject
-    lateinit var mTypes: Types
+    lateinit var mProcessingEnv: XProcessingEnv
 
-    @Inject
-    lateinit var mElements: Elements
+    private fun toTypeMirror(type: Class<*>): XType =
+        mProcessingEnv.requireType(type.canonicalName)
 
-    private fun toTypeMirror(type: Class<*>): TypeMirror =
-        mTypes.getDeclaredType(mElements.getTypeElement(type.canonicalName) ?: throw RuntimeException(type.canonicalName))
+    fun isSubtype(type: XType, parent: Class<*>) = toTypeMirror(parent).isAssignableFrom(type)
 
-    fun isSubtype(type: TypeMirror, parent: Class<*>) = mTypes.isSubtype(type, toTypeMirror(parent))
-
-    fun isAnnotatedWith(type: TypeMirror, annotation: Class<out Annotation>) =
-        mTypes.asElement(type) != null && mTypes.asElement(type).getAnnotation(annotation) != null
+    fun isAnnotatedWith(type: XType, annotation: KClass<out Annotation>) =
+        type.typeElement?.getAnnotation(annotation) != null
 }

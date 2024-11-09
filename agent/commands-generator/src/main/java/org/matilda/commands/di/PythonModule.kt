@@ -1,5 +1,7 @@
 package org.matilda.commands.di
 
+import androidx.room.compiler.processing.ExperimentalProcessingApi
+import androidx.room.compiler.processing.XProcessingEnv
 import dagger.Module
 import dagger.Provides
 import org.matilda.commands.python.PythonProperties
@@ -7,12 +9,12 @@ import org.matilda.commands.python.writer.PythonFileWriter
 import org.matilda.commands.utils.Package
 import org.matilda.commands.utils.option
 import java.io.File
-import javax.annotation.processing.ProcessingEnvironment
 
+@OptIn(ExperimentalProcessingApi::class)
 @Module
 class PythonModule {
     @Provides
-    fun pythonProperties(processingEnvironment: ProcessingEnvironment): PythonProperties {
+    fun pythonProperties(processingEnvironment: XProcessingEnv): PythonProperties {
         val pythonRootDir = File(processingEnvironment.option(PythonProperties.PYTHON_ROOT_DIR_OPTION))
         if (!pythonRootDir.exists()) {
             throw RuntimeException("Specified python directory doesn't exist: $pythonRootDir")

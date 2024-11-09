@@ -1,6 +1,7 @@
 package org.matilda.commands.processors
 
-import com.squareup.javapoet.ClassName
+import androidx.room.compiler.codegen.asClassName
+import androidx.room.compiler.processing.XType
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.info.ServiceInfo
@@ -9,11 +10,13 @@ import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.protobuf.Some
 import org.matilda.commands.python.*
 import org.matilda.commands.python.writer.*
-import org.matilda.commands.types.*
 import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.PYTHON_DEPENDENCIES_FIELD_NAME
+import org.matilda.commands.types.ProtobufTypeTranslator
+import org.matilda.commands.types.TypeConverter
+import org.matilda.commands.types.pythonConverter
+import org.matilda.commands.types.pythonType
 import org.matilda.commands.utils.toSnakeCase
 import javax.inject.Inject
-import javax.lang.model.type.TypeMirror
 
 class PythonServiceProxyClassGenerator @Inject internal constructor() : Processor<ServiceInfo> {
     @Inject
@@ -109,7 +112,7 @@ class PythonServiceProxyClassGenerator @Inject internal constructor() : Processo
     private fun getParameterAnyName(name: String) = "${name}_any"
     private fun getParameterWrapperName(name: String) = "${name}_wrapper"
 
-    private fun PythonCodeBlock.addReturnStatement(returnType: TypeMirror) {
+    private fun PythonCodeBlock.addReturnStatement(returnType: XType) {
         addStatement("%s = Any()", RETURN_VALUE_VARIABLE_NAME)
         addStatement("%s.ParseFromString(%s)", RETURN_VALUE_VARIABLE_NAME, RAW_RETURN_VALUE_VARIABLE_NAME)
 
@@ -129,17 +132,17 @@ class PythonServiceProxyClassGenerator @Inject internal constructor() : Processo
     private val ParameterInfo.pythonName
         get() = name.toSnakeCase()
 
-    private fun getPythonType(typeMirror: TypeMirror) = mTypeConverter.pythonType(typeMirror).name
+    private fun getPythonType(type: XType) = mTypeConverter.pythonType(type).name
 
     private fun PythonFile.addCommandImports(command: CommandInfo) = apply {
         importPythonType(command.returnType)
         command.parameters.forEach { importPythonType(it.type) }
     }
 
-    private fun PythonFile.importPythonType(typeMirror: TypeMirror) {
-        addRequiredFromImports(mTypeConverter.pythonType(typeMirror))
+    private fun PythonFile.importPythonType(type: XType) {
+        addRequiredFromImports(mTypeConverter.pythonType(type))
 
-        val (_, converterRequiredTypes) = mTypeConverter.pythonConverter(typeMirror)
+        val (_, converterRequiredTypes) = mTypeConverter.pythonConverter(type)
         converterRequiredTypes.forEach {
             addRequiredFromImports(it)
         }
@@ -153,7 +156,7 @@ class PythonServiceProxyClassGenerator @Inject internal constructor() : Processo
             .addFromImport(ANY_CLASS)
             .addFromImport(mNameGenerator.forService(service).serviceFullClassName)
             .addRequiredFromImports(pythonOptionalType(PythonTypeName.INT))
-            .addFromImport(mProtobufTypeTranslator.toPythonType(ClassName.get(Some::class.java)))
+            .addFromImport(mProtobufTypeTranslator.toPythonType(Some::class.asClassName()))
             .addFromImport(dependenciesPythonClassName(service))
     }
 

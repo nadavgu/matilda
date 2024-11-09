@@ -1,5 +1,8 @@
 package org.matilda.commands.processors
 
+import androidx.room.compiler.processing.XFiler
+import androidx.room.compiler.processing.XType
+import androidx.room.compiler.processing.writeTo
 import com.squareup.javapoet.FieldSpec
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.MethodSpec
@@ -10,14 +13,12 @@ import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.types.JavaDependencyInfo
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.javaConverter
-import javax.annotation.processing.Filer
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
-import javax.lang.model.type.TypeMirror
 
 class JavaServiceDependenciesClassGenerator @Inject constructor() : Processor<ServiceInfo> {
     @Inject
-    lateinit var mFiler: Filer
+    lateinit var mFiler: XFiler
 
     @Inject
     lateinit var mNameGenerator: NameGenerator
@@ -57,7 +58,7 @@ class JavaServiceDependenciesClassGenerator @Inject constructor() : Processor<Se
             addAll(collectConverterDependencies(command.returnType))
         }
 
-    private fun collectConverterDependencies(type: TypeMirror) = mTypeConverter.javaConverter(type).dependencies
+    private fun collectConverterDependencies(type: XType) = mTypeConverter.javaConverter(type).dependencies
 
     private fun createInjectConstructor() =
         MethodSpec.constructorBuilder()

@@ -1,7 +1,7 @@
 package org.matilda.commands.protobuf
 
-import com.squareup.javapoet.ClassName
+import androidx.room.compiler.codegen.XClassName
 
 interface ProtobufTypeLocator {
-    fun locate(className: ClassName): ProtobufType?
+    fun locate(className: XClassName): ProtobufType?
 }

@@ -1,5 +1,6 @@
 package org.matilda.commands.collectors
 
+import androidx.room.compiler.processing.*
 import org.matilda.commands.MatildaCommand
 import org.matilda.commands.exceptions.AnnotationProcessingException
 import org.matilda.commands.info.CommandInfo
@@ -8,40 +9,35 @@ import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.isSupported
 import javax.inject.Inject
-import javax.lang.model.element.Element
-import javax.lang.model.element.ExecutableElement
-import javax.lang.model.element.TypeElement
-import javax.lang.model.element.VariableElement
-import javax.lang.model.type.TypeMirror
 
 class CommandsCollector @Inject constructor() {
     @Inject
     lateinit var mTypeConverter: TypeConverter
 
-    fun collect(serviceInfo: ServiceInfo, serviceElement: TypeElement) =
-        serviceElement.enclosedElements
-            .filter { it.getAnnotation(MatildaCommand::class.java) != null }
-            .map { element -> element as ExecutableElement }
+    fun collect(serviceInfo: ServiceInfo, serviceElement: XTypeElement) =
+        serviceElement.getEnclosedElements()
+            .filter { it.getAnnotation(MatildaCommand::class) != null }
+            .map { element -> element as XMethodElement }
             .map { collectCommand(it, serviceInfo) }
 
-    private fun collectCommand(element: ExecutableElement, serviceInfo: ServiceInfo) =
-        CommandInfo(element.simpleName.toString(), serviceInfo, getParameters(element),
+    private fun collectCommand(element: XMethodElement, serviceInfo: ServiceInfo) =
+        CommandInfo(element.name, serviceInfo, getParameters(element),
             getReturnType(element), element.thrownTypes)
 
-    private fun getParameters(element: ExecutableElement) = element.parameters.map {
+    private fun getParameters(element: XExecutableElement) = element.parameters.map {
         getParameter(it)
     }
 
-    private fun getParameter(element: VariableElement) =
-        ParameterInfo(element.simpleName.toString(), element.asType()).also {
+    private fun getParameter(element: XVariableElement) =
+        ParameterInfo(element.name, element.type).also {
             verifyType(it.type, element)
         }
 
-    private fun getReturnType(element: ExecutableElement) = element.returnType.also {
+    private fun getReturnType(element: XMethodElement) = element.returnType.also {
         verifyType(it, element)
     }
 
-    private fun verifyType(type: TypeMirror, element: Element) {
+    private fun verifyType(type: XType, element: XElement) {
         if (!mTypeConverter.isSupported(type)) {
             throw AnnotationProcessingException("Paramaters and return values of services have to be: " +
                     mTypeConverter.supportedTypesDescription, element)

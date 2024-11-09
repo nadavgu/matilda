@@ -1,53 +1,62 @@
 package org.matilda.commands.types
 
+import androidx.room.compiler.codegen.XTypeName
+import androidx.room.compiler.codegen.asClassName
+import androidx.room.compiler.processing.XType
 import com.google.protobuf.*
-import com.squareup.javapoet.ArrayTypeName
-import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.TypeName
 import org.matilda.commands.python.PrimitiveTypeName
 import org.matilda.commands.python.PythonTypeName
-import javax.lang.model.type.TypeMirror
 
 data class ScalarTypeInfo(val protobufWrapperJavaType: Class<*>,
                           val javaConverterType: Class<*>,
                           val pythonType: PrimitiveTypeName)
 
-val SCALAR_TYPE_MAP = mapOf(
-    TypeName.DOUBLE to ScalarTypeInfo(DoubleValue::class.java,
+val PRIMITIVE_TYPE_MAP = mapOf(
+    XTypeName.PRIMITIVE_DOUBLE to ScalarTypeInfo(DoubleValue::class.java,
         DoubleConverter::class.java,
         PythonTypeName.FLOAT),
-    TypeName.FLOAT to ScalarTypeInfo(FloatValue::class.java,
+    XTypeName.PRIMITIVE_FLOAT to ScalarTypeInfo(FloatValue::class.java,
         FloatConverter::class.java,
         PythonTypeName.FLOAT),
-    TypeName.INT to ScalarTypeInfo(Int32Value::class.java,
+    XTypeName.PRIMITIVE_INT to ScalarTypeInfo(Int32Value::class.java,
         IntConverter::class.java,
         PythonTypeName.INT),
-    TypeName.LONG to ScalarTypeInfo(Int64Value::class.java,
+    XTypeName.PRIMITIVE_LONG to ScalarTypeInfo(Int64Value::class.java,
         LongConverter::class.java,
         PythonTypeName.INT),
-    TypeName.BOOLEAN to ScalarTypeInfo(BoolValue::class.java,
+    XTypeName.PRIMITIVE_BOOLEAN to ScalarTypeInfo(BoolValue::class.java,
         BooleanConverter::class.java,
         PythonTypeName.BOOL),
-    ClassName.get(java.lang.String::class.java) to ScalarTypeInfo(StringValue::class.java,
+    String::class.asClassName() to ScalarTypeInfo(StringValue::class.java,
         StringConverter::class.java,
         PythonTypeName.STR),
-    ClassName.get(ByteString::class.java) to ScalarTypeInfo(BytesValue::class.java,
+    ByteString::class.asClassName() to ScalarTypeInfo(BytesValue::class.java,
         ByteStringConverter::class.java,
         PythonTypeName.BYTES),
-    ArrayTypeName.of(TypeName.BYTE) to ScalarTypeInfo(BytesValue::class.java,
+    XTypeName.getArrayName(XTypeName.PRIMITIVE_BYTE) to ScalarTypeInfo(BytesValue::class.java,
         ByteArrayConverter::class.java,
         PythonTypeName.BYTES),
 )
 
-fun TypeMirror.isScalar() = TypeName.get(this) in SCALAR_TYPE_MAP
+val BOXED_TYPE_MAP = mapOf(
+    XTypeName.BOXED_DOUBLE to PRIMITIVE_TYPE_MAP[XTypeName.PRIMITIVE_DOUBLE],
+    XTypeName.BOXED_FLOAT to PRIMITIVE_TYPE_MAP[XTypeName.PRIMITIVE_FLOAT],
+    XTypeName.BOXED_INT to PRIMITIVE_TYPE_MAP[XTypeName.PRIMITIVE_INT],
+    XTypeName.BOXED_LONG to PRIMITIVE_TYPE_MAP[XTypeName.PRIMITIVE_LONG],
+    XTypeName.BOXED_BOOLEAN to PRIMITIVE_TYPE_MAP[XTypeName.PRIMITIVE_BOOLEAN],
+)
 
-val TypeMirror.scalarProtobufWrapperJavaType
-    get() = SCALAR_TYPE_MAP[TypeName.get(this)]!!.protobufWrapperJavaType
+val SCALAR_TYPE_MAP = PRIMITIVE_TYPE_MAP + BOXED_TYPE_MAP
+
+fun XType.isScalar() = asTypeName() in SCALAR_TYPE_MAP
+
+val XType.scalarProtobufWrapperJavaType
+    get() = SCALAR_TYPE_MAP[asTypeName()]!!.protobufWrapperJavaType
 
 
-val TypeMirror.scalarJavaConverterType
-    get() = SCALAR_TYPE_MAP[TypeName.get(this)]!!.javaConverterType
+val XType.scalarJavaConverterType
+    get() = SCALAR_TYPE_MAP[asTypeName()]!!.javaConverterType
 
 
-val TypeMirror.scalarPythonType
-    get() = SCALAR_TYPE_MAP[TypeName.get(this)]!!.pythonType
+val XType.scalarPythonType
+    get() = SCALAR_TYPE_MAP[asTypeName()]!!.pythonType

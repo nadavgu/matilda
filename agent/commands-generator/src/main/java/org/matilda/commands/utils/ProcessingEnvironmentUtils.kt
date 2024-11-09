@@ -1,7 +1,8 @@
 package org.matilda.commands.utils
 
-import java.lang.IllegalArgumentException
-import javax.annotation.processing.ProcessingEnvironment
+import androidx.room.compiler.processing.ExperimentalProcessingApi
+import androidx.room.compiler.processing.XProcessingEnv
 
-fun ProcessingEnvironment.option(option: String) =
+@OptIn(ExperimentalProcessingApi::class)
+fun XProcessingEnv.option(option: String) =
     options[option] ?: throw IllegalArgumentException("Option $option not passed to annotation processor")

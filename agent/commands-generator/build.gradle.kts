@@ -12,6 +12,7 @@ version = providers.gradleProperty("VERSION").get()
 
 repositories {
     mavenCentral()
+    google()
 }
 
 dependencies {
@@ -24,6 +25,7 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("com.google.protobuf:protobuf-java:3.23.0")
+    implementation("androidx.room:room-compiler-processing:2.6.1")
     implementation(kotlin("stdlib-jdk8"))
 }
 

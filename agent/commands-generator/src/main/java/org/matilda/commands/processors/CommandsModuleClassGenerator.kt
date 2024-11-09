@@ -8,14 +8,15 @@ import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ProjectServices
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
-import javax.annotation.processing.Filer
+import androidx.room.compiler.processing.XFiler
+import androidx.room.compiler.processing.writeTo
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.lang.model.element.Modifier
 
 class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServices> {
     @Inject
-    lateinit var mFiler: Filer
+    lateinit var mFiler: XFiler
 
     @Inject
     lateinit var mNameGenerator: NameGenerator

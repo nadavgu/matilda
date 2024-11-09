@@ -1,43 +1,37 @@
 package org.matilda.commands.types
 
-import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.ParameterizedTypeName
-import com.squareup.javapoet.TypeName
+import androidx.room.compiler.codegen.asClassName
+import androidx.room.compiler.processing.XType
 import org.matilda.commands.python.PythonClassName
 import org.matilda.commands.python.pythonListType
 import javax.inject.Inject
-import javax.lang.model.type.DeclaredType
-import javax.lang.model.type.TypeMirror
 
 class ListTypeConverter @Inject constructor() : TypeConverter {
-    override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): JavaTypeConverterInfo {
+    override fun javaConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo {
         val (innerFormat, innerArguments) = outerConverter.javaConverter(type.typeArgument, outerConverter)
         return JavaTypeConverterInfo("new \$T<>($innerFormat)",
             listOf(ListConverter::class.java, *innerArguments.toTypedArray()))
     }
 
-    override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): PythonTypeConverterInfo {
+    override fun pythonConverter(type: XType, outerConverter: TypeConverter): PythonTypeConverterInfo {
         val (innerConverter, innerRequiredTypes) = outerConverter.pythonConverter(type.typeArgument, outerConverter)
         return PythonTypeConverterInfo("${CONVERTER_CLASS.name}($innerConverter)",
             listOf(CONVERTER_CLASS) + innerRequiredTypes)
     }
 
-    override fun pythonType(type: TypeMirror, outerConverter: TypeConverter) =
+    override fun pythonType(type: XType, outerConverter: TypeConverter) =
         pythonListType(outerConverter.pythonType(type.typeArgument, outerConverter))
 
-    override fun isSupported(type: TypeMirror, outerConverter: TypeConverter): Boolean {
-        val typeName = TypeName.get(type)
-        if (type is DeclaredType && typeName is ParameterizedTypeName) {
-            if (typeName.rawType.equals(ClassName.get(List::class.java)) && type.typeArguments.size == 1) {
-                return outerConverter.isSupported(type.typeArgument, outerConverter)
-            }
+    override fun isSupported(type: XType, outerConverter: TypeConverter): Boolean {
+        if (type.asTypeName().rawTypeName == List::class.asClassName() && type.typeArguments.size == 1) {
+            return outerConverter.isSupported(type.typeArgument, outerConverter)
         }
 
         return false
     }
 
-    private val TypeMirror.typeArgument
-        get() = (this as DeclaredType).typeArguments[0]
+    private val XType.typeArgument
+        get() = typeArguments[0]
 
     override val supportedTypesDescription = "lists of other supported types"
 

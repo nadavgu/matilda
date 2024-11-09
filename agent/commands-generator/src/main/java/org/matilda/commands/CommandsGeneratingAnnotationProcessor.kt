@@ -1,5 +1,7 @@
 package org.matilda.commands
 
+import androidx.room.compiler.processing.*
+import androidx.room.compiler.processing.javac.JavacBasicAnnotationProcessor
 import org.matilda.commands.di.AnnotationProcessorModule
 import org.matilda.commands.di.DaggerCommandsGeneratorComponent
 import org.matilda.commands.exceptions.AnnotationProcessingException
@@ -8,9 +10,9 @@ import org.matilda.commands.protobuf.ProtobufLocations
 import org.matilda.commands.python.PythonProperties
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
-import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
 
+@ExperimentalProcessingApi
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes("org.matilda.commands.MatildaService", "org.matilda.commands.MatildaCommand",
     "org.matilda.commands.MatildaDynamicService")
@@ -20,29 +22,35 @@ import javax.tools.Diagnostic
     ProtobufLocations.PROTOBUF_DIRS_OPTION,
     JavaProperties.JAVA_MAIN_PACKAGE_OPTION,
 )
-class CommandsGeneratingAnnotationProcessor : AbstractProcessor() {
-    private var mProcessingEnvironment: ProcessingEnvironment? = null
+class CommandsGeneratingAnnotationProcessor : JavacBasicAnnotationProcessor(), XProcessingStep {
+    private var mProcessingEnvironment: XProcessingEnv? = null
     private var mWasRun = false
     @Synchronized
-    override fun init(processingEnv: ProcessingEnvironment) {
-        mProcessingEnvironment = processingEnv
+    override fun initialize(env: XProcessingEnv) {
+        mProcessingEnvironment = env
     }
 
-    override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
+    override fun processingSteps(): Iterable<XProcessingStep> {
+        return listOf(this)
+    }
+
+    override fun annotations(): Set<String> = setOf("org.matilda.commands.MatildaService",
+        "org.matilda.commands.MatildaCommand",
+        "org.matilda.commands.MatildaDynamicService")
+
+    override fun preRound(env: XProcessingEnv, round: XRoundEnv) {
         try {
             val component = DaggerCommandsGeneratorComponent.builder()
-                .annotationProcessorModule(AnnotationProcessorModule(annotations, roundEnv,
-                    mProcessingEnvironment!!, mWasRun))
+                .annotationProcessorModule(AnnotationProcessorModule(env, round, mWasRun))
                 .build()
             component.commandsGenerator().generate()
             mWasRun = true
         } catch (e: AnnotationProcessingException) {
             e.printStackTrace()
-            mProcessingEnvironment!!.messager.printMessage(Diagnostic.Kind.ERROR, e.message, e.element)
+            env.messager.printMessage(Diagnostic.Kind.ERROR, e.message ?: "", e.element)
         } catch (e: Throwable) {
             e.printStackTrace()
-            mProcessingEnvironment!!.messager.printMessage(Diagnostic.Kind.ERROR, e.message)
+            env.messager.printMessage(Diagnostic.Kind.ERROR, e.message ?: "")
         }
-        return false
     }
 }

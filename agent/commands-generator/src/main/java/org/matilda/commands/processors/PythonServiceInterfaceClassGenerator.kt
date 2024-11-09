@@ -1,5 +1,6 @@
 package org.matilda.commands.processors
 
+import androidx.room.compiler.processing.XType
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.info.ServiceInfo
@@ -13,7 +14,6 @@ import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.pythonType
 import org.matilda.commands.utils.toSnakeCase
 import javax.inject.Inject
-import javax.lang.model.type.TypeMirror
 
 class PythonServiceInterfaceClassGenerator @Inject internal constructor() : Processor<ServiceInfo> {
     @Inject
@@ -72,15 +72,15 @@ class PythonServiceInterfaceClassGenerator @Inject internal constructor() : Proc
     private val ParameterInfo.pythonName
         get() = name.toSnakeCase()
 
-    private fun getPythonType(typeMirror: TypeMirror) = mTypeConverter.pythonType(typeMirror).name
+    private fun getPythonType(typeMirror: XType) = mTypeConverter.pythonType(typeMirror).name
 
     private fun PythonFile.addCommandImports(command: CommandInfo) = apply {
         importPythonType(command.returnType)
         command.parameters.forEach { importPythonType(it.type) }
     }
 
-    private fun PythonFile.importPythonType(typeMirror: TypeMirror) {
-        addRequiredFromImports(mTypeConverter.pythonType(typeMirror))
+    private fun PythonFile.importPythonType(type: XType) {
+        addRequiredFromImports(mTypeConverter.pythonType(type))
     }
     private fun getClassName(service: ServiceInfo) = mNameGenerator.forService(service).serviceClassName
 

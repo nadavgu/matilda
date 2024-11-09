@@ -1,12 +1,11 @@
 package org.matilda.commands.types
 
+import androidx.room.compiler.codegen.XClassName
+import androidx.room.compiler.processing.XType
 import com.google.protobuf.Message
-import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.TypeName
 import org.matilda.commands.python.PythonClassName
 import org.matilda.commands.types.TypeConverter.Companion.MAIN_CONVERTERS_PACKAGE
 import javax.inject.Inject
-import javax.lang.model.type.TypeMirror
 
 class MessageTypeConverter @Inject constructor() : TypeConverter {
     @Inject
@@ -15,19 +14,19 @@ class MessageTypeConverter @Inject constructor() : TypeConverter {
     @Inject
     lateinit var mProtobufTypeTranslator: ProtobufTypeTranslator
 
-    override fun javaConverter(type: TypeMirror, outerConverter: TypeConverter): JavaTypeConverterInfo {
+    override fun javaConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo {
         return JavaTypeConverterInfo("new \$T<>(\$T.class)", listOf(MessageConverter::class.java, type))
     }
 
-    override fun pythonConverter(type: TypeMirror, outerConverter: TypeConverter): PythonTypeConverterInfo {
+    override fun pythonConverter(type: XType, outerConverter: TypeConverter): PythonTypeConverterInfo {
         val pythonType = pythonType(type, outerConverter)
         return PythonTypeConverterInfo("${CONVERTER_CLASS.name}(${pythonType.name})",
             listOf(CONVERTER_CLASS, pythonType))
     }
 
-    override fun pythonType(type: TypeMirror, outerConverter: TypeConverter) = mProtobufTypeTranslator.toPythonType(TypeName.get(type) as ClassName)
+    override fun pythonType(type: XType, outerConverter: TypeConverter) = mProtobufTypeTranslator.toPythonType(type.asTypeName() as XClassName)
 
-    override fun isSupported(type: TypeMirror, outerConverter: TypeConverter) =  mTypes.isSubtype(type, Message::class.java)
+    override fun isSupported(type: XType, outerConverter: TypeConverter) =  mTypes.isSubtype(type, Message::class.java)
     override val supportedTypesDescription: String
         get() = "protobuf messages"
 

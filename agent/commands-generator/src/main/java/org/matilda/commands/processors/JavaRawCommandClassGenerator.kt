@@ -1,5 +1,7 @@
 package org.matilda.commands.processors
 
+import androidx.room.compiler.processing.XFiler
+import androidx.room.compiler.processing.writeTo
 import com.google.protobuf.Any
 import com.squareup.javapoet.*
 import org.matilda.commands.Command
@@ -12,13 +14,12 @@ import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.JAVA_DEP
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.javaConverter
 import java.io.IOException
-import javax.annotation.processing.Filer
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
 
 class JavaRawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
     @Inject
-    lateinit var mFiler: Filer
+    lateinit var mFiler: XFiler
 
     @Inject
     lateinit var mNameGenerator: NameGenerator
@@ -44,7 +45,7 @@ class JavaRawCommandClassGenerator @Inject constructor() : Processor<CommandInfo
             .build()
 
     private fun createServiceField(command: CommandInfo) =
-        FieldSpec.builder(TypeName.get(command.service.type), SERVICE_FIELD_NAME)
+        FieldSpec.builder(command.service.type.typeName, SERVICE_FIELD_NAME)
             .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             .build()
 
@@ -58,7 +59,7 @@ class JavaRawCommandClassGenerator @Inject constructor() : Processor<CommandInfo
         MethodSpec.constructorBuilder()
             .addAnnotation(Inject::class.java)
             .addModifiers(Modifier.PUBLIC)
-            .addParameter(ParameterSpec.builder(TypeName.get(command.service.type), SERVICE_PARAMETER_NAME).build())
+            .addParameter(ParameterSpec.builder(command.service.type.typeName, SERVICE_PARAMETER_NAME).build())
             .addParameter(ParameterSpec.builder(mNameGenerator.forService(command.service).dependenciesClassName,
                 DEPENDENCIES_PARAMETER_NAME).build())
             .addStatement("\$L = \$L", SERVICE_FIELD_NAME, SERVICE_PARAMETER_NAME)
@@ -70,7 +71,7 @@ class JavaRawCommandClassGenerator @Inject constructor() : Processor<CommandInfo
             .addModifiers(Modifier.PUBLIC)
             .addParameter(ParameterSpec.builder(BYTE_ARRAY_TYPE_NAME, RAW_PARAMETER_NAME).build())
             .returns(ArrayTypeName.of(TypeName.BYTE))
-            .addExceptions(command.thrownTypes.map(TypeName::get))
+            .addExceptions(command.thrownTypes.map { it.typeName })
             .beginControlFlow("try")
             .addStatement("\$T \$L = \$T.parseFrom(\$L)",
                 Some::class.java, SOME_PARAMETER_VARIABLE_NAME, Some::class.java, RAW_PARAMETER_NAME)
@@ -89,13 +90,14 @@ class JavaRawCommandClassGenerator @Inject constructor() : Processor<CommandInfo
     private fun MethodSpec.Builder.addParameterConversion(index: Int, parameterInfo: ParameterInfo) {
         val (converterFormat, converterArgs) = mTypeConverter.javaConverter(parameterInfo.type)
         addStatement("\$T \$L = $converterFormat.convertFromProtobuf(\$L.getAny(\$L))",
-            parameterInfo.type, parameterInfo.name, *converterArgs.toTypedArray(), SOME_PARAMETER_VARIABLE_NAME, index)
+            parameterInfo.type.typeName, parameterInfo.name, *converterArgs.toTypedArray(),
+            SOME_PARAMETER_VARIABLE_NAME, index)
     }
 
     private fun MethodSpec.Builder.addCommandInvocation(command: CommandInfo): MethodSpec.Builder {
         if (command.hasReturnValue()) {
             addStatement("\$T \$L = \$L.\$L(\$L)",
-                command.returnType, RETURN_VALUE_NAME, SERVICE_FIELD_NAME, command.name,
+                command.returnType.typeName, RETURN_VALUE_NAME, SERVICE_FIELD_NAME, command.name,
                 command.parameters.joinToString { it.name })
         } else {
             addStatement("\$L.\$L(\$L)",

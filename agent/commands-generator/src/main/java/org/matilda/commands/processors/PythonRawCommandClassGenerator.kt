@@ -1,6 +1,7 @@
 package org.matilda.commands.processors
 
-import com.squareup.javapoet.ClassName
+import androidx.room.compiler.codegen.asClassName
+import androidx.room.compiler.processing.XType
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.names.NameGenerator
@@ -17,7 +18,6 @@ import org.matilda.commands.types.pythonConverter
 import org.matilda.commands.types.pythonType
 import org.matilda.commands.utils.toSnakeCase
 import javax.inject.Inject
-import javax.lang.model.type.TypeMirror
 
 class PythonRawCommandClassGenerator @Inject constructor() : Processor<CommandInfo> {
     @Inject
@@ -45,16 +45,16 @@ class PythonRawCommandClassGenerator @Inject constructor() : Processor<CommandIn
         addRequiredFromImports(serviceNameGenerator.serviceFullClassName)
         addRequiredFromImports(serviceNameGenerator.dependenciesPythonClassName)
         addFromImport(ANY_CLASS)
-        addFromImport(mProtobufTypeTranslator.toPythonType(ClassName.get(Some::class.java)))
+        addFromImport(mProtobufTypeTranslator.toPythonType(Some::class.asClassName()))
 
         importPythonType(command.returnType)
         command.parameters.forEach { importPythonType(it.type) }
     }
 
-    private fun PythonFile.importPythonType(typeMirror: TypeMirror) {
-        addRequiredFromImports(mTypeConverter.pythonType(typeMirror))
+    private fun PythonFile.importPythonType(type: XType) {
+        addRequiredFromImports(mTypeConverter.pythonType(type))
 
-        val (_, converterRequiredTypes) = mTypeConverter.pythonConverter(typeMirror)
+        val (_, converterRequiredTypes) = mTypeConverter.pythonConverter(type)
         converterRequiredTypes.forEach {
             addRequiredFromImports(it)
         }
