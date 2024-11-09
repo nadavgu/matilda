@@ -1,9 +1,6 @@
 package org.matilda.commands.collectors
 
-import androidx.room.compiler.processing.XElement
-import androidx.room.compiler.processing.XRoundEnv
-import androidx.room.compiler.processing.XTypeElement
-import androidx.room.compiler.processing.isConstructor
+import androidx.room.compiler.processing.*
 import org.matilda.commands.MatildaDynamicService
 import org.matilda.commands.MatildaService
 import org.matilda.commands.exceptions.AnnotationProcessingException
@@ -11,7 +8,6 @@ import org.matilda.commands.info.ProjectServices
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.info.StaticServiceInfo
 import javax.inject.Inject
-import javax.lang.model.element.ExecutableElement
 import kotlin.reflect.KClass
 
 class ServicesCollector @Inject constructor() {
@@ -66,5 +62,5 @@ class ServicesCollector @Inject constructor() {
         element.getEnclosedElements().filter { it.isConstructor() }
 
     private fun isNonDefaultConstructor(constructor: XElement) =
-        (constructor as ExecutableElement).parameters.isNotEmpty()
+        (constructor as XExecutableElement).parameters.isNotEmpty()
 }

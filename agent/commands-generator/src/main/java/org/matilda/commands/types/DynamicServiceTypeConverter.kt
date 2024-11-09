@@ -26,7 +26,7 @@ class DynamicServiceTypeConverter @Inject constructor() : TypeConverter {
         get() = StringUtils.uncapitalize(javaDynamicServiceConverterTypeName.simpleName())
 
     private val XType.javaDynamicServiceConverterTypeName
-        get() = mNameGenerator.forService(asTypeName().toString()).dynamicServiceConverterClassName
+        get() = mNameGenerator.forService(typeName.toString()).dynamicServiceConverterClassName
     override fun pythonConverter(type: XType, outerConverter: TypeConverter): PythonTypeConverterInfo {
         return PythonTypeConverterInfo(
             "self.$PYTHON_DEPENDENCIES_FIELD_NAME.${type.pythonDynamicServiceConverterFieldName}",
@@ -38,9 +38,9 @@ class DynamicServiceTypeConverter @Inject constructor() : TypeConverter {
     private val XType.pythonDynamicServiceConverterFieldName
         get() = pythonDynamicServiceConverterTypeName.name.toSnakeCase()
     private val XType.pythonDynamicServiceConverterTypeName
-        get() = mNameGenerator.forService(asTypeName().toString()).dynamicServiceConverterPythonClassName
+        get() = mNameGenerator.forService(typeName.toString()).dynamicServiceConverterPythonClassName
     override fun pythonType(type: XType, outerConverter: TypeConverter) =
-        mNameGenerator.forService(type.asTypeName().toString()).serviceFullClassName
+        mNameGenerator.forService(type.typeName.toString()).serviceFullClassName
 
     override fun isSupported(type: XType, outerConverter: TypeConverter) =
         mTypeUtilities.isAnnotatedWith(type, MatildaDynamicService::class)

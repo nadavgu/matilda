@@ -1,6 +1,5 @@
 package org.matilda.commands.types
 
-import androidx.room.compiler.codegen.XClassName
 import androidx.room.compiler.processing.XType
 import com.google.protobuf.Message
 import org.matilda.commands.python.PythonClassName
@@ -15,7 +14,7 @@ class MessageTypeConverter @Inject constructor() : TypeConverter {
     lateinit var mProtobufTypeTranslator: ProtobufTypeTranslator
 
     override fun javaConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo {
-        return JavaTypeConverterInfo("new \$T<>(\$T.class)", listOf(MessageConverter::class.java, type))
+        return JavaTypeConverterInfo("new \$T<>(\$T.class)", listOf(MessageConverter::class.java, type.typeName))
     }
 
     override fun pythonConverter(type: XType, outerConverter: TypeConverter): PythonTypeConverterInfo {
@@ -24,7 +23,7 @@ class MessageTypeConverter @Inject constructor() : TypeConverter {
             listOf(CONVERTER_CLASS, pythonType))
     }
 
-    override fun pythonType(type: XType, outerConverter: TypeConverter) = mProtobufTypeTranslator.toPythonType(type.asTypeName() as XClassName)
+    override fun pythonType(type: XType, outerConverter: TypeConverter) = mProtobufTypeTranslator.toPythonType(type.typeElement!!.asClassName())
 
     override fun isSupported(type: XType, outerConverter: TypeConverter) =  mTypes.isSubtype(type, Message::class.java)
     override val supportedTypesDescription: String

@@ -48,7 +48,7 @@ class ServicesModuleClassGenerator @Inject constructor() : Processor<ProjectServ
             .addAnnotation(Provides::class.java)
             .addModifiers(Modifier.STATIC)
             .returns(service.type.typeName)
-            .addStatement("return new \$T()", service.type)
+            .addStatement("return new \$T()", service.type.typeName)
             .build()
 
     private fun getProvideMethodName(service: ServiceInfo) =
