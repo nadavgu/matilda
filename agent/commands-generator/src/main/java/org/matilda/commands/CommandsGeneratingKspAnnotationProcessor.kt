@@ -1,7 +1,8 @@
 package org.matilda.commands
 
 import androidx.room.compiler.processing.*
-import androidx.room.compiler.processing.javac.JavacBasicAnnotationProcessor
+import androidx.room.compiler.processing.ksp.KspBasicAnnotationProcessor
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import org.matilda.commands.java.JavaProperties
 import org.matilda.commands.protobuf.ProtobufLocations
 import org.matilda.commands.python.PythonProperties
@@ -18,7 +19,8 @@ import javax.lang.model.SourceVersion
     ProtobufLocations.PROTOBUF_DIRS_OPTION,
     JavaProperties.JAVA_MAIN_PACKAGE_OPTION,
 )
-class CommandsGeneratingAnnotationProcessor : JavacBasicAnnotationProcessor() {
+class CommandsGeneratingKspAnnotationProcessor(symbolProcessorEnvironment: SymbolProcessorEnvironment) :
+    KspBasicAnnotationProcessor(symbolProcessorEnvironment) {
     private var mDelegate = CommandsGeneratingDelegateAnnotationProcessor()
 
     @Synchronized

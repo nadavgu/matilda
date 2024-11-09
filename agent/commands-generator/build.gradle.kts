@@ -16,6 +16,8 @@ repositories {
     google()
 }
 
+val kspVersion: String by project
+
 dependencies {
     implementation(project(":commands-generator-api"))
     implementation("com.google.dagger:dagger:2.51.1")
@@ -27,6 +29,7 @@ dependencies {
     implementation("com.google.protobuf:protobuf-java:3.23.0")
     implementation("androidx.room:room-compiler-processing:2.6.1")
     implementation(kotlin("stdlib-jdk8"))
+    implementation("com.google.devtools.ksp:symbol-processing-api:$kspVersion")
 }
 
 tasks.test {

@@ -40,7 +40,7 @@ class CommandsCollector @Inject constructor() {
     private fun verifyType(type: XType, element: XElement) {
         if (!mTypeConverter.isSupported(type)) {
             throw AnnotationProcessingException("Paramaters and return values of services have to be: " +
-                    mTypeConverter.supportedTypesDescription, element)
+                    mTypeConverter.supportedTypesDescription + ". Found: ${type.typeName}", element)
         }
     }
 }
