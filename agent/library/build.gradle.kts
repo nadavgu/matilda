@@ -1,6 +1,8 @@
 plugins {
     java
     id("com.google.protobuf") version "0.9.4"
+    kotlin("jvm")
+    id("com.google.devtools.ksp")
 }
 
 group = "org.matilda"
@@ -19,19 +21,19 @@ java {
 val pythonRootDir = rootProject.layout.projectDirectory.dir(providers.gradleProperty("PYTHON_ROOT_DIR_PATH")).get()
 val pythonGeneratedPackage = providers.gradleProperty("PYTHON_GENERATED_PACKAGE").get()
 
-tasks.compileJava {
-    options.compilerArgs.add("-ApythonRootDir=${pythonRootDir.asFile.absolutePath}")
-    options.compilerArgs.add("-ApythonGeneratedPackage=$pythonGeneratedPackage")
-    options.compilerArgs.add("-AprotobufDirs=${File(buildDir, "extracted-include-protos/main/").absolutePath}" +
+ksp {
+    arg("pythonRootDir", pythonRootDir.asFile.absolutePath)
+    arg("pythonGeneratedPackage", pythonGeneratedPackage)
+    arg("protobufDirs", File(buildDir, "extracted-include-protos/main/").absolutePath +
             ":${File(projectDir, "src/main/proto/").absolutePath}")
-    options.compilerArgs.add("-AjavaMainPackage=org.matilda")
+    arg("javaMainPackage", "org.matilda")
 }
 
 dependencies {
     implementation("com.google.protobuf:protobuf-java:3.23.0")
     implementation("com.google.dagger:dagger:2.52")
-    annotationProcessor("com.google.dagger:dagger-compiler:2.52")
-    annotationProcessor(project(":commands-generator"))
+    ksp("com.google.dagger:dagger-compiler:2.52")
+    ksp(project(":commands-generator"))
     implementation(project(":commands-generator-api"))
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
