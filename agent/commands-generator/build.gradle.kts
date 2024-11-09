@@ -1,9 +1,10 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("java")
-    kotlin("jvm") version "1.9.0"
-    kotlin("kapt") version "1.9.0"
+    kotlin("jvm")
+    id("com.google.devtools.ksp")
     `maven-publish`
 }
 
@@ -17,9 +18,8 @@ repositories {
 
 dependencies {
     implementation(project(":commands-generator-api"))
-    implementation("com.google.dagger:dagger:2.47")
-    annotationProcessor("com.google.dagger:dagger-compiler:2.47")
-    kapt("com.google.dagger:dagger-compiler:2.47")
+    implementation("com.google.dagger:dagger:2.51.1")
+    ksp("com.google.dagger:dagger-compiler:2.51.1")
     implementation("com.squareup:javapoet:1.10.0")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
@@ -33,12 +33,12 @@ tasks.test {
     useJUnitPlatform()
 }
 val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+compileKotlin.compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_1_8)
 }
 val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+compileTestKotlin.compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_1_8)
 }
 
 publishing {
