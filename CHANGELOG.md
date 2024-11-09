@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.5.0] - 2024-11-09
+
+### Added
+
+- command generator can now be used with ksp, in addition to annotation processor anx kapt
+
+### Changed
+
+- The entire codebase was converted from java to kotlin (except for generated code)
+
 ## [0.4.0] - 2024-09-14
 
 ### Added
@@ -65,7 +75,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - python API to access java classes, methods, and fields using reflection
 - command generator annotation processor that allows to easily create commands between python side & java side
 
-[unreleased]: https://github.com/nadavgu/matilda/compare/0.4.0...dev
+[unreleased]: https://github.com/nadavgu/matilda/compare/0.5.0...dev
+[0.5.0]: https://github.com/nadavgu/matilda/compare/0.4.0...0.5.0
 [0.4.0]: https://github.com/nadavgu/matilda/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/nadavgu/matilda/compare/0.2.1...0.3.0
 [0.2.1]: https://github.com/nadavgu/matilda/compare/0.2.0...0.2.1
