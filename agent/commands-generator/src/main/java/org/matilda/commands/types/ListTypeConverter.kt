@@ -1,6 +1,7 @@
 package org.matilda.commands.types
 
 import androidx.room.compiler.codegen.asClassName
+import androidx.room.compiler.codegen.asMutableClassName
 import androidx.room.compiler.processing.XType
 import org.matilda.commands.python.PythonClassName
 import org.matilda.commands.python.pythonListType
@@ -23,7 +24,8 @@ class ListTypeConverter @Inject constructor() : TypeConverter {
         pythonListType(outerConverter.pythonType(type.typeArgument, outerConverter))
 
     override fun isSupported(type: XType, outerConverter: TypeConverter): Boolean {
-        if (type.asTypeName().rawTypeName == List::class.asClassName() && type.typeArguments.size == 1) {
+        if (type.asTypeName().rawTypeName in listOf(List::class.asClassName(), List::class.asMutableClassName())
+            && type.typeArguments.size == 1) {
             return outerConverter.isSupported(type.typeArgument, outerConverter)
         }
 
