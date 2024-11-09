@@ -1,17 +1,14 @@
-package org.matilda.commands.types;
+package org.matilda.commands.types
 
-import com.google.protobuf.Any;
-import com.google.protobuf.Int64Value;
-import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Any
+import com.google.protobuf.Int64Value
 
-public class LongConverter implements ProtobufConverter<Long> {
-    @Override
-    public Int64Value convertToProtobuf(Long object) {
-        return Int64Value.newBuilder().setValue(object).build();
+class LongConverter : ProtobufConverter<Long> {
+    override fun convertToProtobuf(obj: Long): Int64Value {
+        return Int64Value.newBuilder().setValue(obj).build()
     }
 
-    @Override
-    public Long convertFromProtobuf(Any object) throws InvalidProtocolBufferException {
-        return object.unpack(Int64Value.class).getValue();
+    override fun convertFromProtobuf(obj: Any): Long {
+        return obj.unpack(Int64Value::class.java).value
     }
 }

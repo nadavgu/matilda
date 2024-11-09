@@ -1,5 +1,5 @@
-package org.matilda.commands;
+package org.matilda.commands
 
-public interface CommandRegistryManager {
-    int addCommandRegistry(CommandRegistry commandRegistry);
+interface CommandRegistryManager {
+    fun addCommandRegistry(commandRegistry: CommandRegistry): Int
 }

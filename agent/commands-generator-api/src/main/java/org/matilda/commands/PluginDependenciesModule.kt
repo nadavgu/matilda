@@ -1,30 +1,16 @@
-package org.matilda.commands;
+package org.matilda.commands
 
-import dagger.Module;
-import dagger.Provides;
-
-import java.util.Random;
+import dagger.Module
+import dagger.Provides
 
 @Module
-public class PluginDependenciesModule {
-    private final PluginDependencies mPluginDependencies;
-
-    public PluginDependenciesModule(PluginDependencies pluginDependencies) {
-        mPluginDependencies = pluginDependencies;
-    }
+class PluginDependenciesModule(private val mPluginDependencies: PluginDependencies) {
+    @Provides
+    fun commandRegistryManager() = mPluginDependencies.commandRegistryManager
 
     @Provides
-    CommandRegistryManager commandRegistryManager() {
-        return mPluginDependencies.commandRegistryManager;
-    }
+    fun commandRunner() = mPluginDependencies.commandRunner
 
     @Provides
-    CommandRunner commandRunner() {
-        return mPluginDependencies.commandRunner;
-    }
-
-    @Provides
-    Random random() {
-        return mPluginDependencies.random;
-    }
+    fun random() = mPluginDependencies.random
 }

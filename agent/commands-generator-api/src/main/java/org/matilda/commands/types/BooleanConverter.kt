@@ -1,17 +1,14 @@
-package org.matilda.commands.types;
+package org.matilda.commands.types
 
-import com.google.protobuf.Any;
-import com.google.protobuf.BoolValue;
-import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Any
+import com.google.protobuf.BoolValue
 
-public class BooleanConverter implements ProtobufConverter<Boolean> {
-    @Override
-    public BoolValue convertToProtobuf(Boolean object) {
-        return BoolValue.newBuilder().setValue(object).build();
+class BooleanConverter : ProtobufConverter<Boolean> {
+    override fun convertToProtobuf(obj: Boolean): BoolValue {
+        return BoolValue.newBuilder().setValue(obj).build()
     }
 
-    @Override
-    public Boolean convertFromProtobuf(Any object) throws InvalidProtocolBufferException {
-        return object.unpack(BoolValue.class).getValue();
+    override fun convertFromProtobuf(obj: Any): Boolean {
+        return obj.unpack(BoolValue::class.java).value
     }
 }

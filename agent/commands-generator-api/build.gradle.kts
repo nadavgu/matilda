@@ -1,6 +1,8 @@
 plugins {
     `java-library`
     id("com.google.protobuf") version "0.9.4"
+    kotlin("jvm")
+    id("com.google.devtools.ksp")
     `maven-publish`
 }
 
@@ -21,7 +23,7 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     api("com.google.protobuf:protobuf-java:4.28.2")
-    annotationProcessor("com.google.dagger:dagger-compiler:2.52")
+    ksp("com.google.dagger:dagger-compiler:2.52")
 }
 
 tasks.test {

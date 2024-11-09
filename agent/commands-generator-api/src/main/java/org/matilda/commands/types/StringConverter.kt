@@ -1,17 +1,14 @@
-package org.matilda.commands.types;
+package org.matilda.commands.types
 
-import com.google.protobuf.Any;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.StringValue;
+import com.google.protobuf.Any
+import com.google.protobuf.StringValue
 
-public class StringConverter implements ProtobufConverter<String> {
-    @Override
-    public StringValue convertToProtobuf(String object) {
-        return StringValue.newBuilder().setValue(object).build();
+class StringConverter : ProtobufConverter<String> {
+    override fun convertToProtobuf(obj: String): StringValue {
+        return StringValue.newBuilder().setValue(obj).build()
     }
 
-    @Override
-    public String convertFromProtobuf(Any object) throws InvalidProtocolBufferException {
-        return object.unpack(StringValue.class).getValue();
+    override fun convertFromProtobuf(obj: Any): String {
+        return obj.unpack(StringValue::class.java).value
     }
 }

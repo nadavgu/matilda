@@ -1,19 +1,15 @@
-package org.matilda.commands;
+package org.matilda.commands
 
-import javax.inject.Inject;
-import java.util.Random;
+import java.util.*
+import javax.inject.Inject
 
-public class PluginDependencies {
+class PluginDependencies @Inject constructor() {
     @Inject
-    public CommandRegistryManager commandRegistryManager;
-
-    @Inject
-    public CommandRunner commandRunner;
+    lateinit var commandRegistryManager: CommandRegistryManager
 
     @Inject
-    public Random random;
+    lateinit var commandRunner: CommandRunner
 
     @Inject
-    public PluginDependencies() {
-    }
+    lateinit var random: Random
 }

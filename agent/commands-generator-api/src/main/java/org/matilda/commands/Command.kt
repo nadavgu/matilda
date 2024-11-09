@@ -1,5 +1,6 @@
-package org.matilda.commands;
+package org.matilda.commands
 
-public interface Command {
-    byte[] run(byte[] parameter) throws Throwable;
+interface Command {
+    @Throws(Throwable::class)
+    fun run(parameter: ByteArray): ByteArray
 }

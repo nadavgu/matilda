@@ -1,26 +1,17 @@
-package org.matilda.commands;
+package org.matilda.commands
 
-import java.util.HashMap;
-import java.util.Map;
+class CommandRegistry {
+    private val mCommands = mutableMapOf<Int, Command>()
 
-public class CommandRegistry {
-    private final Map<Integer, Command> mCommands;
-
-    public CommandRegistry() {
-        mCommands = new HashMap<>();
-    }
-
-    public void addCommand(int type, Command command) {
+    fun addCommand(type: Int, command: Command) {
         if (mCommands.containsKey(type)) {
-            throw new RuntimeException(String.format("Command %d already handled by %s", type, mCommands.get(type)));
+            throw RuntimeException("Command $type already handled by ${mCommands[type]}")
         }
-        mCommands.put(type, command);
+        mCommands[type] = command
     }
 
-    public Command get(int type) {
-        if (!mCommands.containsKey(type)) {
-            throw new IllegalArgumentException(String.format("Command %d not found", type));
+    operator fun get(type: Int): Command =
+        mCommands.getOrElse(type) {
+            throw IllegalArgumentException("Command $type not found")
         }
-        return mCommands.get(type);
-    }
 }

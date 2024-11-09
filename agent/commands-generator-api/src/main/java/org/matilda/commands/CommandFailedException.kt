@@ -1,7 +1,3 @@
-package org.matilda.commands;
+package org.matilda.commands
 
-public class CommandFailedException extends RuntimeException {
-    public CommandFailedException(String message) {
-        super(message);
-    }
-}
+class CommandFailedException(message: String) : RuntimeException(message)

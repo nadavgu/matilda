@@ -1,5 +1,5 @@
-package org.matilda.commands;
+package org.matilda.commands
 
-public interface ServiceProxyFactory<T> {
-    T createServiceProxy(int commandRegistryId);
+interface ServiceProxyFactory<T> {
+    fun createServiceProxy(commandRegistryId: Int): T
 }

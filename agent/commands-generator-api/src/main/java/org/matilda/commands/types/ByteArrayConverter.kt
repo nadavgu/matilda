@@ -1,24 +1,17 @@
-package org.matilda.commands.types;
+package org.matilda.commands.types
 
-import com.google.protobuf.Any;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.BytesValue;
-import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Any
+import com.google.protobuf.ByteString
+import com.google.protobuf.BytesValue
 
-public class ByteArrayConverter implements ProtobufConverter<byte[]> {
-    private final ByteStringConverter mByteStringConverter;
+class ByteArrayConverter : ProtobufConverter<ByteArray> {
+    private val mByteStringConverter = ByteStringConverter()
 
-    public ByteArrayConverter() {
-        mByteStringConverter = new ByteStringConverter();
+    override fun convertToProtobuf(obj: ByteArray): BytesValue {
+        return mByteStringConverter.convertToProtobuf(ByteString.copyFrom(obj))
     }
 
-    @Override
-    public BytesValue convertToProtobuf(byte[] object) {
-        return mByteStringConverter.convertToProtobuf(ByteString.copyFrom(object));
-    }
-
-    @Override
-    public byte[] convertFromProtobuf(Any object) throws InvalidProtocolBufferException {
-        return mByteStringConverter.convertFromProtobuf(object).toByteArray();
+    override fun convertFromProtobuf(obj: Any): ByteArray {
+        return mByteStringConverter.convertFromProtobuf(obj).toByteArray()
     }
 }

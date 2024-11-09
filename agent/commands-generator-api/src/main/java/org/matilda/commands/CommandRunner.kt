@@ -1,5 +1,5 @@
-package org.matilda.commands;
+package org.matilda.commands
 
-public interface CommandRunner {
-    byte[] run(int registryId, int commandType, byte[] parameter);
+interface CommandRunner {
+    fun run(registryId: Int, commandType: Int, parameter: ByteArray): ByteArray
 }

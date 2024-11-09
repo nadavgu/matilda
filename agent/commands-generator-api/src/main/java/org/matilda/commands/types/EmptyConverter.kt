@@ -1,17 +1,14 @@
-package org.matilda.commands.types;
+package org.matilda.commands.types
 
-import com.google.protobuf.Any;
-import com.google.protobuf.Empty;
-import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Any
+import com.google.protobuf.Empty
 
-public class EmptyConverter implements ProtobufConverter<Void> {
-    @Override
-    public Empty convertToProtobuf(Void object) {
-        return Empty.newBuilder().build();
+class EmptyConverter : ProtobufConverter<Void?> {
+    override fun convertToProtobuf(obj: Void?): Empty {
+        return Empty.newBuilder().build()
     }
 
-    @Override
-    public Void convertFromProtobuf(Any object) throws InvalidProtocolBufferException {
-        return null;
+    override fun convertFromProtobuf(obj: Any): Void? {
+        return null
     }
 }
