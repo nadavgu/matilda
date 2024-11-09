@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='matilda',
-      version='0.4.0',
+      version='0.5.0',
       author='Nadav Gur',
       author_email='nadavgu@gmail.com',
       packages=find_packages(include='matilda*'),
