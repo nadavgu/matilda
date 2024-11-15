@@ -35,6 +35,9 @@ class ProcessorFactory @Inject constructor() {
     lateinit var mJavaServiceDependenciesClassGenerator: JavaServiceDependenciesClassGenerator
 
     @Inject
+    lateinit var mKotlinServiceDependenciesClassGenerator: KotlinServiceDependenciesClassGenerator
+
+    @Inject
     lateinit var mPythonServiceDependenciesClassGenerator: PythonServiceDependenciesClassGenerator
 
     @Inject
@@ -73,7 +76,7 @@ class ProcessorFactory @Inject constructor() {
     fun createProcessor() = CompoundProcessor(
         listOf(
             ProjectCommandsProcessor(selectGenerator(mJavaRawCommandClassGenerator, mKotlinRawCommandClassGenerator)),
-            ProjectServicesProcessor(mJavaServiceDependenciesClassGenerator),
+            ProjectServicesProcessor(selectGenerator(mJavaServiceDependenciesClassGenerator, mKotlinServiceDependenciesClassGenerator)),
             ProjectServicesProcessor(mPythonServiceDependenciesClassGenerator),
             ProjectDynamicServicesProcessor(mJavaServiceProxyClassGenerator),
             ProjectServicesProcessor(mPythonServiceProxyClassGenerator),
