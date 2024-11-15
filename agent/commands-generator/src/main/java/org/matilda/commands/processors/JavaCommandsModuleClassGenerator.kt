@@ -1,5 +1,7 @@
 package org.matilda.commands.processors
 
+import androidx.room.compiler.processing.XFiler
+import androidx.room.compiler.processing.writeTo
 import com.squareup.javapoet.*
 import dagger.Module
 import dagger.Provides
@@ -8,13 +10,11 @@ import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ProjectServices
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
-import androidx.room.compiler.processing.XFiler
-import androidx.room.compiler.processing.writeTo
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.lang.model.element.Modifier
 
-class CommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServices> {
+class JavaCommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServices> {
     @Inject
     lateinit var mFiler: XFiler
 
