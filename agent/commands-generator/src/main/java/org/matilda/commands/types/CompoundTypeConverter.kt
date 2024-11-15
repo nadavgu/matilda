@@ -7,6 +7,9 @@ class CompoundTypeConverter(private val converters: List<TypeConverter>) : TypeC
     override fun javaConverter(type: XType, outerConverter: TypeConverter) =
         converters.first { it.isSupported(type, outerConverter) }.javaConverter(type, outerConverter)
 
+    override fun kotlinConverter(type: XType, outerConverter: TypeConverter) =
+        converters.first { it.isSupported(type, outerConverter) }.kotlinConverter(type, outerConverter)
+
     override fun pythonConverter(type: XType, outerConverter: TypeConverter) =
         converters.first { it.isSupported(type, outerConverter) }.pythonConverter(type, outerConverter)
 

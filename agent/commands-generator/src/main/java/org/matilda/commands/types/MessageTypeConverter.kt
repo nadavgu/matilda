@@ -17,6 +17,10 @@ class MessageTypeConverter @Inject constructor() : TypeConverter {
         return JavaTypeConverterInfo("new \$T<>(\$T.class)", listOf(MessageConverter::class.java, type.typeName))
     }
 
+    override fun kotlinConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo {
+        return JavaTypeConverterInfo("%T<>(%T.class)", listOf(MessageConverter::class, type.typeName))
+    }
+
     override fun pythonConverter(type: XType, outerConverter: TypeConverter): PythonTypeConverterInfo {
         val pythonType = pythonType(type, outerConverter)
         return PythonTypeConverterInfo("${CONVERTER_CLASS.name}(${pythonType.name})",

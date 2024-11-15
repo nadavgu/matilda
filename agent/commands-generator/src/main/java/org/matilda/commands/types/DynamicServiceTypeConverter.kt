@@ -22,6 +22,13 @@ class DynamicServiceTypeConverter @Inject constructor() : TypeConverter {
         )
     }
 
+    override fun kotlinConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo {
+        return JavaTypeConverterInfo("%L.%L",
+            listOf(JAVA_DEPENDENCIES_FIELD_NAME, type.javaDynamicServiceConverterFieldName),
+            listOf(JavaDependencyInfo(type.javaDynamicServiceConverterTypeName, type.javaDynamicServiceConverterFieldName))
+        )
+    }
+
     private val XType.javaDynamicServiceConverterFieldName
         get() = StringUtils.uncapitalize(javaDynamicServiceConverterTypeName.simpleName())
 

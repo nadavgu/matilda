@@ -7,6 +7,8 @@ import org.matilda.commands.utils.Package
 interface TypeConverter {
     fun javaConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo
 
+    fun kotlinConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo
+
     fun pythonConverter(type: XType, outerConverter: TypeConverter): PythonTypeConverterInfo
 
     fun pythonType(type: XType, outerConverter: TypeConverter): PythonTypeName
@@ -21,6 +23,7 @@ interface TypeConverter {
 }
 
 fun TypeConverter.javaConverter(type: XType) = javaConverter(type, this)
+fun TypeConverter.kotlinConverter(type: XType) = kotlinConverter(type, this)
 fun TypeConverter.pythonConverter(type: XType) = pythonConverter(type, this)
 fun TypeConverter.pythonType(type: XType) = pythonType(type, this)
 fun TypeConverter.isSupported(type: XType) = isSupported(type, this)

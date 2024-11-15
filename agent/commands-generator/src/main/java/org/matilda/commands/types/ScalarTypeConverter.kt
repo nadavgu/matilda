@@ -10,6 +10,10 @@ class ScalarTypeConverter @Inject constructor() : TypeConverter {
         return JavaTypeConverterInfo("new \$T()", listOf(type.scalarJavaConverterType))
     }
 
+    override fun kotlinConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo {
+        return JavaTypeConverterInfo("%T()", listOf(type.scalarJavaConverterType))
+    }
+
     override fun pythonConverter(type: XType, outerConverter: TypeConverter): PythonTypeConverterInfo {
         val wrapperTypeName = type.scalarProtobufWrapperJavaType.simpleName
         val wrapperPythonType = PythonClassName(WRAPPERS_PACKAGE, wrapperTypeName)
