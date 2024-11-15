@@ -2,10 +2,13 @@ package org.matilda.commands.types
 
 import androidx.room.compiler.processing.XType
 import com.google.protobuf.Message
+import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
+import com.squareup.kotlinpoet.javapoet.toKTypeName
 import org.matilda.commands.python.PythonClassName
 import org.matilda.commands.types.TypeConverter.Companion.MAIN_CONVERTERS_PACKAGE
 import javax.inject.Inject
 
+@OptIn(KotlinPoetJavaPoetPreview::class)
 class MessageTypeConverter @Inject constructor() : TypeConverter {
     @Inject
     lateinit var mTypes: TypeUtilities
@@ -18,7 +21,8 @@ class MessageTypeConverter @Inject constructor() : TypeConverter {
     }
 
     override fun kotlinConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo {
-        return JavaTypeConverterInfo("%T<>(%T.class)", listOf(MessageConverter::class, type.typeName))
+        return JavaTypeConverterInfo("%T(%T::class.java)",
+            listOf(MessageConverter::class, type.typeName.toKTypeName()))
     }
 
     override fun pythonConverter(type: XType, outerConverter: TypeConverter): PythonTypeConverterInfo {

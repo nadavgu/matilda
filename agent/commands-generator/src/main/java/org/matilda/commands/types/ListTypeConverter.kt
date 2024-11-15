@@ -15,9 +15,9 @@ class ListTypeConverter @Inject constructor() : TypeConverter {
     }
 
     override fun kotlinConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo {
-        val (innerFormat, innerArguments) = outerConverter.javaConverter(type.typeArgument, outerConverter)
-        return JavaTypeConverterInfo("%T<>($innerFormat)",
-            listOf(ListConverter::class.java, *innerArguments.toTypedArray()))
+        val (innerFormat, innerArguments) = outerConverter.kotlinConverter(type.typeArgument, outerConverter)
+        return JavaTypeConverterInfo("%T($innerFormat)",
+            listOf(ListConverter::class, *innerArguments.toTypedArray()))
     }
 
     override fun pythonConverter(type: XType, outerConverter: TypeConverter): PythonTypeConverterInfo {

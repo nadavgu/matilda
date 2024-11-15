@@ -11,7 +11,7 @@ class VoidTypeConverter @Inject constructor() : TypeConverter {
         return JavaTypeConverterInfo("new \$T()", listOf(EmptyConverter::class.java))
     }
     override fun kotlinConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo {
-        return JavaTypeConverterInfo("new %T()", listOf(EmptyConverter::class))
+        return JavaTypeConverterInfo("%T()", listOf(EmptyConverter::class))
     }
 
     override fun pythonConverter(type: XType, outerConverter: TypeConverter): PythonTypeConverterInfo {
