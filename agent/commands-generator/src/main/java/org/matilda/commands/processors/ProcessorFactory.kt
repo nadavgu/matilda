@@ -56,6 +56,9 @@ class ProcessorFactory @Inject constructor() {
     lateinit var mJavaServiceProxyFactoryClassGenerator: JavaServiceProxyFactoryClassGenerator
 
     @Inject
+    lateinit var mKotlinServiceProxyFactoryClassGenerator: KotlinServiceProxyFactoryClassGenerator
+
+    @Inject
     lateinit var mPythonServiceProxyFactoryClassGenerator: PythonServiceProxyFactoryClassGenerator
 
     @Inject
@@ -89,7 +92,7 @@ class ProcessorFactory @Inject constructor() {
             ProjectServicesProcessor(mPythonServiceInterfaceClassGenerator),
             ProjectServicesProcessor(selectGenerator(mJavaCommandsRegistryFactoryClassGenerator, mKotlinCommandsRegistryFactoryClassGenerator)),
             ProjectServicesProcessor(mPythonCommandsRegistryFactoryClassGenerator),
-            ProjectDynamicServicesProcessor(mJavaServiceProxyFactoryClassGenerator),
+            ProjectDynamicServicesProcessor(selectGenerator(mJavaServiceProxyFactoryClassGenerator, mKotlinServiceProxyFactoryClassGenerator)),
             ProjectDynamicServicesProcessor(mPythonServiceProxyFactoryClassGenerator),
             ProjectDynamicServicesProcessor(mJavaDynamicServiceConverterClassGenerator),
             ProjectDynamicServicesProcessor(mPythonDynamicServiceConverterClassGenerator),
