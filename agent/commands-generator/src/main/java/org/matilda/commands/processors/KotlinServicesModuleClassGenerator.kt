@@ -2,9 +2,11 @@ package org.matilda.commands.processors
 
 import androidx.room.compiler.processing.XFiler
 import androidx.room.compiler.processing.writeTo
-import com.squareup.javapoet.JavaFile
-import com.squareup.javapoet.MethodSpec
-import com.squareup.javapoet.TypeSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
+import com.squareup.kotlinpoet.javapoet.toKClassName
+import com.squareup.kotlinpoet.javapoet.toKTypeName
 import dagger.Module
 import dagger.Provides
 import org.apache.commons.lang3.StringUtils
@@ -12,10 +14,11 @@ import org.matilda.commands.info.ProjectServices
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
+import org.matilda.commands.utils.fileSpecBuilder
 import javax.inject.Inject
-import javax.lang.model.element.Modifier
 
-class ServicesModuleClassGenerator @Inject constructor() : Processor<ProjectServices> {
+@OptIn(KotlinPoetJavaPoetPreview::class)
+class KotlinServicesModuleClassGenerator @Inject constructor() : Processor<ProjectServices> {
     @Inject
     lateinit var mFiler: XFiler
 
@@ -26,29 +29,27 @@ class ServicesModuleClassGenerator @Inject constructor() : Processor<ProjectServ
     lateinit var mCommandIdGenerator: CommandIdGenerator
 
     override fun process(instance: ProjectServices) {
-        JavaFile.builder(mNameGenerator.commandsGeneratedPackage.packageName, createClassSpec(instance))
+        fileSpecBuilder(mNameGenerator.commandsGeneratedPackage.packageName, createClassSpec(instance))
             .build()
             .writeTo(mFiler)
     }
 
     private fun createClassSpec(services: ProjectServices): TypeSpec {
-        val builder = TypeSpec.classBuilder(mNameGenerator.servicesModuleClassName)
-            .addAnnotation(Module::class.java)
-            .addModifiers(Modifier.PUBLIC)
+        val builder = TypeSpec.classBuilder(mNameGenerator.servicesModuleClassName.toKClassName())
+            .addAnnotation(Module::class)
         services.forEachStaticService { service ->
             if (!service.hasInjectConstructor) {
-                builder.addMethod(createServiceProvideMethod(service.serviceInfo))
+                builder.addFunction(createServiceProvideMethod(service.serviceInfo))
             }
         }
         return builder.build()
     }
 
     private fun createServiceProvideMethod(service: ServiceInfo) =
-        MethodSpec.methodBuilder(getProvideMethodName(service))
-            .addAnnotation(Provides::class.java)
-            .addModifiers(Modifier.STATIC)
-            .returns(service.type.typeName)
-            .addStatement("return new \$T()", service.type.typeName)
+        FunSpec.builder(getProvideMethodName(service))
+            .addAnnotation(Provides::class)
+            .returns(service.type.typeName.toKTypeName())
+            .addStatement("return %T()", service.type.typeName.toKTypeName())
             .build()
 
     private fun getProvideMethodName(service: ServiceInfo) =
