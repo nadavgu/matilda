@@ -17,6 +17,7 @@ import javax.lang.model.SourceVersion
     PythonProperties.PYTHON_GENERATED_PACKAGE_OPTION,
     ProtobufLocations.PROTOBUF_DIRS_OPTION,
     JavaProperties.JAVA_MAIN_PACKAGE_OPTION,
+    JavaProperties.SHOULD_GENERATE_KOTLIN,
 )
 class CommandsGeneratingAnnotationProcessor : JavacBasicAnnotationProcessor() {
     private var mDelegate = CommandsGeneratingDelegateAnnotationProcessor()

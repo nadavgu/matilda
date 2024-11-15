@@ -1,5 +1,6 @@
 package org.matilda.commands.processors
 
+import org.matilda.commands.java.JavaProperties
 import javax.inject.Inject
 
 class ProcessorFactory @Inject constructor() {
@@ -52,6 +53,18 @@ class ProcessorFactory @Inject constructor() {
 
     @set: Inject
     var mWasRun: Boolean = false
+
+    @Inject
+    lateinit var mJavaProperties: JavaProperties
+
+    private val mShouldGenerateKotlin
+        get() = mJavaProperties.shouldGenerateKotlin
+
+    private fun <T> selectGenerator(javaProcessor: T, kotlinProcessor: T) = if (mShouldGenerateKotlin) {
+        kotlinProcessor
+    } else {
+        javaProcessor
+    }
 
     fun createProcessor() = CompoundProcessor(
         listOf(

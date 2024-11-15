@@ -14,6 +14,8 @@ class JavaModule {
     @Provides
     fun javaProperties(processingEnvironment: XProcessingEnv): JavaProperties {
         val javaMainPackage = Package.fromString(processingEnvironment.option(JavaProperties.JAVA_MAIN_PACKAGE_OPTION))
-        return JavaProperties(javaMainPackage)
+        val shouldGenerateKotlin =
+            processingEnvironment.options[JavaProperties.SHOULD_GENERATE_KOTLIN]?.toBoolean() ?: false
+        return JavaProperties(javaMainPackage, shouldGenerateKotlin)
     }
 }

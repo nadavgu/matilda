@@ -27,10 +27,11 @@ ksp {
     arg("protobufDirs", File(buildDir, "extracted-include-protos/main/").absolutePath +
             ":${File(projectDir, "src/main/proto/").absolutePath}")
     arg("javaMainPackage", "org.matilda")
+    arg("generateKotlin", "true")
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:3.23.0")
+    implementation("com.google.protobuf:protobuf-java:4.28.3")
     implementation("com.google.dagger:dagger:2.52")
     ksp("com.google.dagger:dagger-compiler:2.52")
     ksp(project(":commands-generator"))
