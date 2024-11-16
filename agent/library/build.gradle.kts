@@ -20,6 +20,8 @@ java {
 
 val pythonRootDir = rootProject.layout.projectDirectory.dir(providers.gradleProperty("PYTHON_ROOT_DIR_PATH")).get()
 val pythonGeneratedPackage = providers.gradleProperty("PYTHON_GENERATED_PACKAGE").get()
+val protobufVersion: String by project
+val pbandkVersion: String by project
 
 ksp {
     arg("pythonRootDir", pythonRootDir.asFile.absolutePath)
@@ -32,13 +34,14 @@ ksp {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:3.25.5")
+    implementation("com.google.protobuf:protobuf-kotlin:$protobufVersion")
     ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.2")
     implementation("me.tatarka.inject:kotlin-inject-runtime:0.7.2")
     ksp(project(":commands-generator"))
     implementation(project(":commands-generator-api"))
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation("pro.streem.pbandk:pbandk-runtime:$pbandkVersion")
 }
 
 tasks.test {
@@ -48,7 +51,13 @@ tasks.test {
 protobuf {
     protoc {
         // The artifact spec for the Protobuf Compiler
-        artifact = "com.google.protobuf:protoc:3.25.5"
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
+    }
+
+    plugins {
+        create("pbandk") {
+            artifact = "pro.streem.pbandk:protoc-gen-pbandk-jvm:$pbandkVersion:jvm8@jar"
+        }
     }
 
     generateProtoTasks {
@@ -61,6 +70,13 @@ protobuf {
                             into(pythonRootDir)
                         }
                     }
+                }
+
+                remove(findByName("java"))
+            }
+
+            plugins {
+                create("pbandk") {
                 }
             }
         }

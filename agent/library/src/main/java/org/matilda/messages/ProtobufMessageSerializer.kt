@@ -1,21 +1,20 @@
 package org.matilda.messages
 
-import com.google.protobuf.ByteString
 import me.tatarka.inject.annotations.Inject
 import org.matilda.messages.protobuf.ProtobufMessage
+import pbandk.ByteArr
+import pbandk.decodeFromByteArray
+import pbandk.encodeToByteArray
 
 @Inject
 class ProtobufMessageSerializer : MessageSerializer {
     override fun serialize(message: Message): ByteArray {
-        val protobufMessage = ProtobufMessage.newBuilder()
-            .setType(message.type)
-            .setData(ByteString.copyFrom(message.data))
-            .build()
-        return protobufMessage.toByteArray()
+        val protobufMessage = ProtobufMessage(message.type, ByteArr(message.data))
+        return protobufMessage.encodeToByteArray()
     }
 
     override fun deserialize(data: ByteArray): Message {
-        val protobufMessage = ProtobufMessage.parseFrom(data)
-        return Message(protobufMessage.type, protobufMessage.data.toByteArray())
+        val protobufMessage = ProtobufMessage.decodeFromByteArray(data)
+        return Message(protobufMessage.type, protobufMessage.data.array)
     }
 }

@@ -7,6 +7,6 @@ setup(name='matilda',
       packages=find_packages(include='matilda*'),
       install_requires=[
             'maddie @ git+ssh://git@github.com/nadavgu/maddie-python.git@dev',
-            'protobuf~=4.23'
+            'protobuf~=5.28'
       ]
       )

@@ -18,12 +18,14 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+val protobufVersion: String by project
+
 dependencies {
     implementation("me.tatarka.inject:kotlin-inject-runtime:0.7.2")
     implementation("com.google.dagger:dagger:2.52")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    api("com.google.protobuf:protobuf-java:3.25.5")
+    api("com.google.protobuf:protobuf-kotlin:$protobufVersion")
     ksp("com.google.dagger:dagger-compiler:2.52")
     ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.2")
 }
@@ -37,7 +39,7 @@ val pythonRootDir = rootProject.layout.projectDirectory.dir(providers.gradleProp
 protobuf {
     protoc {
         // The artifact spec for the Protobuf Compiler
-        artifact = "com.google.protobuf:protoc:3.25.5"
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
     }
 
     generateProtoTasks {

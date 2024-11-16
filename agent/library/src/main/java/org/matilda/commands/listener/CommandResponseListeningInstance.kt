@@ -3,17 +3,18 @@ package org.matilda.commands.listener
 import org.matilda.commands.CommandFailedException
 import org.matilda.commands.protobuf.CommandResponse
 import org.matilda.messages.listener.MessageListeningInstance
+import pbandk.decodeFromByteArray
 import java.io.Closeable
 
 class CommandResponseListeningInstance(private val mMessageListeningInstance: MessageListeningInstance) : Closeable {
     @Throws(InterruptedException::class)
     fun waitForResponse(): ByteArray {
         val message = mMessageListeningInstance.waitForMessage()
-        val commandResponse = CommandResponse.parseFrom(message.data)
+        val commandResponse = CommandResponse.decodeFromByteArray(message.data)
         if (!commandResponse.success) {
-            throw CommandFailedException(String(commandResponse.result.toByteArray()))
+            throw CommandFailedException(String(commandResponse.result.array))
         }
-        return commandResponse.result.toByteArray()
+        return commandResponse.result.array
     }
 
     private fun stop() {

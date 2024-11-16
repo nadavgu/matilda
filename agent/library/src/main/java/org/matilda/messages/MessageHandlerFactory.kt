@@ -13,7 +13,7 @@ class MessageHandlerFactory(private val mExecutorService: ExecutorService,
                             private val mCommandMessageHandler: CommandMessageHandler) {
 
     fun create(): MessageHandler {
-        mMessageHandlerRegistry.registerHandler(MessageType.COMMAND.number, mCommandMessageHandler)
+        mMessageHandlerRegistry.registerHandler(MessageType.COMMAND.value, mCommandMessageHandler)
         return MessageDispatcher(mExecutorService, mMessageHandlerRegistry)
     }
 }
