@@ -1,15 +1,8 @@
 package org.matilda.commands
 
+import me.tatarka.inject.annotations.Inject
 import java.util.*
-import javax.inject.Inject
 
-class PluginDependencies @Inject constructor() {
-    @Inject
-    lateinit var commandRegistryManager: CommandRegistryManager
-
-    @Inject
-    lateinit var commandRunner: CommandRunner
-
-    @Inject
-    lateinit var random: Random
-}
+@Inject
+class PluginDependencies(val commandRegistryManager: CommandRegistryManager, val commandRunner: CommandRunner,
+                         val random: Random)

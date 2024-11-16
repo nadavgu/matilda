@@ -18,4 +18,18 @@ class JavaModule {
             processingEnvironment.options[JavaProperties.SHOULD_GENERATE_KOTLIN]?.toBoolean() ?: false
         return JavaProperties(javaMainPackage, shouldGenerateKotlin)
     }
+
+    @Provides
+    fun diFramework(processingEnvironment: XProcessingEnv, javaProperties: JavaProperties): DiFrameWork {
+        val diFramework = processingEnvironment.options[JavaProperties.DI_FRAMEWORK] ?: return DiFrameWork.Dagger
+        return when (diFramework.lowercase()) {
+            "dagger" -> DiFrameWork.Dagger
+            "kotlininject" -> DiFrameWork.KotlinInject.also {
+                if (!javaProperties.shouldGenerateKotlin) {
+                    throw IllegalArgumentException("Kotlin is required for KotlinInject DI framework")
+                }
+            }
+            else -> throw IllegalArgumentException("Invalid DI framework: $diFramework")
+        }
+    }
 }

@@ -9,6 +9,7 @@ import com.squareup.kotlinpoet.javapoet.toKClassName
 import com.squareup.kotlinpoet.javapoet.toKTypeName
 import org.matilda.commands.CommandRunner
 import org.matilda.commands.ServiceProxyFactory
+import org.matilda.commands.di.DiFrameWork
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.JAVA_DEPENDENCIES_FIELD_NAME
@@ -23,6 +24,9 @@ class KotlinServiceProxyFactoryClassGenerator @Inject constructor() : Processor<
     @Inject
     lateinit var mNameGenerator: NameGenerator
 
+    @Inject
+    lateinit var mDiFrameWork: DiFrameWork
+
     override fun process(instance: ServiceInfo) {
         fileSpecBuilder(mNameGenerator.forService(instance).javaServiceProxyFactoryClassName.packageName(),
             createClassSpec(instance))
@@ -34,7 +38,7 @@ class KotlinServiceProxyFactoryClassGenerator @Inject constructor() : Processor<
         TypeSpec.classBuilder(mNameGenerator.forService(service).javaServiceProxyFactoryClassName.toKClassName())
             .addSuperinterface(ServiceProxyFactory::class.asClassName().plusParameter(
                 service.type.typeName.toKTypeName()))
-            .primaryConstructor(createInjectConstructor())
+            .primaryConstructor(createInjectConstructor(service))
             .addProperty(createCommandRunnerField())
             .addProperty(createDependenciesField(service))
             .addFunction(createServiceProxyMethod(service))
@@ -42,22 +46,22 @@ class KotlinServiceProxyFactoryClassGenerator @Inject constructor() : Processor<
 
     private fun createCommandRunnerField() =
         PropertySpec.builder(COMMAND_RUNNER_FIELD_NAME, CommandRunner::class)
-            .addAnnotation(Inject::class)
-            .addModifiers(KModifier.LATEINIT)
-            .mutable(true)
+            .addModifiers(KModifier.PRIVATE)
+            .initializer(COMMAND_RUNNER_FIELD_NAME)
             .build()
 
 
     private fun createDependenciesField(service: ServiceInfo) =
         PropertySpec.builder(JAVA_DEPENDENCIES_FIELD_NAME, mNameGenerator.forService(service).dependenciesClassName.toKTypeName())
-            .addAnnotation(Inject::class)
-            .addModifiers(KModifier.LATEINIT)
-            .mutable(true)
+            .addModifiers(KModifier.PRIVATE)
+            .initializer(JAVA_DEPENDENCIES_FIELD_NAME)
             .build()
 
-    private fun createInjectConstructor() =
+    private fun createInjectConstructor(service: ServiceInfo) =
         FunSpec.constructorBuilder()
-            .addAnnotation(Inject::class)
+            .addAnnotation(mDiFrameWork.Inject)
+            .addParameter(COMMAND_RUNNER_FIELD_NAME, CommandRunner::class)
+            .addParameter(JAVA_DEPENDENCIES_FIELD_NAME, mNameGenerator.forService(service).dependenciesClassName.toKTypeName())
             .build()
 
     private fun createServiceProxyMethod(service: ServiceInfo) =

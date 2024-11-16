@@ -9,6 +9,7 @@ import com.squareup.kotlinpoet.javapoet.toKClassName
 import com.squareup.kotlinpoet.javapoet.toKTypeName
 import org.matilda.commands.CommandRegistry
 import org.matilda.commands.CommandRegistryFactory
+import org.matilda.commands.di.DiFrameWork
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
@@ -27,6 +28,9 @@ class KotlinCommandsRegistryFactoryClassGenerator @Inject constructor() : Proces
     @Inject
     lateinit var mCommandIdGenerator: CommandIdGenerator
 
+    @Inject
+    lateinit var mDiFrameWork: DiFrameWork
+
     override fun process(instance: ServiceInfo) {
         fileSpecBuilder(mNameGenerator.forService(instance).commandRegistryFactoryClassName.packageName(),
             createClassSpec(instance))
@@ -37,7 +41,7 @@ class KotlinCommandsRegistryFactoryClassGenerator @Inject constructor() : Proces
     private fun createClassSpec(service: ServiceInfo) =
         TypeSpec.classBuilder(mNameGenerator.forService(service).commandRegistryFactoryClassName.toKClassName())
             .addSuperinterface(CommandRegistryFactory::class.asClassName().plusParameter(service.type.typeName.toKTypeName()))
-            .primaryConstructor(createInjectConstructor())
+            .primaryConstructor(createInjectConstructor(service))
             .addProperty(createDependenciesField(service))
             .addFunction(createRegisterCommandsMethod(service))
             .addFunction(createCommandRegistryMethod(service))
@@ -46,9 +50,8 @@ class KotlinCommandsRegistryFactoryClassGenerator @Inject constructor() : Proces
     private fun createDependenciesField(service: ServiceInfo) =
         PropertySpec.builder(JAVA_DEPENDENCIES_FIELD_NAME,
             mNameGenerator.forService(service).dependenciesClassName.toKTypeName())
-            .addAnnotation(Inject::class)
-            .addModifiers(KModifier.LATEINIT)
-            .mutable(true)
+            .addModifiers(KModifier.PRIVATE)
+            .initializer(JAVA_DEPENDENCIES_FIELD_NAME)
             .build()
     private fun createRegisterCommandsMethod(service: ServiceInfo): FunSpec {
         val commandRegistryParameter =
@@ -67,9 +70,11 @@ class KotlinCommandsRegistryFactoryClassGenerator @Inject constructor() : Proces
         return builder.build()
     }
 
-    private fun createInjectConstructor() =
+    private fun createInjectConstructor(service: ServiceInfo) =
         FunSpec.constructorBuilder()
-            .addAnnotation(Inject::class)
+            .addAnnotation(mDiFrameWork.Inject)
+            .addParameter(ParameterSpec.builder(JAVA_DEPENDENCIES_FIELD_NAME,
+                mNameGenerator.forService(service).dependenciesClassName.toKTypeName()).build())
             .build()
 
     private fun createCommandRegistryMethod(service: ServiceInfo) =

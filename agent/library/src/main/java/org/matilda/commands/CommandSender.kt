@@ -1,15 +1,13 @@
 package org.matilda.commands
 
 import com.google.protobuf.ByteString
+import me.tatarka.inject.annotations.Inject
 import org.matilda.commands.protobuf.CommandRequest
 import org.matilda.messages.Message
 import org.matilda.messages.MessageSender
 import org.matilda.messages.protobuf.MessageType
-import javax.inject.Inject
 
-class CommandSender @Inject constructor() {
-    @Inject
-    lateinit var mMessageSender: MessageSender
+class CommandSender @Inject constructor(private var mMessageSender: MessageSender) {
     fun send(commandRegistryId: Int, commandType: Int, commandId: Int, parameter: ByteArray) {
         val commandRequest = CommandRequest.newBuilder()
             .setRegistryId(commandRegistryId)

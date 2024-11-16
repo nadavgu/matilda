@@ -28,12 +28,13 @@ ksp {
             ":${File(projectDir, "src/main/proto/").absolutePath}")
     arg("javaMainPackage", "org.matilda")
     arg("generateKotlin", "true")
+    arg("diFramework", "kotlinInject")
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:4.28.3")
-    implementation("com.google.dagger:dagger:2.52")
-    ksp("com.google.dagger:dagger-compiler:2.52")
+    implementation("com.google.protobuf:protobuf-java:3.25.5")
+    ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.2")
+    implementation("me.tatarka.inject:kotlin-inject-runtime:0.7.2")
     ksp(project(":commands-generator"))
     implementation(project(":commands-generator-api"))
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
@@ -47,7 +48,7 @@ tasks.test {
 protobuf {
     protoc {
         // The artifact spec for the Protobuf Compiler
-        artifact = "com.google.protobuf:protoc:3.23.0"
+        artifact = "com.google.protobuf:protoc:3.25.5"
     }
 
     generateProtoTasks {

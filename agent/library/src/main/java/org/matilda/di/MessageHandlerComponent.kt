@@ -1,12 +1,12 @@
 package org.matilda.di
 
-import dagger.Module
-import dagger.Provides
+import me.tatarka.inject.annotations.Component
+import me.tatarka.inject.annotations.Provides
 import org.matilda.messages.MessageHandlerFactory
 import org.matilda.messages.handlers.MessageHandler
 
-@Module(includes = [ExecutorServiceModule::class])
-class MessageHandlerModule {
+@Component
+interface MessageHandlerComponent : ExecutorServiceComponent {
     @Provides
     fun messageHandler(messageHandlerFactory: MessageHandlerFactory): MessageHandler {
         return messageHandlerFactory.create()

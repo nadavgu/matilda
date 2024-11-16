@@ -1,18 +1,19 @@
 package org.matilda.di
 
-import dagger.Module
-import dagger.Provides
+import me.tatarka.inject.annotations.Component
+import me.tatarka.inject.annotations.Provides
+import org.matilda.commands.MatildaScope
 import org.matilda.di.destructors.DestructionManager
 import org.matilda.logger.Logger
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import javax.inject.Singleton
 
-@Module(includes = [LoggerModule::class])
-class ExecutorServiceModule {
+@Component
+@MatildaScope
+interface ExecutorServiceComponent {
     @Provides
-    @Singleton
+    @MatildaScope
     fun executorService(destructionManager: DestructionManager, logger: Logger): ExecutorService {
         val executorService = Executors.newCachedThreadPool()
         destructionManager.addDestructor { shutdownExecutorService(executorService, logger) }

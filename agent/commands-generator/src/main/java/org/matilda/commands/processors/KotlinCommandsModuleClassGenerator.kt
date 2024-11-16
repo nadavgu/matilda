@@ -2,20 +2,24 @@ package org.matilda.commands.processors
 
 import androidx.room.compiler.processing.XFiler
 import androidx.room.compiler.processing.writeTo
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import com.squareup.kotlinpoet.javapoet.toKClassName
 import com.squareup.kotlinpoet.javapoet.toKTypeName
 import dagger.Module
-import dagger.Provides
+import me.tatarka.inject.annotations.Component
+import org.apache.commons.lang3.StringUtils
 import org.matilda.commands.CommandRegistry
+import org.matilda.commands.di.DiFrameWork
+import org.matilda.commands.di.staticProvidesFunctionBuilder
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ProjectServices
 import org.matilda.commands.names.CommandIdGenerator
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.utils.fileSpecBuilder
 import javax.inject.Inject
-import javax.inject.Singleton
 
 @OptIn(KotlinPoetJavaPoetPreview::class)
 class KotlinCommandsModuleClassGenerator @Inject constructor() : Processor<ProjectServices> {
@@ -28,6 +32,9 @@ class KotlinCommandsModuleClassGenerator @Inject constructor() : Processor<Proje
     @Inject
     lateinit var mCommandIdGenerator: CommandIdGenerator
 
+    @Inject
+    lateinit var mDiFrameWork: DiFrameWork
+
     override fun process(instance: ProjectServices) {
         fileSpecBuilder(mNameGenerator.commandsGeneratedPackage.packageName, createClassSpec(instance))
             .build()
@@ -35,55 +42,43 @@ class KotlinCommandsModuleClassGenerator @Inject constructor() : Processor<Proje
     }
 
     private fun createClassSpec(services: ProjectServices): TypeSpec {
-        val builder = TypeSpec.classBuilder(mNameGenerator.commandsModuleClassName.toKClassName())
+        return TypeSpec.interfaceBuilder(mNameGenerator.commandsModuleClassName.toKClassName())
             .addAnnotation(createModuleAnnotation())
-        services.forEachStaticCommand { command -> builder.addProperty(createCommandField(command)) }
-        return builder.primaryConstructor(createInjectConstructor())
-            .addFunction(createRegisterCommandsMethod(services))
-            .addFunction(createCommandRegistryProviderMethod())
+            .apply {
+                if (mDiFrameWork == DiFrameWork.KotlinInject) {
+                    addAnnotation(mDiFrameWork.Singleton)
+                    addSuperinterface(mNameGenerator.servicesModuleClassName.toKClassName())
+                }
+            }
+            .staticProvidesFunctionBuilder(mDiFrameWork) {
+                addFunction(createCommandRegistryProviderMethod(services))
+            }
             .build()
     }
 
     private fun createModuleAnnotation() =
-        AnnotationSpec.builder(Module::class)
-            .addMember("includes = [%T::class]", mNameGenerator.servicesModuleClassName.toKClassName())
-            .build()
-
-    private fun createCommandField(command: CommandInfo) =
-        PropertySpec.builder(getCommandFieldName(command), getCommandTypeName(command))
-            .addAnnotation(Inject::class)
-            .addModifiers(KModifier.LATEINIT)
-            .mutable(true)
-            .build()
-
-    private fun createRegisterCommandsMethod(services: ProjectServices): FunSpec {
-        val commandRegistryParameter =
-            ParameterSpec.builder(COMMAND_REGISTRY_PARAMETER_NAME, CommandRegistry::class).build()
-        val builder = FunSpec.builder(REGISTER_COMMANDS_METHOD_NAME)
-            .addParameter(commandRegistryParameter)
-        services.forEachStaticCommand { command ->
-            builder.addStatement("%L.addCommand(%L, %L)", COMMAND_REGISTRY_PARAMETER_NAME,
-                mCommandIdGenerator.generate(command), getCommandFieldName(command))
+        when (mDiFrameWork) {
+            DiFrameWork.Dagger -> AnnotationSpec.builder(Module::class)
+                .addMember("includes = [%T::class]", mNameGenerator.servicesModuleClassName.toKClassName())
+                .build()
+            DiFrameWork.KotlinInject -> AnnotationSpec.builder(Component::class).build()
         }
-        return builder.build()
-    }
 
-    private fun getCommandFieldName(command: CommandInfo) = "m" + mNameGenerator.forCommand(command).fullCommandName
+    private fun getCommandParameterName(command: CommandInfo) =
+        StringUtils.uncapitalize(mNameGenerator.forCommand(command).fullCommandName)
 
-    private fun createInjectConstructor() =
-        FunSpec.constructorBuilder()
-            .addAnnotation(Inject::class)
-            .build()
-
-    private fun createCommandRegistryProviderMethod() =
+    private fun createCommandRegistryProviderMethod(services: ProjectServices) =
         FunSpec.builder("commandRegistry")
-            .addAnnotation(Provides::class)
-            .addAnnotation(Singleton::class)
-            .addParameter(ParameterSpec.builder(COMMANDS_MODULE_PARAMETER_NAME,
-                mNameGenerator.commandsModuleClassName.toKTypeName()).build())
+            .addAnnotation(mDiFrameWork.Provides)
+            .addAnnotation(mDiFrameWork.Singleton)
             .addStatement("val %L = %T()", COMMAND_REGISTRY_VARIABLE_NAME, CommandRegistry::class)
-            .addStatement("%L.%L(%L)", COMMANDS_MODULE_PARAMETER_NAME, REGISTER_COMMANDS_METHOD_NAME,
-                COMMAND_REGISTRY_VARIABLE_NAME)
+            .apply {
+                services.forEachStaticCommand { command ->
+                    addParameter(getCommandParameterName(command), getCommandTypeName(command))
+                    addStatement("%L.addCommand(%L, %L)", COMMAND_REGISTRY_PARAMETER_NAME,
+                        mCommandIdGenerator.generate(command), getCommandParameterName(command))
+                }
+            }
             .addStatement("return %L", COMMAND_REGISTRY_VARIABLE_NAME)
             .returns(CommandRegistry::class)
             .build()
@@ -92,9 +87,7 @@ class KotlinCommandsModuleClassGenerator @Inject constructor() : Processor<Proje
         mNameGenerator.forCommand(command).rawCommandClassName.toKTypeName()
 
     companion object {
-        private const val REGISTER_COMMANDS_METHOD_NAME = "registerCommands"
         private const val COMMAND_REGISTRY_PARAMETER_NAME = "commandRegistry"
         private const val COMMAND_REGISTRY_VARIABLE_NAME = "commandRegistry"
-        private const val COMMANDS_MODULE_PARAMETER_NAME = "commandsModule"
     }
 }

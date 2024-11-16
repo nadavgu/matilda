@@ -1,13 +1,11 @@
 package org.matilda.messages
 
 import com.google.protobuf.ByteString
+import me.tatarka.inject.annotations.Inject
 import org.matilda.messages.protobuf.ProtobufMessage
-import java.io.InputStream
-import javax.inject.Inject
 
-class ProtobufMessageSerializer @Inject constructor() : MessageSerializer {
-    @Inject
-    lateinit var mInputStream: InputStream
+@Inject
+class ProtobufMessageSerializer : MessageSerializer {
     override fun serialize(message: Message): ByteArray {
         val protobufMessage = ProtobufMessage.newBuilder()
             .setType(message.type)

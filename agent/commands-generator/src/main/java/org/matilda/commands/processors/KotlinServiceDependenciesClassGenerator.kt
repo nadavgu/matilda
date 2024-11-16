@@ -4,12 +4,12 @@ import androidx.room.compiler.processing.XFiler
 import androidx.room.compiler.processing.XType
 import androidx.room.compiler.processing.writeTo
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import com.squareup.kotlinpoet.javapoet.toKClassName
 import com.squareup.kotlinpoet.javapoet.toKTypeName
+import org.matilda.commands.di.DiFrameWork
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.NameGenerator
@@ -30,6 +30,9 @@ class KotlinServiceDependenciesClassGenerator @Inject constructor() : Processor<
     @Inject
     lateinit var mTypeConverter: TypeConverter
 
+    @Inject
+    lateinit var mDiFrameWork: DiFrameWork
+
     override fun process(instance: ServiceInfo) {
         fileSpecBuilder(mNameGenerator.forService(instance).dependenciesClassName.packageName(),
             createClassSpec(instance))
@@ -37,18 +40,18 @@ class KotlinServiceDependenciesClassGenerator @Inject constructor() : Processor<
             .writeTo(mFiler)
     }
 
-    private fun createClassSpec(service: ServiceInfo) =
-        TypeSpec.classBuilder(mNameGenerator.forService(service).dependenciesClassName.toKClassName())
-            .addProperties(createDependenciesFields(service))
-            .primaryConstructor(createInjectConstructor())
+    private fun createClassSpec(service: ServiceInfo): TypeSpec {
+        val dependencies = collectDependencies(service)
+        return TypeSpec.classBuilder(mNameGenerator.forService(service).dependenciesClassName.toKClassName())
+            .addProperties(createDependenciesFields(dependencies))
+            .primaryConstructor(createInjectConstructor(dependencies))
             .build()
+    }
 
-    private fun createDependenciesFields(service: ServiceInfo) = collectDependencies(service)
+    private fun createDependenciesFields(dependencies: Set<JavaDependencyInfo>) = dependencies
         .map { dependencyInfo ->
             PropertySpec.builder(dependencyInfo.variableName, dependencyInfo.typeName.toKTypeName())
-                .addModifiers(KModifier.LATEINIT)
-                .mutable(true)
-                .addAnnotation(Inject::class)
+                .initializer(dependencyInfo.variableName)
                 .build()
         }
 
@@ -64,8 +67,13 @@ class KotlinServiceDependenciesClassGenerator @Inject constructor() : Processor<
 
     private fun collectConverterDependencies(type: XType) = mTypeConverter.kotlinConverter(type).dependencies
 
-    private fun createInjectConstructor() =
+    private fun createInjectConstructor(dependencies: Set<JavaDependencyInfo>) =
         FunSpec.constructorBuilder()
-            .addAnnotation(Inject::class)
+            .addAnnotation(mDiFrameWork.Inject)
+            .apply {
+                dependencies.forEach {
+                    addParameter(it.variableName, it.typeName.toKTypeName())
+                }
+            }
             .build()
 }

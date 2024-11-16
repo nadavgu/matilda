@@ -1,15 +1,11 @@
 package org.matilda.messages
 
+import me.tatarka.inject.annotations.Inject
 import org.matilda.messages.handlers.MessageHandler
 import java.io.EOFException
-import javax.inject.Inject
 
-class MessageServer @Inject constructor() {
-    @Inject
-    lateinit var mMessageReceiver: MessageReceiver
-
-    @Inject
-    lateinit var mMessageHandler: MessageHandler
+@Inject
+class MessageServer(private val mMessageReceiver: MessageReceiver, private val mMessageHandler: MessageHandler) {
     fun start() {
         while (true) {
             try {

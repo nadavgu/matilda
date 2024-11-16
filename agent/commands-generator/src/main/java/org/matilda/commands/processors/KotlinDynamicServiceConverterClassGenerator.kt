@@ -12,6 +12,7 @@ import com.squareup.kotlinpoet.javapoet.toKClassName
 import com.squareup.kotlinpoet.javapoet.toKTypeName
 import org.apache.commons.lang3.StringUtils
 import org.matilda.commands.CommandRegistryManager
+import org.matilda.commands.di.DiFrameWork
 import org.matilda.commands.info.ServiceInfo
 import org.matilda.commands.names.NameGenerator
 import org.matilda.commands.types.DynamicServiceConverter
@@ -25,6 +26,9 @@ class KotlinDynamicServiceConverterClassGenerator @Inject constructor() : Proces
 
     @Inject
     lateinit var mNameGenerator: NameGenerator
+
+    @Inject
+    lateinit var mDiFrameWork: DiFrameWork
 
     override fun process(instance: ServiceInfo) {
         fileSpecBuilder(mNameGenerator.forService(instance).dynamicServiceConverterClassName.packageName(),
@@ -44,7 +48,7 @@ class KotlinDynamicServiceConverterClassGenerator @Inject constructor() : Proces
 
     private fun createInjectConstructor(service: ServiceInfo) =
         FunSpec.constructorBuilder()
-            .addAnnotation(Inject::class)
+            .addAnnotation(mDiFrameWork.Inject)
             .addParameter(ParameterSpec.builder(COMMAND_REGISTRY_MANAGER_VARIABLE_NAME,
                 CommandRegistryManager::class).build())
             .addParameter(ParameterSpec.builder(service.commandRegistryFactoryParameterName,

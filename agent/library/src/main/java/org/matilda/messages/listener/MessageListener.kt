@@ -1,14 +1,12 @@
 package org.matilda.messages.listener
 
+import me.tatarka.inject.annotations.Inject
 import org.matilda.messages.Message
 import org.matilda.messages.MessageHandlerRegistry
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.function.Predicate
-import javax.inject.Inject
 
-class MessageListener @Inject internal constructor() {
-    @Inject
-    lateinit var mMessageHandlerRegistry: MessageHandlerRegistry
+class MessageListener @Inject internal constructor(private val mMessageHandlerRegistry: MessageHandlerRegistry) {
     fun listen(messageType: Int, predicate: Predicate<Message>? = null): MessageListeningInstance {
         val queue = LinkedBlockingQueue<Message>()
         val registration = mMessageHandlerRegistry.registerHandler(messageType) { message: Message ->

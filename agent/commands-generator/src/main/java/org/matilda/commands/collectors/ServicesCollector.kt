@@ -3,6 +3,7 @@ package org.matilda.commands.collectors
 import androidx.room.compiler.processing.*
 import org.matilda.commands.MatildaDynamicService
 import org.matilda.commands.MatildaService
+import org.matilda.commands.di.DiFrameWork
 import org.matilda.commands.exceptions.AnnotationProcessingException
 import org.matilda.commands.info.ProjectServices
 import org.matilda.commands.info.ServiceInfo
@@ -16,6 +17,10 @@ class ServicesCollector @Inject constructor() {
 
     @Inject
     lateinit var mCommandsCollector: CommandsCollector
+
+    @Inject
+    lateinit var mDiFrameWork: DiFrameWork
+
     fun collect() = ProjectServices(collectStaticServices(), collectDynamicServices())
 
     private fun collectStaticServices() = collectServices(MatildaService::class).map { (element, serviceInfo) ->
@@ -46,7 +51,7 @@ class ServicesCollector @Inject constructor() {
         if (constructors.isEmpty()) {
             return false
         }
-        if (constructors.any { constructor -> constructor.getAnnotation(Inject::class) != null }) {
+        if (constructors.any { constructor -> constructor.getAnnotation(mDiFrameWork.Inject) != null }) {
             return true
         }
         if (constructors.any { constructor -> isNonDefaultConstructor(constructor) }) {

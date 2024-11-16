@@ -6,5 +6,6 @@ data class JavaProperties(val javaMainPackage: Package, val shouldGenerateKotlin
     companion object {
         const val JAVA_MAIN_PACKAGE_OPTION = "javaMainPackage"
         const val SHOULD_GENERATE_KOTLIN = "generateKotlin"
+        const val DI_FRAMEWORK = "diFramework"
     }
 }

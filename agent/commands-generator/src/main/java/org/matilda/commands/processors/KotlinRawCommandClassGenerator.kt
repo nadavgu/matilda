@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import com.squareup.kotlinpoet.javapoet.toKClassName
 import com.squareup.kotlinpoet.javapoet.toKTypeName
 import org.matilda.commands.Command
+import org.matilda.commands.di.DiFrameWork
 import org.matilda.commands.info.CommandInfo
 import org.matilda.commands.info.ParameterInfo
 import org.matilda.commands.info.hasReturnValue
@@ -29,6 +30,9 @@ class KotlinRawCommandClassGenerator @Inject constructor() : Processor<CommandIn
 
     @Inject
     lateinit var mTypeConverter: TypeConverter
+
+    @Inject
+    lateinit var mDiFrameWork: DiFrameWork
 
     override fun process(instance: CommandInfo) {
         fileSpecBuilder(mNameGenerator.forCommand(instance).rawCommandClassName.packageName(),
@@ -59,7 +63,7 @@ class KotlinRawCommandClassGenerator @Inject constructor() : Processor<CommandIn
 
     private fun createInjectConstructor(command: CommandInfo) =
         FunSpec.constructorBuilder()
-            .addAnnotation(Inject::class)
+            .addAnnotation(mDiFrameWork.Inject)
             .addParameter(ParameterSpec.builder(SERVICE_PARAMETER_NAME,
                 command.service.type.typeName.toKTypeName()).build())
             .addParameter(ParameterSpec.builder(DEPENDENCIES_PARAMETER_NAME,

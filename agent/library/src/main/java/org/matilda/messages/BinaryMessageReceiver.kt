@@ -1,17 +1,14 @@
 package org.matilda.messages
 
+import me.tatarka.inject.annotations.Inject
 import java.io.DataInputStream
 import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import javax.inject.Inject
 
-class BinaryMessageReceiver @Inject constructor(inputStream: InputStream) : MessageReceiver {
+@Inject
+class BinaryMessageReceiver(private val mSerializer: MessageSerializer, inputStream: InputStream) : MessageReceiver {
     private val mInputStream = DataInputStream(inputStream)
-
-    @Inject
-    lateinit var mSerializer: MessageSerializer
-
 
     override fun receive(): Message {
         val length = readLength()

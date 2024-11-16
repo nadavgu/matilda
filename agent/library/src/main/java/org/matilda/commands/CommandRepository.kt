@@ -1,14 +1,11 @@
 package org.matilda.commands
 
-import javax.inject.Inject
-import javax.inject.Singleton
+import me.tatarka.inject.annotations.Inject
 
-@Singleton
-class CommandRepository @Inject constructor() : CommandRegistryManager {
+@MatildaScope
+@Inject
+class CommandRepository(private val mCommandRegistryIdGenerator: CommandRegistryIdGenerator) : CommandRegistryManager {
     private val mCommandsRegistries = mutableMapOf<Int, CommandRegistry>()
-
-    @Inject
-    lateinit var mCommandRegistryIdGenerator: CommandRegistryIdGenerator
 
     override fun addCommandRegistry(commandRegistry: CommandRegistry) = mCommandRegistryIdGenerator.generate().also {
         mCommandsRegistries[it] = commandRegistry

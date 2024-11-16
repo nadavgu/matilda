@@ -1,10 +1,9 @@
 package org.matilda.commands
 
+import me.tatarka.inject.annotations.Inject
 import java.util.*
-import javax.inject.Inject
 
-class CommandRegistryIdGenerator @Inject internal constructor() {
-    @Inject
-    lateinit var mRandom: Random
+@Inject
+class CommandRegistryIdGenerator(private val mRandom: Random) {
     fun generate() = mRandom.nextInt()
 }

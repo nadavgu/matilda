@@ -1,12 +1,12 @@
 package org.matilda.services.plugins
 
+import me.tatarka.inject.annotations.Inject
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.util.jar.JarEntry
 import java.util.jar.JarInputStream
-import javax.inject.Inject
 
 class JavaLoader @Inject internal constructor() {
     fun load(jarBytes: ByteArray): ClassLoader {

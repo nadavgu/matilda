@@ -1,17 +1,13 @@
 package org.matilda.commands
 
+import me.tatarka.inject.annotations.Inject
 import org.matilda.commands.listener.CommandResponseListener
-import javax.inject.Inject
 
-class CommunicationCommandRunner @Inject internal constructor() : CommandRunner {
-    @Inject
-    lateinit var mCommandSender: CommandSender
 
-    @Inject
-    lateinit var mCommandResponseListener: CommandResponseListener
-
-    @Inject
-    lateinit var mCommandIdGenerator: CommandIdGenerator
+class CommunicationCommandRunner
+@Inject internal constructor(private val mCommandSender: CommandSender,
+                             private val mCommandResponseListener: CommandResponseListener,
+                             private val mCommandIdGenerator: CommandIdGenerator) : CommandRunner {
     override fun run(registryId: Int, commandType: Int, parameter: ByteArray): ByteArray {
         val commandId = mCommandIdGenerator.generate()
         try {

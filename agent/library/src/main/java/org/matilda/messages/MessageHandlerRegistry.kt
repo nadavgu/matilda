@@ -1,11 +1,12 @@
 package org.matilda.messages
 
+import me.tatarka.inject.annotations.Inject
+import org.matilda.commands.MatildaScope
 import org.matilda.messages.handlers.MessageHandler
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class MessageHandlerRegistry @Inject constructor() : MessageHandler {
+@MatildaScope
+@Inject
+class MessageHandlerRegistry : MessageHandler {
     private val mMessageHandlers = mutableMapOf<Int, MutableList<MessageHandler>>()
     fun registerHandler(type: Int, handler: MessageHandler): MessageHandlerRegistration {
         mMessageHandlers.getOrPut(type) { mutableListOf() }.add(handler)

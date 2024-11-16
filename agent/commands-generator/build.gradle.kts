@@ -22,6 +22,7 @@ dependencies {
     implementation(project(":commands-generator-api"))
     implementation("com.google.dagger:dagger:2.51.1")
     ksp("com.google.dagger:dagger-compiler:2.51.1")
+    implementation("me.tatarka.inject:kotlin-inject-runtime:0.7.2")
     implementation("com.squareup:javapoet:1.10.0")
     implementation("com.squareup:kotlinpoet:2.0.0")
     implementation("org.apache.commons:commons-lang3:3.12.0")

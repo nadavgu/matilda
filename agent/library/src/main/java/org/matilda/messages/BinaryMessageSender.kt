@@ -1,16 +1,14 @@
 package org.matilda.messages
 
+import me.tatarka.inject.annotations.Inject
 import java.io.DataOutputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import javax.inject.Inject
 
-class BinaryMessageSender @Inject constructor(outputStream: OutputStream) : MessageSender {
+@Inject
+class BinaryMessageSender(outputStream: OutputStream, private val mSerializer: MessageSerializer) : MessageSender {
     private val mOutputStream = DataOutputStream(outputStream)
-
-    @Inject
-    lateinit var mSerializer: MessageSerializer
 
     override fun send(message: Message) {
         val serializedMessage = mSerializer.serialize(message)

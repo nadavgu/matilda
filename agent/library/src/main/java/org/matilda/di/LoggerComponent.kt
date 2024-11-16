@@ -1,12 +1,12 @@
 package org.matilda.di
 
-import dagger.Module
-import dagger.Provides
+import me.tatarka.inject.annotations.Component
+import me.tatarka.inject.annotations.Provides
 import org.matilda.logger.CompoundLogger
 import org.matilda.logger.Logger
 
-@Module
-class LoggerModule(vararg loggers: Logger) {
+@Component
+abstract class LoggerComponent(loggers: Array<out Logger>) {
     private val mLogger = CompoundLogger(*loggers)
 
 

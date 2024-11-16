@@ -1,6 +1,7 @@
 package org.matilda.commands
 
 import com.google.protobuf.ByteString
+import me.tatarka.inject.annotations.Inject
 import org.matilda.commands.protobuf.CommandRequest
 import org.matilda.commands.protobuf.CommandResponse
 import org.matilda.logger.Logger
@@ -11,19 +12,11 @@ import org.matilda.messages.protobuf.MessageType
 import java.io.IOException
 import java.io.PrintWriter
 import java.io.StringWriter
-import javax.inject.Inject
-import javax.inject.Named
 
-class CommandMessageHandler @Inject internal constructor() : MessageHandler {
-    @Inject
-    lateinit var mMessageSender: MessageSender
-
-    @Inject
-    @Named(CommandsModule.INITIALIZED_COMMAND_REPOSITORY_TAG)
-    lateinit var mCommandRepository: CommandRepository
-
-    @Inject
-    lateinit var mLogger: Logger
+@Inject
+class CommandMessageHandler(private val mMessageSender: MessageSender,
+                            @InitializedCommandRepository private val mCommandRepository: CommandRepository,
+                            private val mLogger: Logger) : MessageHandler {
     override fun handle(message: Message) {
         try {
             val request = CommandRequest.parseFrom(message.data)

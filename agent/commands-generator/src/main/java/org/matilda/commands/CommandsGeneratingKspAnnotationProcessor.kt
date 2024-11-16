@@ -19,6 +19,7 @@ import javax.lang.model.SourceVersion
     ProtobufLocations.PROTOBUF_DIRS_OPTION,
     JavaProperties.JAVA_MAIN_PACKAGE_OPTION,
     JavaProperties.SHOULD_GENERATE_KOTLIN,
+    JavaProperties.DI_FRAMEWORK,
 )
 class CommandsGeneratingKspAnnotationProcessor(symbolProcessorEnvironment: SymbolProcessorEnvironment) :
     KspBasicAnnotationProcessor(symbolProcessorEnvironment) {
