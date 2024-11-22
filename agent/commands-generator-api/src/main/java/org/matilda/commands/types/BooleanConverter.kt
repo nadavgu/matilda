@@ -1,14 +1,15 @@
 package org.matilda.commands.types
 
-import com.google.protobuf.Any
-import com.google.protobuf.BoolValue
+import pbandk.unpack
+import pbandk.wkt.Any
+import pbandk.wkt.BoolValue
 
 class BooleanConverter : ProtobufConverter<Boolean> {
     override fun convertToProtobuf(obj: Boolean): BoolValue {
-        return BoolValue.newBuilder().setValue(obj).build()
+        return BoolValue(obj)
     }
 
     override fun convertFromProtobuf(obj: Any): Boolean {
-        return obj.unpack(BoolValue::class.java).value
+        return obj.unpack(BoolValue.Companion).value
     }
 }

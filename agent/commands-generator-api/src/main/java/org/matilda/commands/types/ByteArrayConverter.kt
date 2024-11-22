@@ -1,17 +1,17 @@
 package org.matilda.commands.types
 
-import com.google.protobuf.Any
-import com.google.protobuf.ByteString
-import com.google.protobuf.BytesValue
+import pbandk.ByteArr
+import pbandk.wkt.Any
+import pbandk.wkt.BytesValue
 
 class ByteArrayConverter : ProtobufConverter<ByteArray> {
-    private val mByteStringConverter = ByteStringConverter()
+    private val mByteArrConverter = ByteArrConverter()
 
     override fun convertToProtobuf(obj: ByteArray): BytesValue {
-        return mByteStringConverter.convertToProtobuf(ByteString.copyFrom(obj))
+        return mByteArrConverter.convertToProtobuf(ByteArr(obj))
     }
 
     override fun convertFromProtobuf(obj: Any): ByteArray {
-        return mByteStringConverter.convertFromProtobuf(obj).toByteArray()
+        return mByteArrConverter.convertFromProtobuf(obj).array
     }
 }

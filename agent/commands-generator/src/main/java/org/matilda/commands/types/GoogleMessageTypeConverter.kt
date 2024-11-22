@@ -9,7 +9,7 @@ import org.matilda.commands.types.TypeConverter.Companion.MAIN_CONVERTERS_PACKAG
 import javax.inject.Inject
 
 @OptIn(KotlinPoetJavaPoetPreview::class)
-class MessageTypeConverter @Inject constructor() : TypeConverter {
+class GoogleMessageTypeConverter @Inject constructor() : TypeConverter {
     @Inject
     lateinit var mTypes: TypeUtilities
 
@@ -17,12 +17,12 @@ class MessageTypeConverter @Inject constructor() : TypeConverter {
     lateinit var mProtobufTypeTranslator: ProtobufTypeTranslator
 
     override fun javaConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo {
-        return JavaTypeConverterInfo("new \$T<>(\$T.class)", listOf(MessageConverter::class.java, type.typeName))
+        return JavaTypeConverterInfo("new \$T<>(\$T.class)", listOf(GoogleMessageConverter::class.java, type.typeName))
     }
 
     override fun kotlinConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo {
         return JavaTypeConverterInfo("%T(%T::class.java)",
-            listOf(MessageConverter::class, type.typeName.toKTypeName()))
+            listOf(GoogleMessageConverter::class, type.typeName.toKTypeName()))
     }
 
     override fun pythonConverter(type: XType, outerConverter: TypeConverter): PythonTypeConverterInfo {

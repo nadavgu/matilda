@@ -17,6 +17,7 @@ repositories {
 }
 
 val kspVersion: String by project
+val pbandkVersion: String by project
 
 dependencies {
     implementation(project(":commands-generator-api"))
@@ -28,7 +29,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.12.0")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    implementation("com.google.protobuf:protobuf-java:4.28.3")
+    implementation("pro.streem.pbandk:pbandk-runtime:$pbandkVersion")
     implementation("androidx.room:room-compiler-processing:2.6.1")
     implementation(kotlin("stdlib-jdk8"))
     implementation("com.google.devtools.ksp:symbol-processing-api:$kspVersion")

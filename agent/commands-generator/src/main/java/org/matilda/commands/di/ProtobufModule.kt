@@ -27,14 +27,14 @@ class ProtobufModule {
     }
 
     @Provides
-    fun typeConverter(messageTypeConverter: MessageTypeConverter,
+    fun typeConverter(googleMessageTypeConverter: GoogleMessageTypeConverter,
                       scalarTypeConverter: ScalarTypeConverter,
                       listTypeConverter: ListTypeConverter,
                       voidTypeConverter: VoidTypeConverter,
                       dynamicServiceTypeConverter: DynamicServiceTypeConverter,
     ): TypeConverter {
         return CompoundTypeConverter(listOf(
-            messageTypeConverter,
+            googleMessageTypeConverter,
             scalarTypeConverter,
             listTypeConverter,
             voidTypeConverter,

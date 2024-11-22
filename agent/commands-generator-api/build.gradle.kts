@@ -19,6 +19,7 @@ java {
 }
 
 val protobufVersion: String by project
+val pbandkVersion: String by project
 
 dependencies {
     implementation("me.tatarka.inject:kotlin-inject-runtime:0.7.2")
@@ -28,6 +29,7 @@ dependencies {
     api("com.google.protobuf:protobuf-kotlin:$protobufVersion")
     ksp("com.google.dagger:dagger-compiler:2.52")
     ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.2")
+    api("pro.streem.pbandk:pbandk-runtime:$pbandkVersion")
 }
 
 tasks.test {
@@ -42,6 +44,12 @@ protobuf {
         artifact = "com.google.protobuf:protoc:$protobufVersion"
     }
 
+    plugins {
+        create("pbandk") {
+            artifact = "pro.streem.pbandk:protoc-gen-pbandk-jvm:$pbandkVersion:jvm8@jar"
+        }
+    }
+
     generateProtoTasks {
         all().configureEach {
             builtins {
@@ -52,6 +60,13 @@ protobuf {
                             into(pythonRootDir)
                         }
                     }
+                }
+
+                remove(findByName("java"))
+            }
+
+            plugins {
+                create("pbandk") {
                 }
             }
         }

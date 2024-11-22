@@ -2,7 +2,6 @@ package org.matilda.commands.processors
 
 import androidx.room.compiler.processing.XFiler
 import androidx.room.compiler.processing.writeTo
-import com.google.protobuf.Any
 import com.squareup.javapoet.*
 import org.matilda.commands.Command
 import org.matilda.commands.info.CommandInfo
@@ -13,7 +12,9 @@ import org.matilda.commands.protobuf.Some
 import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.JAVA_DEPENDENCIES_FIELD_NAME
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.javaConverter
-import java.io.IOException
+import org.matilda.commands.utils.PBANDK_ANY_EXTENSIONS_EXTENSIONS_TYPE
+import org.matilda.commands.utils.PBANDK_MESSAGE_EXTENSIONS_TYPE
+import pbandk.wkt.Any
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
 
@@ -72,9 +73,10 @@ class JavaRawCommandClassGenerator @Inject constructor() : Processor<CommandInfo
             .addParameter(ParameterSpec.builder(BYTE_ARRAY_TYPE_NAME, RAW_PARAMETER_NAME).build())
             .returns(ArrayTypeName.of(TypeName.BYTE))
             .addExceptions(command.thrownTypes.map { it.typeName })
-            .beginControlFlow("try")
-            .addStatement("\$T \$L = \$T.parseFrom(\$L)",
-                Some::class.java, SOME_PARAMETER_VARIABLE_NAME, Some::class.java, RAW_PARAMETER_NAME)
+            .addStatement("\$T \$L = \$T.decodeFromByteArray(\$T, \$L)",
+                Some::class.java, SOME_PARAMETER_VARIABLE_NAME,
+                PBANDK_MESSAGE_EXTENSIONS_TYPE,
+                Some.Companion::class.java, RAW_PARAMETER_NAME)
             .apply {
                 command.parameters.forEachIndexed { index, parameter ->
                     addParameterConversion(index, parameter)
@@ -82,14 +84,11 @@ class JavaRawCommandClassGenerator @Inject constructor() : Processor<CommandInfo
             }
             .addCommandInvocation(command)
             .addReturnValueConversion(command)
-            .nextControlFlow("catch (\$T \$L)", IOException::class.java, EXCEPTION_NAME)
-            .addStatement("throw new \$T(\$L)", RuntimeException::class.java, EXCEPTION_NAME)
-            .endControlFlow()
             .build()
 
     private fun MethodSpec.Builder.addParameterConversion(index: Int, parameterInfo: ParameterInfo) {
         val (converterFormat, converterArgs) = mTypeConverter.javaConverter(parameterInfo.type)
-        addStatement("\$T \$L = $converterFormat.convertFromProtobuf(\$L.getAny(\$L))",
+        addStatement("\$T \$L = $converterFormat.convertFromProtobuf(\$L.getAny().get(\$L))",
             parameterInfo.type.typeName, parameterInfo.name, *converterArgs.toTypedArray(),
             SOME_PARAMETER_VARIABLE_NAME, index)
     }
@@ -108,8 +107,9 @@ class JavaRawCommandClassGenerator @Inject constructor() : Processor<CommandInfo
 
     private fun MethodSpec.Builder.addReturnValueConversion(commandInfo: CommandInfo): MethodSpec.Builder {
         val (converterFormat, converterArgs) = mTypeConverter.javaConverter(commandInfo.returnType)
-        addStatement("return \$T.pack($converterFormat.convertToProtobuf(\$L)).toByteArray()",
-            Any::class.java, *converterArgs.toTypedArray(),
+        addStatement("return \$T.encodeToByteArray(\$T.pack(\$T, $converterFormat.convertToProtobuf(\$L), \"type.googleapis.com\"))",
+            PBANDK_MESSAGE_EXTENSIONS_TYPE, PBANDK_ANY_EXTENSIONS_EXTENSIONS_TYPE,
+            Any.Companion::class.java, *converterArgs.toTypedArray(),
             if (commandInfo.hasReturnValue()) RETURN_VALUE_NAME else "null")
         return this
     }
@@ -120,7 +120,6 @@ class JavaRawCommandClassGenerator @Inject constructor() : Processor<CommandInfo
         private const val SERVICE_PARAMETER_NAME = "service"
         private const val RAW_PARAMETER_NAME = "rawParameter"
         private const val RETURN_VALUE_NAME = "returnValue"
-        private const val EXCEPTION_NAME = "exception"
         private const val SOME_PARAMETER_VARIABLE_NAME = "someParameter"
         private const val DEPENDENCIES_PARAMETER_NAME = "dependencies"
     }

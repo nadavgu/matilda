@@ -2,7 +2,7 @@ package org.matilda.commands.processors
 
 import androidx.room.compiler.processing.XFiler
 import androidx.room.compiler.processing.writeTo
-import com.google.protobuf.Any
+import pbandk.wkt.Any
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import com.squareup.kotlinpoet.javapoet.toKClassName
@@ -18,6 +18,7 @@ import org.matilda.commands.protobuf.Some
 import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.JAVA_DEPENDENCIES_FIELD_NAME
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.kotlinConverter
+import org.matilda.commands.utils.addPbandkExtensionImports
 import org.matilda.commands.utils.fileSpecBuilder
 import javax.inject.Inject
 
@@ -38,6 +39,7 @@ class KotlinServiceProxyClassGenerator @Inject internal constructor() : Processo
     override fun process(instance: ServiceInfo) {
         fileSpecBuilder(mNameGenerator.forService(instance).javaServiceProxyClassName.packageName(),
             createClassSpec(instance))
+            .addPbandkExtensionImports()
             .build()
             .writeTo(mFiler)
     }
@@ -92,32 +94,32 @@ class KotlinServiceProxyClassGenerator @Inject internal constructor() : Processo
                     addParameter(ParameterSpec.builder(parameter.name, parameter.type.typeName.toKTypeName()).build())
                 }
             }
-            .addStatement("val %L = %T.newBuilder()", SOME_PARAMETER_VARIABLE_NAME, Some::class)
+            .addStatement("val %L = mutableListOf<%T>()", ANY_LIST_VARIABLE_NAME, Any::class)
             .apply {
                 command.parameters.forEach {
                     addParameterConversion(it)
                 }
             }
-            .addStatement("val %L = %L.run(%L, %L, %L.build().toByteArray())",
+            .addStatement("val %L = %L.run(%L, %L, %T(%L).encodeToByteArray())",
                 RETURN_VALUE_VARIABLE_NAME, COMMAND_RUNNER_FIELD_NAME,
                 COMMAND_REGISTRY_ID_FIELD_NAME, mCommandIdGenerator.generate(command),
-                SOME_PARAMETER_VARIABLE_NAME)
+                Some::class, ANY_LIST_VARIABLE_NAME)
             .addReturnStatement(command)
             .build()
 
     private fun FunSpec.Builder.addParameterConversion(parameterInfo: ParameterInfo) {
         val (converterFormat, converterArgs) = mTypeConverter.kotlinConverter(parameterInfo.type)
-        addStatement("%L.addAny(%T.pack($converterFormat.convertToProtobuf(%L)))",
-            SOME_PARAMETER_VARIABLE_NAME, Any::class, *converterArgs.toTypedArray(), parameterInfo.name)
+        addStatement("%L.add(%T.pack($converterFormat.convertToProtobuf(%L)))",
+            ANY_LIST_VARIABLE_NAME, Any::class, *converterArgs.toTypedArray(), parameterInfo.name)
     }
 
     private fun FunSpec.Builder.addReturnStatement(command: CommandInfo): FunSpec.Builder {
         val (converterFormat, converterArgs) = mTypeConverter.kotlinConverter(command.returnType)
         if (command.hasReturnValue()) {
-            addStatement("return $converterFormat.convertFromProtobuf(%T.parseFrom(%L))",
+            addStatement("return $converterFormat.convertFromProtobuf(%T.decodeFromByteArray(%L))",
                 *converterArgs.toTypedArray(), Any::class.java, RETURN_VALUE_VARIABLE_NAME)
         } else {
-            addStatement("$converterFormat.convertFromProtobuf(%T.parseFrom(%L))",
+            addStatement("$converterFormat.convertFromProtobuf(%T.decodeFromByteArray(%L))",
                 *converterArgs.toTypedArray(), Any::class.java, RETURN_VALUE_VARIABLE_NAME)
         }
         return this
@@ -128,7 +130,7 @@ class KotlinServiceProxyClassGenerator @Inject internal constructor() : Processo
         private const val COMMAND_RUNNER_PARAMETER_NAME = "commandRunner"
         private const val COMMAND_REGISTRY_ID_FIELD_NAME = "mCommandRegistryId"
         private const val COMMAND_REGISTRY_ID_PARAMETER_NAME = "commandRegistryId"
-        private const val SOME_PARAMETER_VARIABLE_NAME = "someParameter"
+        private const val ANY_LIST_VARIABLE_NAME = "anyList"
         private const val RETURN_VALUE_VARIABLE_NAME = "returnValue"
         private const val DEPENDENCIES_PARAMETER_NAME = "dependencies"
     }

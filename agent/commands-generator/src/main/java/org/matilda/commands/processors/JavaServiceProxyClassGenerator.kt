@@ -2,7 +2,6 @@ package org.matilda.commands.processors
 
 import androidx.room.compiler.processing.XFiler
 import androidx.room.compiler.processing.writeTo
-import com.google.protobuf.Any
 import com.squareup.javapoet.*
 import org.matilda.commands.CommandRunner
 import org.matilda.commands.info.CommandInfo
@@ -15,7 +14,10 @@ import org.matilda.commands.protobuf.Some
 import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.JAVA_DEPENDENCIES_FIELD_NAME
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.javaConverter
-import java.io.IOException
+import org.matilda.commands.utils.PBANDK_ANY_EXTENSIONS_EXTENSIONS_TYPE
+import org.matilda.commands.utils.PBANDK_MESSAGE_EXTENSIONS_TYPE
+import pbandk.wkt.Any
+import java.util.Collections
 import javax.inject.Inject
 import javax.lang.model.element.Modifier
 
@@ -92,38 +94,37 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
                     addParameter(ParameterSpec.builder(parameter.type.typeName, parameter.name).build())
                 }
             }
-            .beginControlFlow("try")
-            .addStatement("\$T \$L = \$T.newBuilder()", Some.Builder::class.java, SOME_PARAMETER_VARIABLE_NAME,
-                Some::class.java)
+            .addStatement("\$T<\$T> \$L = new \$T<>()", List::class.java, Any::class.java, ANY_LIST_VARIABLE_NAME,
+                ArrayList::class.java)
             .apply {
                 command.parameters.forEach {
                     addParameterConversion(it)
                 }
             }
-            .addStatement("\$T \$L = \$L.run(\$L, \$L, \$L.build().toByteArray())",
+            .addStatement("\$T \$L = \$L.run(\$L, \$L, \$T.encodeToByteArray(new \$T(\$L, \$T.emptyMap())))",
                 BYTE_ARRAY_TYPE_NAME, RETURN_VALUE_VARIABLE_NAME, COMMAND_RUNNER_FIELD_NAME,
-                COMMAND_REGISTRY_ID_FIELD_NAME, mCommandIdGenerator.generate(command),
-                SOME_PARAMETER_VARIABLE_NAME)
+                COMMAND_REGISTRY_ID_FIELD_NAME, mCommandIdGenerator.generate(command), PBANDK_MESSAGE_EXTENSIONS_TYPE,
+                Some::class.java, ANY_LIST_VARIABLE_NAME, Collections::class.java)
             .addReturnStatement(command)
-            .nextControlFlow("catch (\$T \$L)", IOException::class.java, EXCEPTION_NAME)
-            .addStatement("throw new \$T(\$L)", RuntimeException::class.java, EXCEPTION_NAME)
-            .endControlFlow()
             .build()
 
     private fun MethodSpec.Builder.addParameterConversion(parameterInfo: ParameterInfo) {
         val (converterFormat, converterArgs) = mTypeConverter.javaConverter(parameterInfo.type)
-        addStatement("\$L.addAny(\$T.pack($converterFormat.convertToProtobuf(\$L)))",
-            SOME_PARAMETER_VARIABLE_NAME, Any::class.java, *converterArgs.toTypedArray(), parameterInfo.name)
+        addStatement("\$L.add(\$T.pack(\$T, $converterFormat.convertToProtobuf(\$L), \"type.googleapis.com\"))",
+            ANY_LIST_VARIABLE_NAME, PBANDK_ANY_EXTENSIONS_EXTENSIONS_TYPE, Any.Companion::class.java,
+            *converterArgs.toTypedArray(), parameterInfo.name)
     }
 
     private fun MethodSpec.Builder.addReturnStatement(command: CommandInfo): MethodSpec.Builder {
         val (converterFormat, converterArgs) = mTypeConverter.javaConverter(command.returnType)
         if (command.hasReturnValue()) {
-            addStatement("return $converterFormat.convertFromProtobuf(\$T.parseFrom(\$L))",
-                *converterArgs.toTypedArray(), Any::class.java, RETURN_VALUE_VARIABLE_NAME)
+            addStatement("return $converterFormat.convertFromProtobuf(\$T.decodeFromByteArray(\$T, \$L))",
+                *converterArgs.toTypedArray(), PBANDK_MESSAGE_EXTENSIONS_TYPE,
+                Any.Companion::class.java, RETURN_VALUE_VARIABLE_NAME)
         } else {
-            addStatement("$converterFormat.convertFromProtobuf(\$T.parseFrom(\$L))",
-                *converterArgs.toTypedArray(), Any::class.java, RETURN_VALUE_VARIABLE_NAME)
+            addStatement("$converterFormat.convertFromProtobuf(\$T.decodeFromByteArray(\$T, \$L))",
+                *converterArgs.toTypedArray(), PBANDK_MESSAGE_EXTENSIONS_TYPE,
+                Any.Companion::class.java, RETURN_VALUE_VARIABLE_NAME)
         }
         return this
     }
@@ -134,9 +135,8 @@ class JavaServiceProxyClassGenerator @Inject internal constructor() : Processor<
         private const val COMMAND_RUNNER_PARAMETER_NAME = "commandRunner"
         private const val COMMAND_REGISTRY_ID_FIELD_NAME = "mCommandRegistryId"
         private const val COMMAND_REGISTRY_ID_PARAMETER_NAME = "commandRegistryId"
-        private const val SOME_PARAMETER_VARIABLE_NAME = "someParameter"
+        private const val ANY_LIST_VARIABLE_NAME = "anyList"
         private const val RETURN_VALUE_VARIABLE_NAME = "returnValue"
-        private const val EXCEPTION_NAME = "exception"
         private const val DEPENDENCIES_PARAMETER_NAME = "dependencies"
     }
 }

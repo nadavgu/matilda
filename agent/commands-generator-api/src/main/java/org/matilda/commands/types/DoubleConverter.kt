@@ -1,14 +1,15 @@
 package org.matilda.commands.types
 
-import com.google.protobuf.Any
-import com.google.protobuf.DoubleValue
+import pbandk.unpack
+import pbandk.wkt.Any
+import pbandk.wkt.DoubleValue
 
 class DoubleConverter : ProtobufConverter<Double> {
     override fun convertToProtobuf(obj: Double): DoubleValue {
-        return DoubleValue.newBuilder().setValue(obj).build()
+        return DoubleValue(obj)
     }
 
     override fun convertFromProtobuf(obj: Any): Double {
-        return obj.unpack(DoubleValue::class.java).value
+        return obj.unpack(DoubleValue.Companion).value
     }
 }

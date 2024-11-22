@@ -2,7 +2,7 @@ package org.matilda.commands.processors
 
 import androidx.room.compiler.processing.XFiler
 import androidx.room.compiler.processing.writeTo
-import com.google.protobuf.Any
+import pbandk.wkt.Any
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import com.squareup.kotlinpoet.javapoet.toKClassName
@@ -17,6 +17,7 @@ import org.matilda.commands.protobuf.Some
 import org.matilda.commands.types.DynamicServiceTypeConverter.Companion.JAVA_DEPENDENCIES_FIELD_NAME
 import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.kotlinConverter
+import org.matilda.commands.utils.addPbandkExtensionImports
 import org.matilda.commands.utils.fileSpecBuilder
 import javax.inject.Inject
 
@@ -37,6 +38,7 @@ class KotlinRawCommandClassGenerator @Inject constructor() : Processor<CommandIn
     override fun process(instance: CommandInfo) {
         fileSpecBuilder(mNameGenerator.forCommand(instance).rawCommandClassName.packageName(),
             createClassSpec(instance))
+            .addPbandkExtensionImports()
             .build()
             .writeTo(mFiler)
     }
@@ -77,7 +79,7 @@ class KotlinRawCommandClassGenerator @Inject constructor() : Processor<CommandIn
             .addModifiers(KModifier.OVERRIDE)
             .addParameter(ParameterSpec.builder(PARAMETER_NAME, ByteArray::class).build())
             .returns(ByteArray::class)
-            .addStatement("val %L = %T.parseFrom(%L)",
+            .addStatement("val %L = %T.decodeFromByteArray(%L)",
                 SOME_PARAMETER_VARIABLE_NAME, Some::class, PARAMETER_NAME)
             .apply {
                 command.parameters.forEachIndexed { index, parameter ->
@@ -90,7 +92,7 @@ class KotlinRawCommandClassGenerator @Inject constructor() : Processor<CommandIn
 
     private fun FunSpec.Builder.addParameterConversion(index: Int, parameterInfo: ParameterInfo) {
         val (converterFormat, converterArgs) = mTypeConverter.kotlinConverter(parameterInfo.type)
-        addStatement("val %L = $converterFormat.convertFromProtobuf(%L.getAny(%L))",
+        addStatement("val %L = $converterFormat.convertFromProtobuf(%L.any[%L])",
             parameterInfo.name, *converterArgs.toTypedArray(),
             SOME_PARAMETER_VARIABLE_NAME, index)
     }
@@ -109,7 +111,7 @@ class KotlinRawCommandClassGenerator @Inject constructor() : Processor<CommandIn
 
     private fun FunSpec.Builder.addReturnValueConversion(commandInfo: CommandInfo): FunSpec.Builder {
         val (converterFormat, converterArgs) = mTypeConverter.kotlinConverter(commandInfo.returnType)
-        addStatement("return %T.pack($converterFormat.convertToProtobuf(%L)).toByteArray()",
+        addStatement("return %T.pack($converterFormat.convertToProtobuf(%L)).encodeToByteArray()",
             Any::class.java, *converterArgs.toTypedArray(),
             if (commandInfo.hasReturnValue()) RETURN_VALUE_NAME else "null")
         return this

@@ -3,9 +3,10 @@ package org.matilda.commands.types
 import androidx.room.compiler.codegen.XTypeName
 import androidx.room.compiler.codegen.asClassName
 import androidx.room.compiler.processing.XType
-import com.google.protobuf.*
+import pbandk.wkt.*
 import org.matilda.commands.python.PrimitiveTypeName
 import org.matilda.commands.python.PythonTypeName
+import pbandk.ByteArr
 
 data class ScalarTypeInfo(val protobufWrapperJavaType: Class<*>,
                           val javaConverterType: Class<*>,
@@ -30,8 +31,8 @@ val PRIMITIVE_TYPE_MAP = mapOf(
     String::class.asClassName() to ScalarTypeInfo(StringValue::class.java,
         StringConverter::class.java,
         PythonTypeName.STR),
-    ByteString::class.asClassName() to ScalarTypeInfo(BytesValue::class.java,
-        ByteStringConverter::class.java,
+    ByteArr::class.asClassName() to ScalarTypeInfo(BytesValue::class.java,
+        ByteArrConverter::class.java,
         PythonTypeName.BYTES),
     XTypeName.getArrayName(XTypeName.PRIMITIVE_BYTE) to ScalarTypeInfo(BytesValue::class.java,
         ByteArrayConverter::class.java,

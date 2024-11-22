@@ -1,11 +1,11 @@
 package org.matilda.commands.types
 
-import com.google.protobuf.Any
-import com.google.protobuf.Empty
+import pbandk.wkt.Any
+import pbandk.wkt.Empty
 
 class EmptyConverter : ProtobufConverter<Void?> {
-    override fun convertToProtobuf(obj: Void?): Empty {
-        return Empty.newBuilder().build()
+    override fun convertToProtobuf(obj: Void?):  Empty {
+        return Empty()
     }
 
     override fun convertFromProtobuf(obj: Any): Void? {

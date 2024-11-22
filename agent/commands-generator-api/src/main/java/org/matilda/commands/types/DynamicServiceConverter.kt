@@ -1,7 +1,7 @@
 package org.matilda.commands.types
 
-import com.google.protobuf.Any
-import com.google.protobuf.Int32Value
+import pbandk.wkt.Any
+import pbandk.wkt.Int32Value
 import org.matilda.commands.CommandRegistryFactory
 import org.matilda.commands.CommandRegistryManager
 import org.matilda.commands.ServiceProxyFactory
