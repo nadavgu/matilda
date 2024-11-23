@@ -1,7 +1,7 @@
 plugins {
     `java-gradle-plugin`
     `maven-publish`
-    kotlin("jvm") version "2.0.20"
+    kotlin("jvm")
 }
 
 group = "org.matilda"
