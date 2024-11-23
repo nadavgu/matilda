@@ -30,6 +30,7 @@ dependencies {
     ksp("com.google.dagger:dagger-compiler:2.52")
     ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.2")
     api("pro.streem.pbandk:pbandk-runtime:$pbandkVersion")
+    protobuf(project(":commands-generator-protos"))
 }
 
 tasks.test {

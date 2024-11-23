@@ -39,6 +39,7 @@ dependencies {
     implementation("me.tatarka.inject:kotlin-inject-runtime:0.7.2")
     ksp(project(":commands-generator"))
     implementation(project(":commands-generator-api"))
+    compileOnly(project(":commands-generator-protos"))
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("pro.streem.pbandk:pbandk-runtime:$pbandkVersion")
