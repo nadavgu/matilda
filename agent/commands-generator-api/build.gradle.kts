@@ -28,7 +28,6 @@ kotlin {
 
     sourceSets {
         commonMain {
-            kotlin.srcDir("src/main/java")
             dependencies {
                 implementation("me.tatarka.inject:kotlin-inject-runtime:0.7.2")
                 implementation("com.google.dagger:dagger:2.52")
