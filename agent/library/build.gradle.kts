@@ -1,3 +1,7 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
     java
     id("com.google.protobuf") version "0.9.4"
@@ -26,7 +30,8 @@ val pbandkVersion: String by project
 ksp {
     arg("pythonRootDir", pythonRootDir.asFile.absolutePath)
     arg("pythonGeneratedPackage", pythonGeneratedPackage)
-    arg("protobufDirs", File(buildDir, "extracted-include-protos/main/").absolutePath +
+    arg("protobufDirs", File(layout.buildDirectory.get().asFile,
+        "extracted-include-protos/main/").absolutePath +
             ":${File(projectDir, "src/main/proto/").absolutePath}")
     arg("javaMainPackage", "org.matilda")
     arg("generateKotlin", "true")
@@ -35,8 +40,6 @@ ksp {
 
 kotlin {
     jvm {
-        withJava()
-        @Suppress("OPT_IN_USAGE")
         mainRun {
             mainClass.set("org.matilda.Main")
         }
