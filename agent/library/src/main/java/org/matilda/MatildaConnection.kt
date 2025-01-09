@@ -1,18 +1,17 @@
 package org.matilda
 
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
+import kotlinx.io.RawSink
+import kotlinx.io.RawSource
 
-class MatildaConnection(val inputStream: InputStream, val outputStream: OutputStream) {
+class MatildaConnection(val source: RawSource, val sink: RawSink) {
     fun close() {
         try {
-            outputStream.close()
-        } catch (ignored: IOException) {
+            sink.close()
+        } catch (ignored: Throwable) {
         }
         try {
-            inputStream.close()
-        } catch (ignored: IOException) {
+            source.close()
+        } catch (ignored: Throwable) {
         }
     }
 }

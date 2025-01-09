@@ -11,7 +11,6 @@ import org.matilda.messages.protobuf.MessageType
 import pbandk.ByteArr
 import pbandk.decodeFromByteArray
 import pbandk.encodeToByteArray
-import java.io.IOException
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -20,21 +19,17 @@ class CommandMessageHandler(private val mMessageSender: MessageSender,
                             @InitializedCommandRepository private val mCommandRepository: CommandRepository,
                             private val mLogger: Logger) : MessageHandler {
     override suspend fun handle(message: Message) {
-        try {
-            val request = CommandRequest.decodeFromByteArray(message.data)
-            val result: ByteArray = try {
-                mCommandRepository.getCommand(request.registryId, request.type)
-                    .run(request.param.array)
-            } catch (e: Throwable) {
-                mLogger.log("Failure", e)
-                reportCommandFailure(request, e)
-                return
-            }
-            val commandResponse = CommandResponse(request.id, true, ByteArr(result))
-            mMessageSender.send(Message(MessageType.COMMAND_RESPONSE.value, commandResponse.encodeToByteArray()))
-        } catch (e: IOException) {
-            mLogger.log("Failed to handle command message", e)
+        val request = CommandRequest.decodeFromByteArray(message.data)
+        val result: ByteArray = try {
+            mCommandRepository.getCommand(request.registryId, request.type)
+                .run(request.param.array)
+        } catch (e: Throwable) {
+            mLogger.log("Failure", e)
+            reportCommandFailure(request, e)
+            return
         }
+        val commandResponse = CommandResponse(request.id, true, ByteArr(result))
+        mMessageSender.send(Message(MessageType.COMMAND_RESPONSE.value, commandResponse.encodeToByteArray()))
     }
 
     private fun reportCommandFailure(request: CommandRequest, throwable: Throwable) {

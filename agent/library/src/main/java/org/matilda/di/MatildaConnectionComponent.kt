@@ -1,10 +1,9 @@
 package org.matilda.di
 
+import kotlinx.io.*
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 import org.matilda.MatildaConnection
-import java.io.InputStream
-import java.io.OutputStream
 
 @Component
 abstract class MatildaConnectionComponent(private val mMatildaConnection: MatildaConnection) {
@@ -14,12 +13,22 @@ abstract class MatildaConnectionComponent(private val mMatildaConnection: Matild
     }
 
     @Provides
-    fun inputStream(): InputStream {
-        return mMatildaConnection.inputStream
+    fun rawSource(): RawSource {
+        return mMatildaConnection.source
     }
 
     @Provides
-    fun outputStream(): OutputStream {
-        return mMatildaConnection.outputStream
+    fun source(rawSource: RawSource): Source {
+        return rawSource.buffered()
+    }
+
+    @Provides
+    fun rawSink(): RawSink {
+        return mMatildaConnection.sink
+    }
+
+    @Provides
+    fun sink(rawSink: RawSink): Sink {
+        return rawSink.buffered()
     }
 }

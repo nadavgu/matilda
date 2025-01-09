@@ -1,15 +1,12 @@
 package org.matilda.messages
 
+import kotlinx.io.Source
+import kotlinx.io.readByteArray
+import kotlinx.io.readIntLe
 import me.tatarka.inject.annotations.Inject
-import java.io.DataInputStream
-import java.io.InputStream
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 
 @Inject
-class BinaryMessageReceiver(private val mSerializer: MessageSerializer, inputStream: InputStream) : MessageReceiver {
-    private val mInputStream = DataInputStream(inputStream)
-
+class BinaryMessageReceiver(private val mSerializer: MessageSerializer, private val mSource: Source) : MessageReceiver {
     override fun receive(): Message {
         val length = readLength()
         val data = readData(length)
@@ -17,16 +14,10 @@ class BinaryMessageReceiver(private val mSerializer: MessageSerializer, inputStr
     }
 
     private fun readData(length: Int): ByteArray {
-        val bytes = ByteArray(length)
-        mInputStream.readFully(bytes)
-        return bytes
+        return mSource.readByteArray(length)
     }
 
     private fun readLength(): Int {
-        val lengthBytes = ByteArray(Integer.BYTES)
-        mInputStream.readFully(lengthBytes)
-        return ByteBuffer.wrap(lengthBytes)
-            .order(ByteOrder.LITTLE_ENDIAN)
-            .getInt()
+        return mSource.readIntLe()
     }
 }
