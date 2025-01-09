@@ -6,7 +6,7 @@ import org.matilda.messages.MessageHandlerFactory
 import org.matilda.messages.handlers.MessageHandler
 
 @Component
-interface MessageHandlerComponent : ExecutorServiceComponent {
+interface MessageHandlerComponent : CoroutinesComponent {
     @Provides
     fun messageHandler(messageHandlerFactory: MessageHandlerFactory): MessageHandler {
         return messageHandlerFactory.create()

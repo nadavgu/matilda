@@ -1,11 +1,12 @@
 package org.matilda.messages.handlers
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.matilda.messages.Message
-import java.util.concurrent.ExecutorService
 
-class MessageDispatcher(private val mExecutorService: ExecutorService, private val mMessageHandler: MessageHandler) :
+class MessageDispatcher(private val mCoroutineScope: CoroutineScope, private val mMessageHandler: MessageHandler) :
     MessageHandler {
     override fun handle(message: Message) {
-        mExecutorService.submit { mMessageHandler.handle(message) }
+        mCoroutineScope.launch { mMessageHandler.handle(message) }
     }
 }

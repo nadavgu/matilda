@@ -50,6 +50,7 @@ kotlin {
             kotlin.srcDir("src/main/java")
             dependencies {
                 implementation("me.tatarka.inject:kotlin-inject-runtime:0.7.2")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
                 implementation(project(":commands-generator-api"))
                 api("pro.streem.pbandk:pbandk-runtime:$pbandkVersion")
             }
