@@ -1,7 +1,7 @@
 package org.matilda.commands
 
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import kotlin.random.Random
 
 @Inject
 class CommandRegistryIdGenerator(private val mRandom: Random) {

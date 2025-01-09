@@ -17,7 +17,7 @@ val kspVersion: String by project
 val pbandkVersion: String by project
 
 dependencies {
-    implementation(project(":commands-generator-api"))
+    implementation(project(":commands-generator-api", "jvmRuntimeElements"))
     implementation("com.google.dagger:dagger:2.51.1")
     ksp("com.google.dagger:dagger-compiler:2.51.1")
     implementation("me.tatarka.inject:kotlin-inject-runtime:0.7.2")

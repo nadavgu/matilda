@@ -29,6 +29,8 @@ kotlin {
         withJava()
     }
 
+    linuxX64()
+
     sourceSets {
         commonMain {
             dependencies {
@@ -39,7 +41,7 @@ kotlin {
             }
         }
 
-        commonTest {
+        jvmTest {
             dependencies {
                 implementation(project.dependencies.platform("org.junit:junit-bom:5.9.1"))
                 implementation("org.junit.jupiter:junit-jupiter")
