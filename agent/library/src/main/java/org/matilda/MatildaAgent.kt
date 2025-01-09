@@ -1,5 +1,6 @@
 package org.matilda
 
+import kotlinx.coroutines.runBlocking
 import org.matilda.di.LoggerComponent
 import org.matilda.di.MatildaComponent
 import org.matilda.di.MatildaConnectionComponent
@@ -18,10 +19,12 @@ class MatildaAgent(matildaConnection: MatildaConnection, vararg loggers: Logger)
     }
 
     fun run() {
-        try {
-            mMatildaComponent.messageListener.start()
-        } finally {
-            mMatildaComponent.destructionManager.destruct()
+        runBlocking {
+            try {
+                mMatildaComponent.messageListener.start()
+            } finally {
+                mMatildaComponent.destructionManager.destruct()
+            }
         }
     }
 }

@@ -17,7 +17,7 @@ class MessageHandlerRegistry : MessageHandler {
         mMessageHandlers[type]?.remove(handler)
     }
 
-    override fun handle(message: Message) {
+    override suspend fun handle(message: Message) {
         mMessageHandlers[message.type]?.forEach { it.handle(message) }
     }
 }

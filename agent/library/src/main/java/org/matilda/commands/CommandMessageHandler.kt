@@ -19,7 +19,7 @@ import java.io.StringWriter
 class CommandMessageHandler(private val mMessageSender: MessageSender,
                             @InitializedCommandRepository private val mCommandRepository: CommandRepository,
                             private val mLogger: Logger) : MessageHandler {
-    override fun handle(message: Message) {
+    override suspend fun handle(message: Message) {
         try {
             val request = CommandRequest.decodeFromByteArray(message.data)
             val result: ByteArray = try {

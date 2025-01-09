@@ -1,16 +1,16 @@
 package org.matilda.messages.listener
 
+import kotlinx.coroutines.channels.Channel
 import org.matilda.messages.Message
 import org.matilda.messages.MessageHandlerRegistration
 import java.io.Closeable
-import java.util.concurrent.BlockingQueue
 
 class MessageListeningInstance(
-    private val mMessageQueue: BlockingQueue<Message>,
+    private val mMessageChannel: Channel<Message>,
     private val mRegistration: MessageHandlerRegistration
 ) : Closeable {
-    fun waitForMessage(): Message {
-        return mMessageQueue.take()
+    suspend fun waitForMessage(): Message {
+        return mMessageChannel.receive()
     }
 
     fun stop() {

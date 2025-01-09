@@ -7,8 +7,7 @@ import pbandk.decodeFromByteArray
 import java.io.Closeable
 
 class CommandResponseListeningInstance(private val mMessageListeningInstance: MessageListeningInstance) : Closeable {
-    @Throws(InterruptedException::class)
-    fun waitForResponse(): ByteArray {
+    suspend fun waitForResponse(): ByteArray {
         val message = mMessageListeningInstance.waitForMessage()
         val commandResponse = CommandResponse.decodeFromByteArray(message.data)
         if (!commandResponse.success) {

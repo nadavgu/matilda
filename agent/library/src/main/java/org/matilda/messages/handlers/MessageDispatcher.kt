@@ -6,7 +6,7 @@ import org.matilda.messages.Message
 
 class MessageDispatcher(private val mCoroutineScope: CoroutineScope, private val mMessageHandler: MessageHandler) :
     MessageHandler {
-    override fun handle(message: Message) {
+    override suspend fun handle(message: Message) {
         mCoroutineScope.launch { mMessageHandler.handle(message) }
     }
 }

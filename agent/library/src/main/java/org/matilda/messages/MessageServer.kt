@@ -6,7 +6,7 @@ import java.io.EOFException
 
 @Inject
 class MessageServer(private val mMessageReceiver: MessageReceiver, private val mMessageHandler: MessageHandler) {
-    fun start() {
+    suspend fun start() {
         while (true) {
             try {
                 val message = mMessageReceiver.receive()

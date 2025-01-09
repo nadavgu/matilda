@@ -1,5 +1,6 @@
 package org.matilda.commands
 
+import kotlinx.coroutines.runBlocking
 import me.tatarka.inject.annotations.Inject
 import org.matilda.commands.listener.CommandResponseListener
 
@@ -13,7 +14,7 @@ class CommunicationCommandRunner
         try {
             mCommandResponseListener.listen(commandId).use { listeningInstance ->
                 mCommandSender.send(registryId, commandType, commandId, parameter)
-                return listeningInstance.waitForResponse()
+                return runBlocking { listeningInstance.waitForResponse() }
             }
         } catch (e: InterruptedException) {
             Thread.currentThread().interrupt()
