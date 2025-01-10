@@ -1,6 +1,36 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+
+
+interface KspDependencies {
+    fun ksp(dependencyNotation: Any)
+}
+
+fun KotlinMultiplatformExtension.commonMainKspDependencies(
+    project: Project,
+    block: KspDependencies.() -> Unit,
+) {
+    project.dependencies {
+        object : KspDependencies {
+            override fun ksp(dependencyNotation: Any) {
+                add("kspCommonMainMetadata", dependencyNotation)
+            }
+        }.block()
+    }
+
+    sourceSets.named("commonMain").configure {
+        kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+    }
+
+    project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
+        if(name != "kspCommonMainKotlinMetadata") {
+            dependsOn("kspCommonMainKotlinMetadata")
+        }
+    }
+}
 
 plugins {
     java
@@ -45,8 +75,10 @@ kotlin {
         }
     }
 
+    linuxX64()
+
     sourceSets {
-        val jvmMain by getting {
+        val commonMain by getting {
             kotlin.srcDir("src/main/java")
             dependencies {
                 implementation("me.tatarka.inject:kotlin-inject-runtime:0.7.2")
@@ -58,18 +90,21 @@ kotlin {
             }
         }
 
-        commonTest {
+        jvmTest {
             dependencies {
                 implementation(project.dependencies.platform("org.junit:junit-bom:5.9.1"))
                 implementation("org.junit.jupiter:junit-jupiter")
             }
         }
     }
+
+    commonMainKspDependencies(project) {
+        ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.2")
+        ksp(project(":commands-generator"))
+    }
 }
 
 dependencies {
-    add("kspJvm", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.2")
-    add("kspJvm", project(":commands-generator"))
     compileOnly(project(":commands-generator-protos"))
     compileOnly("com.google.protobuf:protobuf-kotlin:$protobufVersion")
 }
