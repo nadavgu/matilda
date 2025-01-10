@@ -1,5 +1,12 @@
-from typing import Callable
+from abc import ABC, abstractmethod
 
 from matilda.messages.message import Message
 
-MessageHandler = Callable[[Message], None]
+
+class MessageHandler(ABC):
+    @abstractmethod
+    def handle_message(self, message: Message):
+        pass
+
+    def handle_no_more_messages(self):
+        pass

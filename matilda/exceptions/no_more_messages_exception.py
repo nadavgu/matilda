@@ -1,0 +1,2 @@
+class NoMoreMessagesException(Exception):
+    pass

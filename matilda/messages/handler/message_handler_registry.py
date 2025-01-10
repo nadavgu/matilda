@@ -10,7 +10,7 @@ from matilda.messages.message import Message
 from matilda.protos.message_pb2 import MessageType
 
 
-class MessageHandlerRegistry(Dependency):
+class MessageHandlerRegistry(MessageHandler, Dependency):
     def __init__(self):
         self.__handlers: Dict[int, List[MessageHandler]] = {}
 
@@ -27,11 +27,16 @@ class MessageHandlerRegistry(Dependency):
     def handle_message(self, message: Message):
         if message.message_type in self.__handlers:
             for handler in self.__handlers[message.message_type]:
-                handler(message)
+                handler.handle_message(message)
+
+    def handle_no_more_messages(self):
+        for message_type in self.__handlers:
+            for handler in self.__handlers[message_type]:
+                handler.handle_no_more_messages()
 
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'MessageHandlerRegistry':
         message_handler_registry = MessageHandlerRegistry()
         command_message_handler = dependency_container.get(CommandMessageHandler)
-        message_handler_registry.register(MessageType.COMMAND, command_message_handler.handle)
+        message_handler_registry.register(MessageType.COMMAND, command_message_handler)
         return message_handler_registry

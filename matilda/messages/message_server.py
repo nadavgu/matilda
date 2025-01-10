@@ -14,8 +14,9 @@ class MessageServer(Dependency):
         while True:
             try:
                 message = self.__message_receiver.receive()
-                self.__message_dispatcher.dispatch(message)
+                self.__message_dispatcher.handle_message(message)
             except EOFError:
+                self.__message_dispatcher.handle_no_more_messages()
                 return
 
     @staticmethod
