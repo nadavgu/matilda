@@ -11,10 +11,10 @@ class TypeUtilities @Inject constructor() {
     @Inject
     lateinit var mProcessingEnv: XProcessingEnv
 
-    private fun toTypeMirror(type: Class<*>): XType =
-        mProcessingEnv.requireType(type.canonicalName)
+    private fun toTypeMirror(type: Class<*>): XType? =
+        mProcessingEnv.findType(type.canonicalName)
 
-    fun isSubtype(type: XType, parent: Class<*>) = toTypeMirror(parent).isAssignableFrom(type)
+    fun isSubtype(type: XType, parent: Class<*>) = toTypeMirror(parent)?.isAssignableFrom(type) ?: false
 
     fun isAnnotatedWith(type: XType, annotation: KClass<out Annotation>) =
         type.typeElement?.getAnnotation(annotation) != null
