@@ -11,14 +11,9 @@ class CommunicationCommandRunner
                              private val mCommandIdGenerator: CommandIdGenerator) : CommandRunner {
     override fun run(registryId: Int, commandType: Int, parameter: ByteArray): ByteArray {
         val commandId = mCommandIdGenerator.generate()
-        try {
-            mCommandResponseListener.listen(commandId).use { listeningInstance ->
-                mCommandSender.send(registryId, commandType, commandId, parameter)
-                return runBlocking { listeningInstance.waitForResponse() }
-            }
-        } catch (e: InterruptedException) {
-            Thread.currentThread().interrupt()
-            throw RuntimeException(e)
+        mCommandResponseListener.listen(commandId).use { listeningInstance ->
+            mCommandSender.send(registryId, commandType, commandId, parameter)
+            return runBlocking { listeningInstance.waitForResponse() }
         }
     }
 }
