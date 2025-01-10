@@ -1,5 +1,6 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
+import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
@@ -30,6 +31,10 @@ fun KotlinMultiplatformExtension.commonMainKspDependencies(
             dependsOn("kspCommonMainKotlinMetadata")
         }
     }
+
+    project.tasks.withType(Jar::class.java).configureEach {
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
 }
 
 plugins {
@@ -37,6 +42,7 @@ plugins {
     id("com.google.protobuf") version "0.9.4"
     kotlin("multiplatform")
     id("com.google.devtools.ksp")
+    `maven-publish`
 }
 
 group = "org.matilda"
@@ -155,5 +161,11 @@ protobuf {
                 }
             }
         }
+    }
+}
+
+publishing {
+    repositories {
+        mavenLocal()
     }
 }
