@@ -2,15 +2,16 @@ package org.matilda
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.matilda.logger.StderrLogger
-import org.matilda.utils.fdSink
-import org.matilda.utils.fdSource
+import org.matilda.utils.Fd
+import org.matilda.utils.sink
+import org.matilda.utils.source
 import platform.posix.*
 
 fun main() {
     val logger = StderrLogger()
     try {
         pingToLoader()
-        MatildaAgent(MatildaConnection(STDIN_FILENO.fdSource(), STDOUT_FILENO.fdSink()), logger).run()
+        MatildaAgent(MatildaConnection(Fd(STDIN_FILENO).source(), Fd(STDOUT_FILENO).sink()), logger).run()
     } catch (e: Throwable) {
         // Handle exception here on purpose, cause kotlin-native's uncaught exception handler writes to stdout,
         // but we don't want to write there because we use it

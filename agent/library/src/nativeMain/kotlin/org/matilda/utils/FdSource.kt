@@ -8,11 +8,10 @@ import kotlinx.cinterop.usePinned
 import kotlinx.io.Buffer
 import kotlinx.io.IOException
 import kotlinx.io.RawSource
-import platform.posix.close
 import platform.posix.errno
 import platform.posix.read
 
-class FdSource(private val mFd: Int) : RawSource {
+class FdSource(private val mFd: Fd) : RawSource {
     private var closed = false
 
     override fun readAtMostTo(sink: Buffer, byteCount: Long): Long {
@@ -20,7 +19,7 @@ class FdSource(private val mFd: Int) : RawSource {
 
         // Copy bytes from the file to the segment.
         val bytesRead = temporaryBuffer.usePinned { pinned ->
-            read(mFd, pinned.addressOf(0), byteCount.toULong())
+            read(mFd.fd, pinned.addressOf(0), byteCount.toULong())
         }
 
         sink.write(temporaryBuffer, 0, bytesRead.toInt())
@@ -35,8 +34,8 @@ class FdSource(private val mFd: Int) : RawSource {
     override fun close() {
         if (closed) return
         closed = true
-        close(mFd)
+        mFd.close()
     }
 }
 
-fun Int.fdSource() = FdSource(this)
+fun Fd.source() = FdSource(this)

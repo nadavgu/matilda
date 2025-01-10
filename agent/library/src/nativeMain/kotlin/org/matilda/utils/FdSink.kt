@@ -48,8 +48,8 @@ private class FileSink(
     }
 }
 
-fun Int.fdSink(): RawSink {
-    val file = fdopen(this, "wb")
+fun Fd.sink(): RawSink {
+    val file = fdopen(fd, "wb")
         ?: throw IOException("Failed to open fd $this with ${strerror(errno)?.toKString()}")
     return FileSink(file)
 }
