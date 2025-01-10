@@ -2,20 +2,19 @@ package org.matilda.di.destructors
 
 import me.tatarka.inject.annotations.Inject
 import org.matilda.commands.MatildaScope
-import java.util.*
 
 @MatildaScope
 @Inject
 class DestructionManager {
-    private val mDestructors = Stack<Destructor>()
+    private val mDestructors = ArrayDeque<Destructor>()
 
     fun addDestructor(destructor: Destructor) {
-        mDestructors.push(destructor)
+        mDestructors.addFirst(destructor)
     }
 
     fun destruct() {
-        while (!mDestructors.empty()) {
-            mDestructors.pop().destruct()
+        while (!mDestructors.isEmpty()) {
+            mDestructors.removeFirst().destruct()
         }
     }
 }
