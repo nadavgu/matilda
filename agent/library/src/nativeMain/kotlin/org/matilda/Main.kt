@@ -1,9 +1,9 @@
 package org.matilda
 
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.io.files.Path
-import kotlinx.io.files.SystemFileSystem
 import org.matilda.logger.StderrLogger
+import org.matilda.utils.fdSink
+import org.matilda.utils.fdSource
 import platform.posix.*
 
 fun main() {
@@ -24,9 +24,3 @@ private fun pingToLoader() {
     fputc(0, stdout)
     fflush(stdout)
 }
-
-private fun Int.fdSource() = SystemFileSystem.source(fdPath)
-private fun Int.fdSink() = SystemFileSystem.sink(fdPath)
-
-private val Int.fdPath
-    get() = Path("/proc/self/fd/$this")
