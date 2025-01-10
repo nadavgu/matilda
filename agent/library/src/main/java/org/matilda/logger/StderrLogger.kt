@@ -1,12 +1,14 @@
 package org.matilda.logger
 
+import org.matilda.utils.printErr
+
 class StderrLogger : Logger {
     override fun log(message: String) {
-        System.err.println(message)
+        printErr(message)
     }
 
     override fun log(message: String, throwable: Throwable) {
-        System.err.println(message)
+        printErr(message)
         throwable.printStackTrace()
     }
 }

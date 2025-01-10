@@ -75,7 +75,13 @@ kotlin {
         }
     }
 
-    linuxX64()
+    linuxX64 {
+        binaries {
+            executable(buildTypes = listOf(DEBUG)) {
+                entryPoint = "org.matilda.main"
+            }
+        }
+    }
 
     sourceSets {
         val commonMain by getting {
