@@ -1,3 +1,4 @@
+import traceback
 from typing import Callable, List
 
 from maddie.dependency import Dependency
@@ -13,7 +14,10 @@ class DestructionManager(Dependency):
 
     def destruct(self):
         while len(self.__destructors) != 0:
-            self.__destructors.pop()()
+            try:
+                self.__destructors.pop()()
+            except Exception as e:
+                traceback.print_exception(e)
 
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'DestructionManager':
