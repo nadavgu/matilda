@@ -11,8 +11,8 @@ import kotlinx.io.RawSource
 import platform.posix.errno
 import platform.posix.read
 
-class FdSource(private val mFd: Fd) : RawSource {
-    private var closed = false
+class FdSource(private val mFd: Fd, private val mOwn: Boolean = true) : RawSource {
+    private var mClosed = false
 
     override fun readAtMostTo(sink: Buffer, byteCount: Long): Long {
         val temporaryBuffer = ByteArray(byteCount.toInt())
@@ -32,10 +32,10 @@ class FdSource(private val mFd: Fd) : RawSource {
     }
 
     override fun close() {
-        if (closed) return
-        closed = true
+        if (mClosed or !mOwn) return
+        mClosed = true
         mFd.close()
     }
 }
 
-fun Fd.source() = FdSource(this)
+fun Fd.source(own: Boolean = true) = FdSource(this, own)
