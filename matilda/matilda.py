@@ -4,6 +4,7 @@ from maddie.dependency_container import DependencyContainer
 
 from matilda.di.dependency_providers import add_dependency_providers
 from matilda.di.destructors.destruction_manager import DestructionManager
+from matilda.executable_matilda_runner import ExecutableMatildaRunner
 from matilda.java_process_matilda_runner import JavaProcessMatildaRunner
 from matilda.matilda_connection import MatildaConnection
 from matilda.matilda_process import MatildaProcess
@@ -18,6 +19,9 @@ class Matilda:
 
     def run_in_java_process(self, java_path='java') -> MatildaProcess:
         return self.run(JavaProcessMatildaRunner(java_path=java_path))
+
+    def run_in_native_process(self) -> MatildaProcess:
+        return self.run(ExecutableMatildaRunner())
 
     @staticmethod
     def __create_matilda_process(connection: MatildaConnection) -> MatildaProcess:
