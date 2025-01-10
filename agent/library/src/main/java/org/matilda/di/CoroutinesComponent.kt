@@ -2,6 +2,7 @@ package org.matilda.di
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.newFixedThreadPoolContext
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
@@ -14,7 +15,7 @@ import kotlin.coroutines.CoroutineContext
 @MatildaScope
 interface CoroutinesComponent {
 
-    @OptIn(DelicateCoroutinesApi::class)
+    @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
     @Provides
     @MatildaScope
     fun coroutineContext(destructionManager: DestructionManager, logger: Logger): CoroutineContext =
