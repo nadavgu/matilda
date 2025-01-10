@@ -1,8 +1,8 @@
 package org.matilda.messages
 
+import kotlinx.io.EOFException
 import me.tatarka.inject.annotations.Inject
 import org.matilda.messages.handlers.MessageHandler
-import java.io.EOFException
 
 @Inject
 class MessageServer(private val mMessageReceiver: MessageReceiver, private val mMessageHandler: MessageHandler) {
