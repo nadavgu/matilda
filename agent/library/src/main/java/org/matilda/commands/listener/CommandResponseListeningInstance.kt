@@ -10,7 +10,7 @@ class CommandResponseListeningInstance(private val mMessageListeningInstance: Me
         val message = mMessageListeningInstance.waitForMessage()
         val commandResponse = CommandResponse.decodeFromByteArray(message.data)
         if (!commandResponse.success) {
-            throw CommandFailedException(String(commandResponse.result.array))
+            throw CommandFailedException(commandResponse.result.array.decodeToString())
         }
         return commandResponse.result.array
     }

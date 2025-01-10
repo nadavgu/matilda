@@ -32,7 +32,7 @@ class CommandMessageHandler(private val mMessageSender: MessageSender,
 
     private fun reportCommandFailure(request: CommandRequest, throwable: Throwable) {
         val commandResponse = CommandResponse(request.id, false,
-            ByteArr(throwable.stackTraceToString().toByteArray()))
+            ByteArr(throwable.stackTraceToString().encodeToByteArray()))
         mMessageSender.send(Message(MessageType.COMMAND_RESPONSE.value, commandResponse.encodeToByteArray()))
     }
 }
