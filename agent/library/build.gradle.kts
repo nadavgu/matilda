@@ -53,6 +53,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.6.0")
                 implementation(project(":commands-generator-api"))
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
                 api("pro.streem.pbandk:pbandk-runtime:$pbandkVersion")
             }
         }
