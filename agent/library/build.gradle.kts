@@ -84,7 +84,10 @@ kotlin {
     linuxX64 {
         binaries {
             executable(buildTypes = listOf(DEBUG)) {
+                outputDirectory =
+                    pythonRootDir.dir(providers.gradleProperty("RESOURCES_SUBDIR")).get().asFile
                 entryPoint = "org.matilda.main"
+                baseName = "agent-linuxX64.kexe"
             }
         }
     }
