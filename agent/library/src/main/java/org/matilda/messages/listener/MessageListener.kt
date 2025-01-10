@@ -4,13 +4,12 @@ import kotlinx.coroutines.channels.Channel
 import me.tatarka.inject.annotations.Inject
 import org.matilda.messages.Message
 import org.matilda.messages.MessageHandlerRegistry
-import java.util.function.Predicate
 
 class MessageListener @Inject internal constructor(private val mMessageHandlerRegistry: MessageHandlerRegistry) {
-    fun listen(messageType: Int, predicate: Predicate<Message>? = null): MessageListeningInstance {
+    fun listen(messageType: Int, predicate: ((Message) -> Boolean)? = null): MessageListeningInstance {
         val channel = Channel<Message>()
         val registration = mMessageHandlerRegistry.registerHandler(messageType) { message: Message ->
-            if (predicate == null || predicate.test(message)) {
+            if (predicate == null || predicate(message)) {
                 channel.send(message)
             }
         }
