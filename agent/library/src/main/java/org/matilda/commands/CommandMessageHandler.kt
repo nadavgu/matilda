@@ -11,8 +11,6 @@ import org.matilda.messages.protobuf.MessageType
 import pbandk.ByteArr
 import pbandk.decodeFromByteArray
 import pbandk.encodeToByteArray
-import java.io.PrintWriter
-import java.io.StringWriter
 
 @Inject
 class CommandMessageHandler(private val mMessageSender: MessageSender,
@@ -34,16 +32,7 @@ class CommandMessageHandler(private val mMessageSender: MessageSender,
 
     private fun reportCommandFailure(request: CommandRequest, throwable: Throwable) {
         val commandResponse = CommandResponse(request.id, false,
-            ByteArr(getStackTraceString(throwable).toByteArray()))
+            ByteArr(throwable.stackTraceToString().toByteArray()))
         mMessageSender.send(Message(MessageType.COMMAND_RESPONSE.value, commandResponse.encodeToByteArray()))
-    }
-
-    private fun getStackTraceString(throwable: Throwable): String {
-        StringWriter().use { stringWriter ->
-            PrintWriter(stringWriter).use { printWriter ->
-                throwable.printStackTrace(printWriter)
-                return stringWriter.toString()
-            }
-        }
     }
 }
