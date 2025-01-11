@@ -7,6 +7,7 @@ from matilda.di.destructors.destruction_manager import DestructionManager
 from matilda.executable_matilda_runner import ExecutableMatildaRunner
 from matilda.java_process_matilda_runner import JavaProcessMatildaRunner
 from matilda.matilda_connection import MatildaConnection
+from matilda.platform.matilda_platform import MatildaPlatform
 from matilda.matilda_process import MatildaProcess
 from matilda.matilda_runner import MatildaRunner
 from matilda.messages.message_server import MessageServer
@@ -14,8 +15,9 @@ from matilda.messages.message_server import MessageServer
 
 class Matilda:
     def run(self, runner: MatildaRunner) -> MatildaProcess:
+        platform = runner.platform()
         connection = runner.run()
-        return self.__create_matilda_process(connection)
+        return self.__create_matilda_process(connection, platform)
 
     def run_in_java_process(self, java_path='java') -> MatildaProcess:
         return self.run(JavaProcessMatildaRunner(java_path=java_path))
@@ -24,8 +26,8 @@ class Matilda:
         return self.run(ExecutableMatildaRunner())
 
     @staticmethod
-    def __create_matilda_process(connection: MatildaConnection) -> MatildaProcess:
-        dependency_container = Matilda.__create_dependency_container(connection)
+    def __create_matilda_process(connection: MatildaConnection, platform: MatildaPlatform) -> MatildaProcess:
+        dependency_container = Matilda.__create_dependency_container(connection, platform)
         Matilda.__start_message_server(dependency_container.get(MessageServer),
                                        dependency_container.get(DestructionManager),
                                        connection)
@@ -38,9 +40,10 @@ class Matilda:
             raise
 
     @staticmethod
-    def __create_dependency_container(connection: MatildaConnection) -> DependencyContainer:
+    def __create_dependency_container(connection: MatildaConnection, platform: MatildaPlatform) -> DependencyContainer:
         dependency_container = DependencyContainer()
         dependency_container.add(MatildaConnection, connection)
+        dependency_container.add(MatildaPlatform, platform)
         add_dependency_providers(dependency_container)
         return dependency_container
 
