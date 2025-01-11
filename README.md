@@ -210,13 +210,14 @@ template = 'template.template_plugin'
 The key ("template" here) specifies the name of the plugin, and the value specifies the file that implements it.
 
 The file should contain the following:
-1. an attribute called `PLUGIN_ENTRY_POINT_CLASS_NAME` that holds the full name of the java class that implements the
-`createCommandRegistry()` method
+1. an attribute called `PLUGIN_ENTRY_POINT`, which will be a `PluginEntryPoint` object, containing:
+   1. `entry_point_symbol`, the full name of the java class that implements the
+   `createCommandRegistry()` method
+   2. (optional) `binary_path`, the path to the jar file of the java part of the plugin.
+If not specified, the jar will be taken from "resources/plugin.jar"
 2. a function called `load_plugins()` that receives a `DependencyContainer` object with all the generated services from
 matilda's RPC as dependencies. The function return value will then be exported as the plugin's API: 
 `process.plugins.[plugin_name]`
-3. (optional) an attribute called `jar_path` that contains the path to the jar file of the java part of the plugin.
-If not specified, the jar will be taken from "resources/plugin.jar".
 
 ```python
 from maddie.dependency import Dependency
