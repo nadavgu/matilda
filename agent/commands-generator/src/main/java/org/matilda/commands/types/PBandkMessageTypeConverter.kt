@@ -1,15 +1,15 @@
 package org.matilda.commands.types
 
 import androidx.room.compiler.processing.XType
-import com.google.protobuf.Message
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import com.squareup.kotlinpoet.javapoet.toKTypeName
 import org.matilda.commands.python.PythonClassName
 import org.matilda.commands.types.TypeConverter.Companion.MAIN_CONVERTERS_PACKAGE
+import pbandk.Message
 import javax.inject.Inject
 
 @OptIn(KotlinPoetJavaPoetPreview::class)
-class GoogleMessageTypeConverter @Inject constructor() : TypeConverter {
+class PBandkMessageTypeConverter @Inject constructor() : TypeConverter {
     @Inject
     lateinit var mTypes: TypeUtilities
 
@@ -17,12 +17,12 @@ class GoogleMessageTypeConverter @Inject constructor() : TypeConverter {
     lateinit var mProtobufTypeTranslator: ProtobufTypeTranslator
 
     override fun javaConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo {
-        return JavaTypeConverterInfo("new \$T<>(\$T.class)", listOf(GoogleMessageConverter::class.java, type.typeName))
+        return JavaTypeConverterInfo("new \$T<>(\$T.Companion)", listOf(PbandkMessageConverter::class.java, type.typeName))
     }
 
     override fun kotlinConverter(type: XType, outerConverter: TypeConverter): JavaTypeConverterInfo {
-        return JavaTypeConverterInfo("%T(%T::class.java)",
-            listOf(GoogleMessageConverter::class, type.typeName.toKTypeName()))
+        return JavaTypeConverterInfo("%T(%T.Companion)",
+            listOf(PbandkMessageConverter::class, type.typeName.toKTypeName()))
     }
 
     override fun pythonConverter(type: XType, outerConverter: TypeConverter): PythonTypeConverterInfo {
@@ -35,7 +35,7 @@ class GoogleMessageTypeConverter @Inject constructor() : TypeConverter {
 
     override fun isSupported(type: XType, outerConverter: TypeConverter) =  mTypes.isSubtype(type, Message::class.java)
     override val supportedTypesDescription: String
-        get() = "google protobuf messages"
+        get() = "pbandk protobuf messages"
 
     companion object {
         private val CONVERTER_CLASS = PythonClassName(MAIN_CONVERTERS_PACKAGE.subpackage("message_converter"),

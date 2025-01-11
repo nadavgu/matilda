@@ -28,6 +28,7 @@ class ProtobufModule {
 
     @Provides
     fun typeConverter(googleMessageTypeConverter: GoogleMessageTypeConverter,
+                      pBandkMessageTypeConverter: PBandkMessageTypeConverter,
                       scalarTypeConverter: ScalarTypeConverter,
                       listTypeConverter: ListTypeConverter,
                       voidTypeConverter: VoidTypeConverter,
@@ -35,6 +36,7 @@ class ProtobufModule {
     ): TypeConverter {
         return CompoundTypeConverter(listOf(
             googleMessageTypeConverter,
+            pBandkMessageTypeConverter,
             scalarTypeConverter,
             listTypeConverter,
             voidTypeConverter,
