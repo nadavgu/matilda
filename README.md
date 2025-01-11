@@ -210,11 +210,17 @@ template = 'template.template_plugin'
 The key ("template" here) specifies the name of the plugin, and the value specifies the file that implements it.
 
 The file should contain the following:
-1. an attribute called `PLUGIN_ENTRY_POINT`, which will be a `PluginEntryPoint` object, containing:
-   1. `entry_point_symbol`, the full name of the java class that implements the
-   `createCommandRegistry()` method
-   2. (optional) `binary_path`, the path to the jar file of the java part of the plugin.
-If not specified, the jar will be taken from "resources/plugin.jar"
+1. an attribute called `PLUGIN_ENTRY_POINTS`, which will be a dict. The dict will contain an entry for each platform
+that the plugin supports (meaning, each target the plugin was compiled to, such as JVM, linux native with x86_64
+architecture, android native with ARM32 architecture, and so on). The entry key will be a value from the 
+`MatildaPlatform` enum, containing all the possible platforms, and the value will be a `PluginEntryPoint` object,
+containing:
+   1. `entry_point_symbol`, for java platforms, it is the full name of the java class that implements the
+   `createCommandRegistry()` method. For native platforms, it is the full name of the function that creates the command
+   registry
+   2. (optional) `binary_path`, the path to the binary file of the java/native part of the plugin. If not specified,
+   the jar will be taken from the "resources" directory, with some default file name
+
 2. a function called `load_plugins()` that receives a `DependencyContainer` object with all the generated services from
 matilda's RPC as dependencies. The function return value will then be exported as the plugin's API: 
 `process.plugins.[plugin_name]`
@@ -222,9 +228,14 @@ matilda's RPC as dependencies. The function return value will then be exported a
 ```python
 from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
+from matilda.platform.matilda_platform import MatildaPlatform
+from matilda.plugins.plugin_entry_point import PluginEntryPoint
 from template.generated.commands.math_service import MathService
 
-PLUGIN_ENTRY_POINT_CLASS_NAME = "org.matilda.template.TemplatePlugin"
+PLUGIN_ENTRY_POINTS = {
+    MatildaPlatform.JVM: PluginEntryPoint("org.matilda.template.TemplatePlugin"),
+    MatildaPlatform.LINUX_X64: PluginEntryPoint("createCommandRegistry"),
+}
 
 
 def load_plugin(dependencies_container: DependencyContainer):
