@@ -29,7 +29,12 @@ kotlin {
         withJava()
     }
 
-    linuxX64()
+    linuxX64 {
+        val main by compilations.getting
+        val interop by main.cinterops.creating {
+            packageName("org.matilda.plugins.interop")
+        }
+    }
 
     sourceSets {
         commonMain {
