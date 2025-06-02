@@ -8,7 +8,7 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import org.matilda.commands.CommandRegistry
 import org.matilda.commands.PluginDependencies
 
-class NativePlugin(private val mHandle : CPointer<out CPointed>) : Plugin {
+class NativePlugin(private val mLibrary: NativeLibrary) : Plugin {
     override fun createCommandRegistry(entryPoint: String, pluginDependencies: PluginDependencies): CommandRegistry {
         TODO("Not yet implemented")
     }
