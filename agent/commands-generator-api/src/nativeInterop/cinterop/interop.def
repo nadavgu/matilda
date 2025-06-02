@@ -13,3 +13,8 @@ struct CommandRegistryStruct {
     struct ByteArrayStruct (*runCommand)(const void *commandHandle, struct ByteArrayStruct parameter);
     void (*free)(struct CommandRegistryStruct *);
 };
+
+struct CommandRegistryManagerStruct {
+    const void *handle;
+    int (*addCommandRegistry)(const void *handle, struct CommandRegistryStruct registry);
+};
