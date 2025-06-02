@@ -2,6 +2,8 @@ package org.matilda.commands
 
 import dagger.Module
 import dagger.Provides
+import kotlinx.datetime.Clock
+import kotlin.random.Random
 
 @Module
 class PluginDependenciesModule(private val mPluginDependencies: PluginDependencies) {
@@ -12,5 +14,5 @@ class PluginDependenciesModule(private val mPluginDependencies: PluginDependenci
     fun commandRunner() = mPluginDependencies.commandRunner
 
     @Provides
-    fun random() = mPluginDependencies.random
+    fun random() = Random(Clock.System.now().toEpochMilliseconds())
 }

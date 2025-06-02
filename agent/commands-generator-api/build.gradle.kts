@@ -43,6 +43,7 @@ kotlin {
                 implementation("com.google.dagger:dagger:2.52")
                 api("pro.streem.pbandk:pbandk-runtime:$pbandkVersion")
                 api("com.google.protobuf:protobuf-kotlin:$protobufVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
             }
         }
 

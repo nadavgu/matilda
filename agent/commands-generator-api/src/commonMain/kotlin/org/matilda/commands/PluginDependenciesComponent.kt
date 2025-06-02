@@ -1,7 +1,9 @@
 package org.matilda.commands
 
+import kotlinx.datetime.Clock
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
+import kotlin.random.Random
 
 @Component
 abstract class PluginDependenciesComponent(private val mPluginDependencies: PluginDependencies) {
@@ -12,5 +14,5 @@ abstract class PluginDependenciesComponent(private val mPluginDependencies: Plug
     fun commandRunner() = mPluginDependencies.commandRunner
 
     @Provides
-    fun random() = mPluginDependencies.random
+    fun random() = Random(Clock.System.now().toEpochMilliseconds())
 }
