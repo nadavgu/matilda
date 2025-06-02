@@ -1,7 +1,8 @@
 ---
 
-struct TestStruct {
-    int value;
-    const char *ptr;
+struct ByteArrayStruct {
+    int size;
+    const char *data;
+    void (*freeData)(char *);
 };
 
