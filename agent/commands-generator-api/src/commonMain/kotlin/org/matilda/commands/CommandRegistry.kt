@@ -14,4 +14,7 @@ class CommandRegistry {
         mCommands.getOrElse(type) {
             throw IllegalArgumentException("Command $type not found")
         }
+
+    val commands: Map<Int, Command>
+        get() = mCommands
 }

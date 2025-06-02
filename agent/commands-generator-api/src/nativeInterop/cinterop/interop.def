@@ -6,3 +6,10 @@ struct ByteArrayStruct {
     void (*freeData)(char *);
 };
 
+struct CommandRegistryStruct {
+    const void *handle;
+    int (*getSize)(const void *handle);
+    void (*getCommands)(const void *handle, int *outTypes, void **outCommandHandles);
+    struct ByteArrayStruct (*runCommand)(const void *commandHandle, struct ByteArrayStruct parameter);
+    void (*free)(struct CommandRegistryStruct *);
+};
