@@ -23,3 +23,8 @@ struct CommandRunnerStruct {
     const void *handle;
     struct ByteArrayStruct (*run)(const void *handle, int registryId, int commandType, struct ByteArrayStruct parameter);
 };
+
+struct PluginDependenciesStruct {
+    struct CommandRegistryManagerStruct commandRegistryManager;
+    struct CommandRunnerStruct commandRunner;
+};
