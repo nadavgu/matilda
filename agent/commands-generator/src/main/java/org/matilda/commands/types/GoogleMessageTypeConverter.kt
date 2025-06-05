@@ -38,7 +38,7 @@ class GoogleMessageTypeConverter @Inject constructor() : TypeConverter {
         get() = "google protobuf messages"
 
     companion object {
-        private val CONVERTER_CLASS = PythonClassName(MAIN_CONVERTERS_PACKAGE.subpackage("message_converter"),
-            "MessageConverter")
+        private val CONVERTER_CLASS = PythonClassName(MAIN_CONVERTERS_PACKAGE.subpackage("any_converter"),
+            "AnyConverter")
     }
 }
