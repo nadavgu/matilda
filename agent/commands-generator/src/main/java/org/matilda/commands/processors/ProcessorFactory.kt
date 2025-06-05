@@ -94,6 +94,7 @@ class ProcessorFactory @Inject constructor() {
     fun createProcessor() = CompoundProcessor(
         listOf(
             ProjectCommandsProcessor(selectGenerator(mJavaRawCommandClassGenerator, mKotlinRawCommandClassGenerator)),
+            ProjectCommandsProcessor(mPythonRawCommandClassGenerator),
             ProjectServicesProcessor(selectGenerator(mJavaServiceDependenciesClassGenerator, mKotlinServiceDependenciesClassGenerator)),
             ProjectServicesProcessor(mPythonServiceDependenciesClassGenerator),
             ProjectDynamicServicesProcessor(selectGenerator(mJavaServiceProxyClassGenerator, mKotlinServiceProxyClassGenerator)),
