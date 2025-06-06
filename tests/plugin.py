@@ -1,5 +1,9 @@
+from typing import Union
+
 from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
+
+from tests.generated.commands.java_test_service import JavaTestService
 from tests.generated.commands.matilda_test_service import MatildaTestService
 
 from matilda.platform.matilda_platform import MatildaPlatform
@@ -16,7 +20,7 @@ def load_plugin(dependencies_container: DependencyContainer):
 
 
 class TestPlugin(Dependency):
-    def __init__(self, test_service: MatildaTestService):
+    def __init__(self, test_service: Union[MatildaTestService, JavaTestService]):
         self.__test_service = test_service
 
     @property

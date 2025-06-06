@@ -1,13 +1,15 @@
 from typing import Generator
 
 import pytest
-import tests
+import tests.java_plugin
+import tests.plugin
 from _pytest.fixtures import SubRequest
 
 from matilda.matilda import Matilda
 from matilda.matilda_process import MatildaProcess
 from matilda.platform.matilda_platform import MatildaPlatform
 from tests.plugin import TestPlugin
+from tests.plugin_type import PluginType
 
 
 @pytest.fixture(scope='session')
@@ -44,6 +46,19 @@ def matilda_process(matilda_platform: MatildaPlatform, matilda_java_process: Mat
         return matilda_native_process
 
 
+@pytest.fixture(params = [
+    PluginType.KMP,
+    PluginType.JAVA,
+], scope='session')
+def plugin_type(request: SubRequest) -> PluginType:
+    return request.param
+
+
 @pytest.fixture(scope='session')
-def plugin(matilda_process: MatildaProcess) -> TestPlugin:
-    return matilda_process.plugins.load_plugin(tests.plugin, "test")
+def plugin(plugin_type: PluginType, matilda_process: MatildaProcess, matilda_platform: MatildaPlatform) -> TestPlugin:
+    if plugin_type is PluginType.KMP:
+        return matilda_process.plugins.load_plugin(tests.plugin, "test")
+    else:
+        if matilda_platform is MatildaPlatform.LINUX_X64:
+            pytest.skip("java plugin not supported on native platform")
+        return matilda_process.plugins.load_plugin(tests.java_plugin, "test")
