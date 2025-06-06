@@ -62,6 +62,7 @@ val pythonRootDir = rootProject.layout.projectDirectory.dir(providers.gradleProp
 val pythonGeneratedPackage = providers.gradleProperty("PYTHON_GENERATED_PACKAGE").get()
 val protobufVersion: String by project
 val pbandkVersion: String by project
+val kotlinInjectVersion: String by project
 
 ksp {
     arg("pythonRootDir", pythonRootDir.asFile.absolutePath)
@@ -96,7 +97,7 @@ kotlin {
         val commonMain by getting {
             kotlin.srcDir("src/main/java")
             dependencies {
-                implementation("me.tatarka.inject:kotlin-inject-runtime:0.7.2")
+                implementation("me.tatarka.inject:kotlin-inject-runtime:$kotlinInjectVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.6.0")
                 implementation(project(":commands-generator-api"))
@@ -114,7 +115,7 @@ kotlin {
     }
 
     commonMainKspDependencies(project) {
-        ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.2")
+        ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:$kotlinInjectVersion")
         ksp(project(":commands-generator"))
     }
 }

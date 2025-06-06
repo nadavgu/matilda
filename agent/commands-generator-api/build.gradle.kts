@@ -23,6 +23,7 @@ java {
 
 val protobufVersion: String by project
 val pbandkVersion: String by project
+val kotlinInjectVersion: String by project
 
 kotlin {
     jvm {
@@ -39,7 +40,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation("me.tatarka.inject:kotlin-inject-runtime:0.7.2")
+                implementation("me.tatarka.inject:kotlin-inject-runtime:$kotlinInjectVersion")
                 implementation("com.google.dagger:dagger:2.52")
                 api("pro.streem.pbandk:pbandk-runtime:$pbandkVersion")
                 api("com.google.protobuf:protobuf-kotlin:$protobufVersion")
@@ -58,7 +59,7 @@ kotlin {
 
 dependencies {
     ksp("com.google.dagger:dagger-compiler:2.52")
-    ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.2")
+    ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:$kotlinInjectVersion")
     protobuf(project(":commands-generator-protos"))
     compileOnly("com.google.protobuf:protobuf-kotlin:$protobufVersion")
 }
