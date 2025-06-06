@@ -4,8 +4,9 @@ import pbandk.wkt.Any
 import org.matilda.commands.protobuf.Some
 import pbandk.pack
 import pbandk.unpack
+import kotlin.jvm.JvmSuppressWildcards
 
-class ListConverter<T>(private val mInternalConverter: ProtobufConverter<T>) : ProtobufConverter<List<T>> {
+class ListConverter<T>(private val mInternalConverter: ProtobufConverter<T>) : ProtobufConverter<List<@JvmSuppressWildcards T>> {
     override fun convertToProtobuf(obj: List<T>): Some {
         return Some(obj.map { element: T ->
             Any.pack(mInternalConverter.convertToProtobuf(element))
