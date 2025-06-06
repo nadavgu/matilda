@@ -2,7 +2,6 @@ package org.matilda.commands.processors
 
 import androidx.room.compiler.processing.XFiler
 import androidx.room.compiler.processing.writeTo
-import pbandk.wkt.Any
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import com.squareup.kotlinpoet.javapoet.toKClassName
@@ -20,6 +19,7 @@ import org.matilda.commands.types.TypeConverter
 import org.matilda.commands.types.kotlinConverter
 import org.matilda.commands.utils.addPbandkExtensionImports
 import org.matilda.commands.utils.fileSpecBuilder
+import pbandk.wkt.Any
 import javax.inject.Inject
 
 @OptIn(KotlinPoetJavaPoetPreview::class)
@@ -88,7 +88,7 @@ class KotlinServiceProxyClassGenerator @Inject internal constructor() : Processo
     private fun createCommandMethod(command: CommandInfo) =
         FunSpec.builder(command.name)
             .addModifiers(KModifier.OVERRIDE)
-            .returns(command.returnType.typeName.toKTypeName())
+            .returns(if (command.hasReturnValue()) command.returnType.typeName.toKTypeName() else UNIT)
             .apply {
                 command.parameters.forEach { parameter ->
                     addParameter(ParameterSpec.builder(parameter.name, parameter.type.typeName.toKTypeName()).build())
