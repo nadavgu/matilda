@@ -11,7 +11,7 @@ class SquareFunction(FunctionService):
 
 if __name__ == '__main__':
     with Matilda().run_in_java_process() as matilda_process:
-        math_service: MathService = matilda_process.plugins.template.math
+        math_service: MathService = matilda_process.plugins.template.service
         print(math_service.sum(3, 4))
         print(math_service.map(SquareFunction(), [1, 2, 3, 4]))
         adder = math_service.create_adder(5)

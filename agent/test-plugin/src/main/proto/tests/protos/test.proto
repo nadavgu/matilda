@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "test.protobuf";
+option java_outer_classname = "ExerciseProto";
+option java_multiple_files = true;
+
+
+enum Level {
+  LOW = 0;
+  MID = 1;
+  HIGH = 2;
+}
+
+message TestMessage {
+  Level level = 1;
+  double amount = 2;
+}

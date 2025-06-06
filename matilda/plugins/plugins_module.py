@@ -39,7 +39,7 @@ class PluginsModule(Dependency):
 
     def __getattr__(self, item):
         entry_point = self.__entry_points[item]
-        plugin = self.__load_plugin(entry_point, item)
+        plugin = self.load_plugin(importlib.import_module(entry_point), item)
         setattr(self, item, plugin)
         return plugin
 
@@ -47,8 +47,7 @@ class PluginsModule(Dependency):
     def __entry_points(self) -> Dict[str, str]:
         return {entry_point.name: entry_point.value for entry_point in entry_points(group='matilda.plugins')}
 
-    def __load_plugin(self, entry_point: str, plugin_name: str):
-        module = importlib.import_module(entry_point)
+    def load_plugin(self, module: ModuleType, plugin_name: str):
         plugin_dependencies = self.__load_plugin_dependencies(module, plugin_name)
         return module.load_plugin(plugin_dependencies)
 

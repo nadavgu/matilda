@@ -6,10 +6,15 @@ set -e
 GRADLE_DIR="./agent"   # Change this to the actual directory name
 PYTHON_DIR="."
 
-TEMPLATE_DIR="./matilda"   # Change this to the actual directory name
-PROTO_DIR="$TEMPLATE_DIR/protos"
-GENERATED_DIR="$TEMPLATE_DIR/generated"
-RESOURCES_DIR="$TEMPLATE_DIR/resources"
+PYTHON_DIR="./matilda"   # Change this to the actual directory name
+PROTO_DIR="$PYTHON_DIR/protos"
+GENERATED_DIR="$PYTHON_DIR/generated"
+RESOURCES_DIR="$PYTHON_DIR/resources"
+
+TESTS_DIR="./tests"
+TESTS_PROTO_DIR="$TESTS_DIR/protos"
+TESTS_GENERATED_DIR="$TESTS_DIR/generated"
+TESTS_RESOURCES_DIR="$TESTS_DIR/resources"
 
 do_clean() {
   echo "Cleaning Gradle project..."
@@ -19,14 +24,18 @@ do_clean() {
   find "$PYTHON_DIR" -type d -name "__pycache__" -exec rm -rf {} +
   rm -rf build dist *.egg-info
 
-  echo "Deleting 'generated' directory..."
-  rm -rf "$GENERATED_DIR"
+  echo "Deleting 'generated' directories..."
+  rm -rf "$GENERATED_DIR" "$TESTS_GENERATED_DIR"
 
   echo "Deleting *.pb2.py files in $PROTO_DIR..."
   find "$PROTO_DIR" -name "*_pb2.py" -type f -delete
 
-  echo "Cleaning resources directory except .gitignore and __init__.py..."
+  echo "Deleting *.pb2.py files in $TEST_PLUGIN_PROTO_DIR..."
+  find "$TESTS_PROTO_DIR" -name "*_pb2.py" -type f -delete
+
+  echo "Cleaning resources directories except required files..."
   find "$RESOURCES_DIR" -type f ! -name ".gitignore" ! -name "__init__.py" ! -name "resources.py" -delete
+  find "$TESTS_RESOURCES_DIR" -type f ! -name ".gitignore" ! -name "__init__.py" -delete
 
   echo "Clean completed."
 }
