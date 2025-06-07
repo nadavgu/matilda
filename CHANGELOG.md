@@ -15,6 +15,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.7.0] - 2025-06-07
+
+### Added
+
+- Added full support for native agents. Matilda can now run in native linux X86 64 processes
+- Command generator supports generating kotlin native code
+- Plugins can also be loaded in linux X86 64 processes
+- Improved setup script and added options
+- Added system tests
+
+### Changed
+
+- Plugin entry point API changed to support multiple platforms with different binaries and entry points
+- Plugins now receive a kotlin.random.Random object as a dependency instead of java.util.Random
+
+### Fixed
+
+- Fixed packaging issues that caused protos and resources to not be included in final installed library
+- Fixed accidentally removed generation of python code that calls java callbacks
+- Fixed bug with handling commands that receive/return google protobuf generated message classes
+- Fixed bug with dynamic service void functions
+- Fixed bug with commands returning a list of lists
+
+## [0.6.0] - 2025-01-10
+
+### Added
+
+- Command generator can now generate kotlin code that supports kotlin multiplatform
+
+### Fixed
+
+- Closing resources even if closing other resources fails
+- Exiting gracefully when agent crashes, instead of blocking forever
+
+### Changed
+
+- The entire codebase now supports kotlin multiplatform, generated code as well.
+  - kotlinpoet instead of javapoet
+  - pbandk protobuf plugin instead of google protobuf
+  - kotlin-inject instead of dagger
+  - kotlinx.coroutines instead of java.util.concurrent
+  - kotlinx.io instead of java.io/java.nio
+  - kotlinx.datetime instead of java time
+- Command generator protobuf files are now in a separate compileOnly library - command-generator-protos
+- Upgraded to gradle 8.9
+
 ## [0.5.0] - 2024-11-09
 
 ### Added
@@ -75,7 +121,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - python API to access java classes, methods, and fields using reflection
 - command generator annotation processor that allows to easily create commands between python side & java side
 
-[unreleased]: https://github.com/nadavgu/matilda/compare/0.5.0...dev
+[unreleased]: https://github.com/nadavgu/matilda/compare/0.7.0...dev
+[0.7.0]: https://github.com/nadavgu/matilda/compare/0.6.0...0.7.0
+[0.6.0]: https://github.com/nadavgu/matilda/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/nadavgu/matilda/compare/0.4.0...0.5.0
 [0.4.0]: https://github.com/nadavgu/matilda/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/nadavgu/matilda/compare/0.2.1...0.3.0
