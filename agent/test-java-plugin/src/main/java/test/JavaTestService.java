@@ -28,6 +28,12 @@ public class JavaTestService {
     }
 
     @MatildaCommand
+    public List<List<Integer>> reverseListOfLists(List<List<Integer>> values) {
+        Collections.reverse(values);
+        return values;
+    }
+
+    @MatildaCommand
     public void nothing() {}
 
     @MatildaCommand

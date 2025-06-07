@@ -22,6 +22,11 @@ class MatildaTestService {
     }
 
     @MatildaCommand
+    fun reverseListOfLists(values: List<List<Int>>): List<List<Int>> {
+        return values.reversed()
+    }
+
+    @MatildaCommand
     fun nothing() {}
 
     @MatildaCommand

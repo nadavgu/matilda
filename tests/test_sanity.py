@@ -15,6 +15,9 @@ class TestSanity:
     def test_list_function(self, plugin: TestPlugin):
         assert plugin.service.reverse_list([1, 2, 3]) == [3, 2, 1]
 
+    def test_list_of_lists_function(self, plugin: TestPlugin):
+        assert plugin.service.reverse_list_of_lists([[1, 2], [3, 4], [5, 6]]) == [[5, 6], [3, 4], [1, 2]]
+
     def test_void_function(self, plugin: TestPlugin):
         assert plugin.service.nothing() is None
 
