@@ -14,6 +14,7 @@ version = providers.gradleProperty("VERSION").get()
 
 repositories {
     mavenCentral()
+    google()
 }
 
 java {
