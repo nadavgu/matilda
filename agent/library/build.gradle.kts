@@ -40,7 +40,7 @@ fun KotlinMultiplatformExtension.commonMainKspDependencies(
 }
 
 plugins {
-    java
+    id("com.android.library")
     id("com.google.protobuf") version "0.9.4"
     kotlin("multiplatform")
     id("com.google.devtools.ksp")
@@ -60,6 +60,16 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+android {
+    namespace = "org.matilda"
+    compileSdk = 36
+
+    compileOptions.apply {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions.jvmTarget.set(JvmTarget.JVM_1_8)
 }
@@ -74,7 +84,7 @@ ksp {
     arg("pythonRootDir", pythonRootDir.asFile.absolutePath)
     arg("pythonGeneratedPackage", pythonGeneratedPackage)
     arg("protobufDirs", File(layout.buildDirectory.get().asFile,
-        "extracted-include-protos/main/").absolutePath +
+        "extracted-include-protos/debug/").absolutePath +
             ":${File(projectDir, "src/main/proto/").absolutePath}")
     arg("javaMainPackage", "org.matilda")
     arg("generateKotlin", "true")
@@ -143,7 +153,8 @@ protobuf {
     }
 
     generateProtoTasks {
-        ofSourceSet("main").forEach { task ->
+        // Only generate sources for debug, to prevent non-flavored from having duplicated sources
+        ofBuildType("debug").matching { !it.isTestVariant }.forEach { task ->
             task.builtins {
                 create("python") {
                     task.doLast {
