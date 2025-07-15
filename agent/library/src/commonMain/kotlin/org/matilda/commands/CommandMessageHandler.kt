@@ -10,7 +10,6 @@ import org.matilda.messages.handlers.MessageHandler
 import org.matilda.messages.protobuf.MessageType
 import pbandk.ByteArr
 import pbandk.decodeFromByteArray
-import pbandk.encodeToByteArray
 
 @Inject
 class CommandMessageHandler(private val mMessageSender: MessageSender,

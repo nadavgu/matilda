@@ -6,7 +6,6 @@ import org.matilda.messages.Message
 import org.matilda.messages.MessageSender
 import org.matilda.messages.protobuf.MessageType
 import pbandk.ByteArr
-import pbandk.encodeToByteArray
 
 class CommandSender @Inject constructor(private var mMessageSender: MessageSender) {
     fun send(commandRegistryId: Int, commandType: Int, commandId: Int, parameter: ByteArray) {
