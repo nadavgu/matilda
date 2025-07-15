@@ -4,7 +4,6 @@ import me.tatarka.inject.annotations.Inject
 import org.matilda.messages.protobuf.ProtobufMessage
 import pbandk.ByteArr
 import pbandk.decodeFromByteArray
-import pbandk.encodeToByteArray
 
 @Inject
 class ProtobufMessageSerializer : MessageSerializer {

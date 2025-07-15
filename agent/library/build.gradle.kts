@@ -95,7 +95,6 @@ kotlin {
 
     sourceSets {
         val commonMain by getting {
-            kotlin.srcDir("src/main/java")
             dependencies {
                 implementation("me.tatarka.inject:kotlin-inject-runtime:$kotlinInjectVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
