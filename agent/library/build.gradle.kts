@@ -98,6 +98,8 @@ kotlin {
         }
     }
 
+    androidTarget()
+
     linuxX64 {
         binaries {
             executable(buildTypes = listOf(DEBUG)) {
@@ -108,6 +110,8 @@ kotlin {
             }
         }
     }
+
+    applyDefaultHierarchyTemplate()
 
     sourceSets {
         val commonMain by getting {
@@ -127,6 +131,13 @@ kotlin {
                 implementation("org.junit.jupiter:junit-jupiter")
             }
         }
+
+        val javaMain by creating {
+            dependsOn(commonMain)
+        }
+
+        jvmMain.get().dependsOn(javaMain)
+        androidMain.get().dependsOn(javaMain)
     }
 
     commonMainKspDependencies(project) {
