@@ -37,8 +37,7 @@ fun KotlinMultiplatformExtension.commonMainKspDependencies(
 }
 
 plugins {
-    java
-    application
+    id("com.android.library")
     id("com.google.protobuf") version "0.9.4"
     kotlin("multiplatform")
     id("com.google.devtools.ksp")
@@ -58,6 +57,11 @@ repositories {
     mavenCentral()
     mavenLocal()
     google()
+}
+
+android {
+    namespace = "org.matilda"
+    compileSdk = 36
 }
 
 kotlin {
@@ -107,7 +111,7 @@ ksp {
     arg("pythonRootDir", pythonRootDir.asFile.absolutePath)
     arg("pythonGeneratedPackage", pythonGeneratedPackage)
     arg("protobufDirs",
-        File(layout.buildDirectory.asFile.get(), "extracted-include-protos/main/").absolutePath + ":"
+        File(layout.buildDirectory.asFile.get(), "extracted-include-protos/debug/").absolutePath + ":"
                 + File(projectDir, "src/main/proto/").absolutePath
     )
     arg("javaMainPackage", "org.matilda.template")
@@ -117,7 +121,7 @@ ksp {
 
 tasks.named<Jar>("jvmJar") {
     from({
-        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+        configurations.getByName("jvmRuntimeClasspath").filter { it.name.endsWith("jar") }.map { zipTree(it) }
     })
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
@@ -141,10 +145,6 @@ tasks.withType<KotlinCompile>().configureEach {
     compilerOptions.jvmTarget.set(JvmTarget.JVM_1_8)
 }
 
-application {
-    mainClass.set("org.matilda.template.TemplatePlugin")
-}
-
 protobuf {
     protoc {
         // The artifact spec for the Protobuf Compiler
@@ -158,7 +158,8 @@ protobuf {
     }
 
     generateProtoTasks {
-        ofSourceSet("main").forEach { task ->
+        // Only generate sources for debug, to prevent non-flavored from having duplicated sources
+        ofBuildType("debug").matching { !it.isTestVariant }.forEach { task ->
             task.builtins {
                 create("python") {
                     task.doLast {
@@ -169,7 +170,9 @@ protobuf {
                     }
                 }
 
-                remove(findByName("java"))
+                findByName("java")?.also {
+                    remove(it)
+                }
             }
             task.plugins {
                 create("pbandk") {
