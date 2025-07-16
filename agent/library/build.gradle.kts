@@ -40,7 +40,7 @@ fun KotlinMultiplatformExtension.commonMainKspDependencies(
 }
 
 plugins {
-    id("com.android.library")
+    id("com.android.application")
     id("com.google.protobuf") version "0.9.4"
     kotlin("multiplatform")
     id("com.google.devtools.ksp")
@@ -61,12 +61,29 @@ java {
 }
 
 android {
-    namespace = "org.matilda"
+    namespace = "org.matilda.library"
     compileSdk = 36
+
+    defaultConfig {
+        minSdk = 21
+    }
 
     compileOptions.apply {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    packaging {
+        resources {
+            // no resources (such as .proto files) are needed
+            excludes += "**"
+        }
+    }
+}
+
+androidComponents {
+    beforeVariants(selector().withBuildType("release")) { variantBuilder ->
+        variantBuilder.enable = false
     }
 }
 
@@ -200,5 +217,19 @@ protobuf {
 publishing {
     repositories {
         mavenLocal()
+    }
+}
+
+afterEvaluate {
+    android.applicationVariants.forEach { variant ->
+        variant.packageApplicationProvider.get().doLast {
+            variant.outputs.forEach { output ->
+                copy {
+                    from(output.outputFile)
+                    into(pythonRootDir.dir(providers.gradleProperty("RESOURCES_SUBDIR")))
+                    rename { "android-agent.apk" }
+                }
+            }
+        }
     }
 }
