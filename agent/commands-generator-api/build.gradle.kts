@@ -46,6 +46,13 @@ kotlin {
                 api("pro.streem.pbandk:pbandk-runtime:$pbandkVersion")
                 api("com.google.protobuf:protobuf-kotlin:$protobufVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
+                api(project(":commands-generator-api-common"))
+            }
+        }
+
+        jvmMain {
+            dependencies {
+                api(project(":commands-generator-api-java"))
             }
         }
 
@@ -80,7 +87,8 @@ protobuf {
     }
 
     generateProtoTasks {
-        ofSourceSet("main").forEach { task ->
+        // Only generate sources for debug, to prevent non-flavored from having duplicated sources
+        ofBuildType("debug").matching { !it.isTestVariant }.forEach { task ->
             task.builtins {
                 create("python") {
                     task.doLast {
@@ -91,7 +99,9 @@ protobuf {
                     }
                 }
 
-                remove(findByName("java"))
+                findByName("java")?.also {
+                    remove(it)
+                }
             }
             task.plugins {
                 create("pbandk") {
