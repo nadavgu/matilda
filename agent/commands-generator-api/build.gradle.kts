@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    `java-library`
+    id("com.android.library")
     id("com.google.protobuf") version "0.9.4"
     kotlin("multiplatform")
     id("com.google.devtools.ksp")
@@ -22,14 +22,23 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+android {
+    namespace = "org.matilda"
+    compileSdk = 36
+
+    compileOptions.apply {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+
 val protobufVersion: String by project
 val pbandkVersion: String by project
 val kotlinInjectVersion: String by project
 
 kotlin {
-    jvm {
-        withJava()
-    }
+    jvm()
+    androidTarget()
 
     linuxX64 {
         val main by compilations.getting
