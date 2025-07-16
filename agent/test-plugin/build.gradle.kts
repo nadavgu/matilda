@@ -71,6 +71,8 @@ kotlin {
         }
     }
 
+    androidTarget()
+
     linuxX64 {
         binaries {
             sharedLib(buildTypes = listOf(DEBUG)) {
