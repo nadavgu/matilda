@@ -18,22 +18,19 @@ dependencies {
 
 val pythonRootDir = rootProject.layout.projectDirectory.dir(providers.gradleProperty("PYTHON_ROOT_DIR_PATH")).get()
 
-tasks.jar {
-    dependsOn(configurations.runtimeClasspath)
+val packMergedJar = tasks.register<Jar>("packMergedJar") {
+    from(tasks.jar.get().outputs.files.map { zipTree(it) })
     from({
         configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
     })
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
-    doLast {
-        outputs.files.forEach { outputFile ->
-            copy {
-                from(outputFile)
-                into(pythonRootDir.dir(providers.gradleProperty("RESOURCES_SUBDIR")))
-                rename {"agent.jar"}
-            }
-        }
-    }
+    destinationDirectory.set(pythonRootDir.dir(providers.gradleProperty("RESOURCES_SUBDIR")))
+    archiveFileName.set("agent.jar")
+}
+
+tasks.jar {
+    finalizedBy(packMergedJar)
 }
 
 tasks.test {
