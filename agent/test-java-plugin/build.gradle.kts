@@ -1,7 +1,7 @@
 plugins {
     java
     application
-    id("com.google.protobuf") version "0.9.4"
+    id("com.google.protobuf")
 }
 
 group = "org.matilda"

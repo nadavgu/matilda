@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.android.library")
-    id("com.google.protobuf") version "0.9.4"
+    id("com.google.protobuf")
     kotlin("multiplatform")
     id("com.google.devtools.ksp")
     `maven-publish`
