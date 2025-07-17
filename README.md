@@ -8,10 +8,10 @@ Matilda's python library supplies you some basic ways to run the agent, but you 
 agent yourself in some other way (for example - injecting the agent to a process of your choosing).
 
 ### Running the agent in a new java process
-By calling `Matilda.new_java_process`, one can run the matilda agent in a new isolated process.
+By calling `Matilda.run_in_java_process`, one can run the matilda agent in a new isolated process.
 The function returns a `MatildaProcess` object that can be used to interact with the new process.
 
-When you finish using the `MatildaProcess`, call its `close` function, or  simply use it
+When you finish using the `MatildaProcess`, call its `close` function, or simply use it
 in a context manager
 
 ```python
@@ -20,6 +20,13 @@ from matilda.matilda import Matilda
 with Matilda().run_in_java_process() as matilda_process:
     integer_class = matilda_process.plugins.java.find_class("java.lang.Integer")
 ```
+
+### Running the agent in a new native process
+Similarly, calling `Matilda.run_in_native_process`, one can run the matilda agent in a new isolated native process.
+
+### Running the agent on a connected android device
+By calling `Matilda.run_in_android_java_process`, one can run the matilda agent in a new java process in a device
+connected through `adb`
 
 ### Running the agent in a custom way
 If you want to run the matilda agent in some other way (for example, inject it to a process, in order to debug it),
