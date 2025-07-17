@@ -15,6 +15,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.8.0] - 2025-07-17
+
+### Added
+
+- Added full support for android java agents. Matilda can now run agents in android jvm processes.
+- Plugins can also be loaded in android jvm processes
+- Added an api function that runs matilda in a new java process on an android device connected through adb
+
+### Fixed
+
+### Changed
+
+### Removed
+
 ## [0.7.0] - 2025-06-07
 
 ### Added
