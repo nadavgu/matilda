@@ -7,6 +7,7 @@ from matilda.platform.unsupported_os_exception import UnsupportedOSException
 
 class MatildaPlatform(Enum):
     JVM = "jvm"
+    ANDROID = "android"
     LINUX_X64 = "linuxX64"
 
 

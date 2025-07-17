@@ -2,6 +2,7 @@ from threading import Thread
 
 from maddie.dependency_container import DependencyContainer
 
+from matilda.adb_java_process_matilda_runner import AdbJavaProcessMatildaRunner
 from matilda.di.dependency_providers import add_dependency_providers
 from matilda.di.destructors.destruction_manager import DestructionManager
 from matilda.executable_matilda_runner import ExecutableMatildaRunner
@@ -24,6 +25,9 @@ class Matilda:
 
     def run_in_native_process(self) -> MatildaProcess:
         return self.run(ExecutableMatildaRunner())
+
+    def run_in_android_java_process(self) -> MatildaProcess:
+        return self.run(AdbJavaProcessMatildaRunner())
 
     @staticmethod
     def __create_matilda_process(connection: MatildaConnection, platform: MatildaPlatform) -> MatildaProcess:
