@@ -47,6 +47,8 @@ kotlin {
         }
     }
 
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
         commonMain {
             dependencies {
@@ -59,11 +61,16 @@ kotlin {
             }
         }
 
-        jvmMain {
+        val javaMain by creating {
+            dependsOn(commonMain.get())
+
             dependencies {
                 api(project(":commands-generator-api-java"))
             }
         }
+
+        jvmMain.get().dependsOn(javaMain)
+        androidMain.get().dependsOn(javaMain)
 
         jvmTest {
             dependencies {
