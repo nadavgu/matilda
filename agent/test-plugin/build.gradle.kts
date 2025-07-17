@@ -138,21 +138,19 @@ ksp {
     arg("diFramework", "kotlinInject")
 }
 
-tasks.named<Jar>("jvmJar") {
+val packMergedJar = tasks.register<org.gradle.api.tasks.bundling.Jar>("packMergedJar") {
+    from(tasks.named<Jar>("jvmJar").get().outputs.files.map { zipTree(it) })
     from({
         configurations.getByName("jvmRuntimeClasspath").filter { it.name.endsWith("jar") }.map { zipTree(it) }
     })
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
-    doLast {
-        outputs.files.forEach { outputFile ->
-            copy {
-                from(outputFile)
-                into(pythonResourcesDir)
-                rename {"plugin.jar"}
-            }
-        }
-    }
+    destinationDirectory.set(pythonResourcesDir)
+    archiveFileName.set("plugin.jar")
+}
+
+tasks.named<Jar>("jvmJar") {
+    finalizedBy(packMergedJar)
 }
 
 afterEvaluate {

@@ -40,21 +40,19 @@ tasks.test {
     useJUnitPlatform()
 }
 
-tasks.jar {
+val packMergedJar = tasks.register<Jar>("packMergedJar") {
+    from(tasks.jar.get().outputs.files.map { zipTree(it) })
     from({
         configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
     })
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
-    doLast {
-        outputs.files.forEach { outputFile ->
-            copy {
-                from(outputFile)
-                into(pythonResourcesDir)
-                rename {"java-plugin.jar"}
-            }
-        }
-    }
+    destinationDirectory.set(pythonResourcesDir)
+    archiveFileName.set("java-plugin.jar")
+}
+
+tasks.jar {
+    finalizedBy(packMergedJar)
 }
 
 java {
