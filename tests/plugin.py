@@ -11,6 +11,7 @@ from matilda.plugins.plugin_entry_point import PluginEntryPoint
 
 PLUGIN_ENTRY_POINTS = {
     MatildaPlatform.JVM: PluginEntryPoint("test.TestPlugin"),
+    MatildaPlatform.ANDROID: PluginEntryPoint("test.TestPlugin"),
     MatildaPlatform.LINUX_X64: PluginEntryPoint("createCommandRegistry"),
 }
 

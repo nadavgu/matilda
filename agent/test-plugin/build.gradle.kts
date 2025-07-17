@@ -37,7 +37,7 @@ fun KotlinMultiplatformExtension.commonMainKspDependencies(
 }
 
 plugins {
-    id("com.android.library")
+    id("com.android.application")
     id("com.google.protobuf") version "0.9.4"
     kotlin("multiplatform")
     id("com.google.devtools.ksp")
@@ -62,6 +62,23 @@ repositories {
 android {
     namespace = "org.matilda"
     compileSdk = 36
+
+    defaultConfig {
+        minSdk = 21
+    }
+
+    packaging {
+        resources {
+            // no resources (such as .proto files) are needed
+            excludes += "**"
+        }
+    }
+}
+
+androidComponents {
+    beforeVariants(selector().withBuildType("release")) { variantBuilder ->
+        variantBuilder.enable = false
+    }
 }
 
 kotlin {
@@ -133,6 +150,20 @@ tasks.named<Jar>("jvmJar") {
                 from(outputFile)
                 into(pythonResourcesDir)
                 rename {"plugin.jar"}
+            }
+        }
+    }
+}
+
+afterEvaluate {
+    android.applicationVariants.forEach { variant ->
+        variant.packageApplicationProvider.get().doLast {
+            variant.outputs.forEach { output ->
+                copy {
+                    from(output.outputFile)
+                    into(pythonResourcesDir)
+                    rename { "android-plugin.apk" }
+                }
             }
         }
     }
