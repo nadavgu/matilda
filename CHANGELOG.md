@@ -135,7 +135,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - python API to access java classes, methods, and fields using reflection
 - command generator annotation processor that allows to easily create commands between python side & java side
 
-[unreleased]: https://github.com/nadavgu/matilda/compare/0.7.0...dev
+[unreleased]: https://github.com/nadavgu/matilda/compare/0.8.0...dev
+[0.8.0]: https://github.com/nadavgu/matilda/compare/0.7.0...0.8.0
 [0.7.0]: https://github.com/nadavgu/matilda/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/nadavgu/matilda/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/nadavgu/matilda/compare/0.4.0...0.5.0
