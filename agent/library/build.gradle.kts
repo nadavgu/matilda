@@ -41,7 +41,7 @@ fun KotlinMultiplatformExtension.commonMainKspDependencies(
 
 plugins {
     id("com.android.application")
-    id("com.google.protobuf") version "0.9.4"
+    id("com.google.protobuf")
     kotlin("multiplatform")
     id("com.google.devtools.ksp")
     `maven-publish`
