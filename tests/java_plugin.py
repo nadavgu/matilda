@@ -10,6 +10,8 @@ from tests.plugin import TestPlugin
 PLUGIN_ENTRY_POINTS = {
     MatildaPlatform.JVM: PluginEntryPoint("test.JavaTestPlugin",
                                           binary_path=str(Path(__file__).parent / "resources" / "java-plugin.jar")),
+    MatildaPlatform.ANDROID: PluginEntryPoint("test.JavaTestPlugin",
+                                          binary_path=str(Path(__file__).parent / "resources" / "android-java-plugin.apk")),
 }
 
 
