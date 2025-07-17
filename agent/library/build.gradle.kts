@@ -92,6 +92,7 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 val pythonRootDir = rootProject.layout.projectDirectory.dir(providers.gradleProperty("PYTHON_ROOT_DIR_PATH")).get()
+val pythonResourcesDir = pythonRootDir.dir(providers.gradleProperty("RESOURCES_SUBDIR"))
 val pythonGeneratedPackage = providers.gradleProperty("PYTHON_GENERATED_PACKAGE").get()
 val protobufVersion: String by project
 val pbandkVersion: String by project
@@ -226,10 +227,25 @@ afterEvaluate {
             variant.outputs.forEach { output ->
                 copy {
                     from(output.outputFile)
-                    into(pythonRootDir.dir(providers.gradleProperty("RESOURCES_SUBDIR")))
+                    into(pythonResourcesDir)
                     rename { "android-agent.apk" }
                 }
             }
         }
     }
+}
+
+val packMergedJar = tasks.register<org.gradle.api.tasks.bundling.Jar>("packMergedJar") {
+    from(tasks.named<Jar>("jvmJar").get().outputs.files.map { zipTree(it) })
+    from({
+        configurations.getByName("jvmRuntimeClasspath").filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    })
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    destinationDirectory.set(pythonResourcesDir)
+    archiveFileName.set("agent.jar")
+}
+
+tasks.named<Jar>("jvmJar") {
+    finalizedBy(packMergedJar)
 }
