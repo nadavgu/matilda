@@ -25,7 +25,8 @@ else:
 
 DEFAULT_BINARY_NAMES = {
     MatildaPlatform.JVM: "plugin.jar",
-    MatildaPlatform.LINUX_X64: "libplugin_linuxX64.so"
+    MatildaPlatform.LINUX_X64: "libplugin_linuxX64.so",
+    MatildaPlatform.ANDROID: "android-plugin.apk",
 }
 
 
