@@ -11,6 +11,7 @@ version = providers.gradleProperty("VERSION").get()
 repositories {
     mavenCentral()
     google()
+    mavenLocal()
 }
 
 val kspVersion: String by project

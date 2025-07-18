@@ -9,6 +9,7 @@ version = providers.gradleProperty("VERSION").get()
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {

@@ -10,6 +10,7 @@ version = providers.gradleProperty("VERSION").get()
 repositories {
     mavenCentral()
     google()
+    mavenLocal()
 }
 
 val protobufVersion: String by project
