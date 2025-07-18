@@ -11,6 +11,7 @@ val pythonRootDir = rootProject.layout.projectDirectory.dir(providers.gradleProp
 val pythonGeneratedPackage = "tests.generated"
 val pythonResourcesDir = pythonRootDir.dir("tests/resources").asFile
 val protobufVersion: String by project
+val daggerVersion: String by project
 
 repositories {
     mavenCentral()
@@ -24,8 +25,8 @@ dependencies {
     implementation(project(":commands-generator-api"))
     compileOnly(project(":commands-generator-protos"))
     annotationProcessor(project(":commands-generator"))
-    annotationProcessor("com.google.dagger:dagger-compiler:2.47")
-    implementation("com.google.dagger:dagger:2.47")
+    annotationProcessor("com.google.dagger:dagger-compiler:$daggerVersion")
+    implementation("com.google.dagger:dagger:$daggerVersion")
 }
 
 tasks.compileJava {

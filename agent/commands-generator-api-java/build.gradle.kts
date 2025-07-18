@@ -19,12 +19,13 @@ repositories {
 
 val protobufVersion: String by project
 val pbandkVersion: String by project
+val daggerVersion: String by project
 
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    ksp("com.google.dagger:dagger-compiler:2.51.1")
-    implementation("com.google.dagger:dagger:2.51.1")
+    ksp("com.google.dagger:dagger-compiler:$daggerVersion")
+    implementation("com.google.dagger:dagger:$daggerVersion")
     api("pro.streem.pbandk:pbandk-runtime:$pbandkVersion")
     api("com.google.protobuf:protobuf-kotlin:$protobufVersion")
     implementation(project(":commands-generator-api-common"))

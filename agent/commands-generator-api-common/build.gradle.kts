@@ -35,6 +35,7 @@ android {
 val protobufVersion: String by project
 val pbandkVersion: String by project
 val kotlinInjectVersion: String by project
+val daggerVersion: String by project
 
 kotlin {
     jvm()
@@ -45,7 +46,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation("me.tatarka.inject:kotlin-inject-runtime:$kotlinInjectVersion")
-                implementation("com.google.dagger:dagger:2.52")
+                implementation("com.google.dagger:dagger:$daggerVersion")
                 api("pro.streem.pbandk:pbandk-runtime:$pbandkVersion")
                 api("com.google.protobuf:protobuf-kotlin:$protobufVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
