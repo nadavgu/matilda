@@ -1,15 +1,13 @@
-from abc import ABC
 from subprocess import Popen, PIPE
 
 from matilda.exceptions.matilda_process_not_started_exception import MatildaProcessNotStartedException
 from matilda.matilda_connection import MatildaConnection
-from matilda.matilda_runner import MatildaRunner
 from matilda.popen_matilda_connection import PopenMatildaConnection
 
 PING_BYTE = 0
 
 
-class CommandMatildaRunner(MatildaRunner, ABC):
+class CommandMatildaRunner:
     def __init__(self, *args: str):
         self.__args = args
 
