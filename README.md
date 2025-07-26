@@ -220,8 +220,8 @@ The file should contain the following:
 1. an attribute called `PLUGIN_ENTRY_POINTS`, which will be a dict. The dict will contain an entry for each platform
 that the plugin supports (meaning, each target the plugin was compiled to, such as JVM, linux native with x86_64
 architecture, android native with ARM32 architecture, and so on). The entry key will be a value from the 
-`MatildaPlatform` enum, containing all the possible platforms, and the value will be a `PluginEntryPoint` object,
-containing:
+one of the values in `matilda.platform.supported_platforms`, which contains all the possible platforms. 
+The value will be a `PluginEntryPoint` object, containing:
    1. `entry_point_symbol`, for java platforms, it is the full name of the java class that implements the
    `createCommandRegistry()` method. For native platforms, it is the full name of the function that creates the command
    registry
@@ -235,13 +235,13 @@ matilda's RPC as dependencies. The function return value will then be exported a
 ```python
 from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
-from matilda.platform.matilda_platform import MatildaPlatform
+from matilda.platform.supported_platforms import JVM, LINUX_X64
 from matilda.plugins.plugin_entry_point import PluginEntryPoint
 from template.generated.commands.math_service import MathService
 
 PLUGIN_ENTRY_POINTS = {
-    MatildaPlatform.JVM: PluginEntryPoint("org.matilda.template.TemplatePlugin"),
-    MatildaPlatform.LINUX_X64: PluginEntryPoint("createCommandRegistry"),
+    JVM: PluginEntryPoint("org.matilda.template.TemplatePlugin"),
+    LINUX_X64: PluginEntryPoint("createCommandRegistry"),
 }
 
 

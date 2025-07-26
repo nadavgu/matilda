@@ -9,6 +9,7 @@ from _pytest.config import Config
 from matilda.matilda import Matilda
 from matilda.matilda_process import MatildaProcess
 from matilda.platform.matilda_platform import MatildaPlatform
+from matilda.platform.supported_platforms import JVM, LINUX_X64, ANDROID
 from tests.plugin import TestPlugin
 from tests.plugin_type import PluginType
 
@@ -28,13 +29,17 @@ def matilda() -> Matilda:
 
 
 @pytest.fixture(params = [
-    MatildaPlatform.JVM,
-    MatildaPlatform.LINUX_X64,
-    MatildaPlatform.ANDROID,
+    JVM,
+    LINUX_X64,
+    ANDROID,
+], ids=[
+    "JVM",
+    "LINUX_X64",
+    "ANDROID"
 ], scope='session')
 def matilda_platform(request: SubRequest, run_on_connected_android_device: bool) -> MatildaPlatform:
     platform: MatildaPlatform = request.param
-    if platform == MatildaPlatform.ANDROID and not run_on_connected_android_device:
+    if platform == ANDROID and not run_on_connected_android_device:
         pytest.skip("Not running tests on android in this run - to run pass the option --test-on-connected-android-device")
     return platform
 
@@ -63,11 +68,11 @@ def matilda_android_process(matilda: Matilda, run_on_connected_android_device: b
 @pytest.fixture(scope='session')
 def matilda_process(matilda_platform: MatildaPlatform, matilda_java_process: MatildaProcess,
                     matilda_native_process: MatildaProcess, matilda_android_process: MatildaProcess) -> MatildaProcess:
-    if matilda_platform == MatildaPlatform.JVM:
+    if matilda_platform == JVM:
         return matilda_java_process
-    elif matilda_platform == MatildaPlatform.ANDROID:
+    elif matilda_platform == ANDROID:
         return matilda_android_process
-    elif matilda_platform == MatildaPlatform.LINUX_X64:
+    elif matilda_platform == LINUX_X64:
         return matilda_native_process
     else:
         raise ValueError(matilda_platform)
@@ -86,6 +91,6 @@ def plugin(plugin_type: PluginType, matilda_process: MatildaProcess, matilda_pla
     if plugin_type is PluginType.KMP:
         return matilda_process.plugins.load_plugin(tests.plugin, "test")
     else:
-        if matilda_platform is MatildaPlatform.LINUX_X64:
+        if matilda_platform is LINUX_X64:
             pytest.skip("java plugin not supported on native platform")
         return matilda_process.plugins.load_plugin(tests.java_plugin, "test")

@@ -3,16 +3,16 @@ from typing import Union
 from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 
+from matilda.platform.supported_platforms import JVM, ANDROID, LINUX_X64
 from tests.generated.commands.java_test_service import JavaTestService
 from tests.generated.commands.matilda_test_service import MatildaTestService
 
-from matilda.platform.matilda_platform import MatildaPlatform
 from matilda.plugins.plugin_entry_point import PluginEntryPoint
 
 PLUGIN_ENTRY_POINTS = {
-    MatildaPlatform.JVM: PluginEntryPoint("test.TestPlugin"),
-    MatildaPlatform.ANDROID: PluginEntryPoint("test.TestPlugin"),
-    MatildaPlatform.LINUX_X64: PluginEntryPoint("createCommandRegistry"),
+    JVM: PluginEntryPoint("test.TestPlugin"),
+    ANDROID: PluginEntryPoint("test.TestPlugin"),
+    LINUX_X64: PluginEntryPoint("createCommandRegistry"),
 }
 
 

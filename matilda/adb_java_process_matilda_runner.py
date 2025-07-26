@@ -3,6 +3,7 @@ import os
 from matilda.command_matilda_runner import CommandMatildaRunner
 from matilda.matilda_connection import MatildaConnection
 from matilda.platform.matilda_platform import MatildaPlatform
+from matilda.platform.supported_platforms import ANDROID
 from matilda.resources.resources import get_resource_path
 
 
@@ -14,7 +15,7 @@ class AdbJavaProcessMatildaRunner(CommandMatildaRunner):
                                                              AdbJavaProcessMatildaRunner.__build_app_process_command())
 
     def platform(self) -> MatildaPlatform:
-        return MatildaPlatform.ANDROID
+        return ANDROID
 
     def run(self) -> MatildaConnection:
         os.system(f"adb push {get_resource_path('android-agent.apk')} {self.__DEVICE_PATH}")
