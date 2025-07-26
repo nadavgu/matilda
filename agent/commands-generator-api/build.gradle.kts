@@ -49,6 +49,20 @@ kotlin {
         }
     }
 
+    androidNativeArm32 {
+        val main by compilations.getting
+        val interop by main.cinterops.creating {
+            packageName("org.matilda.plugins.interop")
+        }
+    }
+
+    androidNativeArm64 {
+        val main by compilations.getting
+        val interop by main.cinterops.creating {
+            packageName("org.matilda.plugins.interop")
+        }
+    }
+
     applyDefaultHierarchyTemplate()
 
     sourceSets {

@@ -13,7 +13,7 @@ import platform.posix.dlopen
 
 class NativeLoader {
     fun load(bytes: ByteArray): NativeLibrary {
-        return NativeLibrary(checkLibdlResult(memfdCreate("plugin", 0).use { fd ->
+        return NativeLibrary(checkLibdlResult(memfdCreate("plugin", 0u).use { fd ->
             fd.write(bytes)
             dlopen(fd.procPath, RTLD_LAZY)
         }))

@@ -15,6 +15,7 @@ private class FileSink(
 ) : RawSink {
     private var closed = false
 
+    @OptIn(UnsafeNumber::class)
     override fun write(
         source: Buffer,
         byteCount: Long

@@ -41,6 +41,8 @@ kotlin {
     jvm()
     androidTarget()
     linuxX64()
+    androidNativeArm32()
+    androidNativeArm64()
 
     sourceSets {
         commonMain {

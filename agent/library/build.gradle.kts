@@ -130,6 +130,28 @@ kotlin {
         }
     }
 
+    androidNativeArm32 {
+        binaries {
+            executable(buildTypes = listOf(DEBUG)) {
+                outputDirectory =
+                    pythonRootDir.dir(providers.gradleProperty("RESOURCES_SUBDIR")).get().asFile
+                entryPoint = "org.matilda.main"
+                baseName = "agent-androidNativeArm32.kexe"
+            }
+        }
+    }
+
+    androidNativeArm64 {
+        binaries {
+            executable(buildTypes = listOf(DEBUG)) {
+                outputDirectory =
+                    pythonRootDir.dir(providers.gradleProperty("RESOURCES_SUBDIR")).get().asFile
+                entryPoint = "org.matilda.main"
+                baseName = "agent-androidNativeArm64.kexe"
+            }
+        }
+    }
+
     applyDefaultHierarchyTemplate()
 
     sourceSets {
