@@ -99,6 +99,24 @@ kotlin {
         }
     }
 
+    androidNativeArm32 {
+        binaries {
+            sharedLib(buildTypes = listOf(DEBUG)) {
+                outputDirectory = pythonResourcesDir
+                baseName = "plugin-androidNativeArm32.so"
+            }
+        }
+    }
+
+    androidNativeArm64 {
+        binaries {
+            sharedLib(buildTypes = listOf(DEBUG)) {
+                outputDirectory = pythonResourcesDir
+                baseName = "plugin-androidNativeArm64.so"
+            }
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
