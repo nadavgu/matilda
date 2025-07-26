@@ -29,9 +29,9 @@ fun collectDexFiles(jarBytes: ByteArray): Array<ByteBuffer> {
 private fun collectJarEntries(jarBytes: ByteArray, filter: (JarEntry) -> Boolean): List<Pair<JarEntry, ByteArray>> {
     val entries = mutableListOf<Pair<JarEntry, ByteArray>>()
     JarInputStream(ByteArrayInputStream(jarBytes)).use { jarInputStream ->
-        var jarEntry: JarEntry
+        var jarEntry: JarEntry?
         while (jarInputStream.nextJarEntry.also { jarEntry = it } != null) {
-            if (filter(jarEntry)) {
+            if (filter(jarEntry!!)) {
                 entries.add(jarEntry to readFully(jarInputStream))
             }
         }
