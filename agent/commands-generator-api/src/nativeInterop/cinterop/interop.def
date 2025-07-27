@@ -6,11 +6,16 @@ struct ByteArrayStruct {
     void (*freeData)(char *);
 };
 
+struct CommandResultStruct {
+    int success;
+    struct ByteArrayStruct data;
+};
+
 struct CommandRegistryStruct {
     const void *handle;
     int (*getSize)(const void *handle);
     void (*getCommands)(const void *handle, int *outTypes, void **outCommandHandles);
-    struct ByteArrayStruct (*runCommand)(const void *commandHandle, struct ByteArrayStruct parameter);
+    struct CommandResultStruct (*runCommand)(const void *commandHandle, struct ByteArrayStruct parameter);
     void (*free)(struct CommandRegistryStruct *);
 };
 
@@ -21,7 +26,7 @@ struct CommandRegistryManagerStruct {
 
 struct CommandRunnerStruct {
     const void *handle;
-    struct ByteArrayStruct (*run)(const void *handle, int registryId, int commandType, struct ByteArrayStruct parameter);
+    struct CommandResultStruct (*run)(const void *handle, int registryId, int commandType, struct ByteArrayStruct parameter);
 };
 
 struct PluginDependenciesStruct {

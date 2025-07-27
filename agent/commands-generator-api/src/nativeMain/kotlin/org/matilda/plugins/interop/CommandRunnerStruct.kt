@@ -14,6 +14,7 @@ fun CommandRunnerStruct.initializeFrom(commandRunner: CommandRunner) {
     handle = stableRef.asCPointer()
 
     run = staticCFunction { handle, registryId, commandType, parameterStruct ->
-        handle!!.asStableRef<CommandRunner>().get().run(registryId, commandType, parameterStruct.toByteArray()).toByteArrayStruct()
+        handle!!.asStableRef<CommandRunner>().get()
+            .runCatching(registryId, commandType, parameterStruct.toByteArray()).toCommandResultStruct()
     }
 }

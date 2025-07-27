@@ -2,14 +2,21 @@
 package org.matilda.plugins.interop
 
 import kotlinx.cinterop.*
+import org.matilda.plugins.interop.toByteArrayStruct
 
 fun CValue<ByteArrayStruct>.toByteArray() = useContents {
-    ByteArray(size) { index ->
-        data!![index]
-    }
+    toByteArray()
+}
+
+fun ByteArrayStruct.toByteArray() = ByteArray(size) { index ->
+    data!![index]
 }
 
 fun CValue<ByteArrayStruct>.free() = useContents {
+    free()
+}
+
+fun ByteArrayStruct.free() {
     freeData!!(data)
     data = null
 }
@@ -25,9 +32,13 @@ fun CValue<ByteArrayStruct>.moveToByteArray() = use {
 }
 
 fun ByteArray.toByteArrayStruct() = cValue<ByteArrayStruct> {
-    size = this@toByteArrayStruct.size
+    initializeFrom(this@toByteArrayStruct)
+}
+
+fun ByteArrayStruct.initializeFrom(byteArray: ByteArray) {
+    size = byteArray.size
     data = nativeHeap.allocArray(size) { index ->
-        value = get(index)
+        value = byteArray[index]
     }
     freeData = staticCFunction { data ->
         data?.apply {

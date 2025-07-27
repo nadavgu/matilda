@@ -54,7 +54,7 @@ fun CommandRegistry.toCommandRegistryStruct() = nativeHeap.alloc<CommandRegistry
 
 
     runCommand = staticCFunction { commandHandle, parameterStruct ->
-        commandHandle!!.asStableRef<Command>().get().run(parameterStruct.toByteArray()).toByteArrayStruct()
+        commandHandle!!.asStableRef<Command>().get().runCatching(parameterStruct.toByteArray()).toCommandResultStruct()
     }
 
     free = staticCFunction { ptr ->
