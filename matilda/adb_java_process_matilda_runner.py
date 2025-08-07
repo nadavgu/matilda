@@ -19,7 +19,7 @@ class AdbJavaProcessMatildaRunner(MatildaRunner):
         return ANDROID
 
     def run(self) -> MatildaConnection:
-        os.system(f"adb push {get_resource_path('android-agent.apk')} {self.__DEVICE_PATH}")
+        self.__adb_device.files.push(get_resource_path('android-agent.apk'), self.__DEVICE_PATH)
         return PopenMatildaConnection.create(self.__adb_device.shell.run_async(self.__build_app_process_command()))
 
     @staticmethod
