@@ -2,7 +2,11 @@ import traceback
 from subprocess import Popen
 from typing import IO, AnyStr, Callable
 
+from matilda.exceptions.matilda_process_not_started_exception import MatildaProcessNotStartedException
 from matilda.matilda_connection import MatildaConnection
+
+
+PING_BYTE = 0
 
 
 class PopenMatildaConnection(MatildaConnection):
@@ -33,3 +37,15 @@ class PopenMatildaConnection(MatildaConnection):
         return_code = self.__popen.wait()
         if return_code != 0:
             print(self.__popen.stderr.read().decode())
+
+    @staticmethod
+    def create(popen: Popen):
+        PopenMatildaConnection.__verify_agent_loaded(popen)
+        return PopenMatildaConnection(popen)
+
+    @staticmethod
+    def __verify_agent_loaded(popen: Popen):
+        ping_byte = popen.stdout.read(1)
+        if len(ping_byte) != 1 or ping_byte[0] != PING_BYTE:
+            exit_code = popen.wait()
+            raise MatildaProcessNotStartedException(exit_code, popen.stderr.read())
