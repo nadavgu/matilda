@@ -13,3 +13,6 @@ class NativeMatildaPlatform(MatildaPlatform):
     @staticmethod
     def of_this_machine() -> 'NativeMatildaPlatform':
         return NativeMatildaPlatform(OperatingSystem.of_this_machine(), Architecture.of_this_machine())
+
+    def is_android(self) -> bool:
+        return self.operating_system == OperatingSystem.ANDROID
