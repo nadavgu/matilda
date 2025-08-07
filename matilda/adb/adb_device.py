@@ -2,6 +2,7 @@ from typing import Optional
 
 from matilda.adb.adb_commander import AdbCommander
 from matilda.adb.adb_device_files import AdbDeviceFiles
+from matilda.adb.adb_device_info import AdbDeviceInfo
 from matilda.adb.adb_device_properties import AdbDeviceProperties
 from matilda.adb.adb_device_shell import AdbDeviceShell
 
@@ -12,6 +13,7 @@ class AdbDevice:
         self.__shell = AdbDeviceShell(commander)
         self.__files = AdbDeviceFiles(commander, self.__shell)
         self.__properties = AdbDeviceProperties(self.__shell)
+        self.__info = AdbDeviceInfo(self.__properties)
 
     @property
     def shell(self):
@@ -24,3 +26,7 @@ class AdbDevice:
     @property
     def properties(self):
         return self.__properties
+
+    @property
+    def info(self):
+        return self.__info
