@@ -13,7 +13,7 @@ from matilda.commands.command_registry_manager import CommandRegistryManager
 from matilda.commands.command_runner import CommandRunner
 from matilda.generated.commands.plugins_service import PluginsService
 from matilda.platform.matilda_platform import MatildaPlatform
-from matilda.platform.supported_platforms import ANDROID, LINUX_X64, JVM
+from matilda.platform.supported_platforms import ANDROID, LINUX_X64, JVM, ANDROID_NATIVE_ARM64, ANDROID_NATIVE_ARM32
 from matilda.plugins.platform_not_supported_by_plugin_exception import PlatformNotSupportedByPluginException
 from matilda.plugins.plugin_entry_point import PluginEntryPoint
 
@@ -27,6 +27,8 @@ else:
 DEFAULT_BINARY_NAMES = {
     JVM: "plugin.jar",
     LINUX_X64: "libplugin_linuxX64.so",
+    ANDROID_NATIVE_ARM64: "libplugin_androidNativeArm64.so",
+    ANDROID_NATIVE_ARM32: "libplugin_androidNativeArm32.so",
     ANDROID: "android-plugin.apk",
 }
 

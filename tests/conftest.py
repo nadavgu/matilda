@@ -8,8 +8,10 @@ from _pytest.config import Config
 
 from matilda.matilda import Matilda
 from matilda.matilda_process import MatildaProcess
+from matilda.platform.architecture import Architecture
 from matilda.platform.matilda_platform import MatildaPlatform
-from matilda.platform.supported_platforms import JVM, LINUX_X64, ANDROID
+from matilda.platform.native_matilda_platform import NativeMatildaPlatform
+from matilda.platform.supported_platforms import JVM, LINUX_X64, ANDROID, ANDROID_NATIVE_ARM64, ANDROID_NATIVE_ARM32
 from tests.plugin import TestPlugin
 from tests.plugin_type import PluginType
 
@@ -32,10 +34,14 @@ def matilda() -> Matilda:
     JVM,
     LINUX_X64,
     ANDROID,
+    ANDROID_NATIVE_ARM64,
+    ANDROID_NATIVE_ARM32,
 ], ids=[
     "JVM",
     "LINUX_X64",
-    "ANDROID"
+    "ANDROID",
+    "ANDROID_NATIVE_ARM64",
+    "ANDROID_NATIVE_ARM32",
 ], scope='session')
 def matilda_platform(request: SubRequest, run_on_connected_android_device: bool) -> MatildaPlatform:
     platform: MatildaPlatform = request.param
@@ -66,14 +72,38 @@ def matilda_android_process(matilda: Matilda, run_on_connected_android_device: b
 
 
 @pytest.fixture(scope='session')
+def matilda_android_native_arm64_process(matilda: Matilda, run_on_connected_android_device: bool) -> Generator[Optional[MatildaProcess], None, None]:
+    if run_on_connected_android_device:
+        with matilda.run_in_android_native_process(architecture=Architecture.ARM64) as process:
+            yield process
+    else:
+        yield None
+
+@pytest.fixture(scope='session')
+def matilda_android_native_arm32_process(matilda: Matilda, run_on_connected_android_device: bool) -> Generator[Optional[MatildaProcess], None, None]:
+    if run_on_connected_android_device:
+        with matilda.run_in_android_native_process(architecture=Architecture.ARM32) as process:
+            yield process
+    else:
+        yield None
+
+
+@pytest.fixture(scope='session')
 def matilda_process(matilda_platform: MatildaPlatform, matilda_java_process: MatildaProcess,
-                    matilda_native_process: MatildaProcess, matilda_android_process: MatildaProcess) -> MatildaProcess:
+                    matilda_native_process: MatildaProcess, matilda_android_process: MatildaProcess,
+                    matilda_android_native_arm64_process: MatildaProcess,
+                    matilda_android_native_arm32_process: MatildaProcess,
+                    ) -> MatildaProcess:
     if matilda_platform == JVM:
         return matilda_java_process
     elif matilda_platform == ANDROID:
         return matilda_android_process
     elif matilda_platform == LINUX_X64:
         return matilda_native_process
+    elif matilda_platform == ANDROID_NATIVE_ARM64:
+        return matilda_android_native_arm64_process
+    elif matilda_platform == ANDROID_NATIVE_ARM32:
+        return matilda_android_native_arm32_process
     else:
         raise ValueError(matilda_platform)
 
@@ -91,6 +121,6 @@ def plugin(plugin_type: PluginType, matilda_process: MatildaProcess, matilda_pla
     if plugin_type is PluginType.KMP:
         return matilda_process.plugins.load_plugin(tests.plugin, "test")
     else:
-        if matilda_platform is LINUX_X64:
+        if isinstance(matilda_platform, NativeMatildaPlatform):
             pytest.skip("java plugin not supported on native platform")
         return matilda_process.plugins.load_plugin(tests.java_plugin, "test")
