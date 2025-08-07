@@ -2,20 +2,20 @@
 
 package org.matilda.services.plugins
 
+import kotlinx.cinterop.CPointed
+import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.io.Buffer
 import kotlinx.io.RawSink
 import org.matilda.utils.Fd
 import org.matilda.utils.memfdCreate
 import org.matilda.utils.sink
-import platform.posix.RTLD_LAZY
-import platform.posix.dlopen
 
 class NativeLoader {
     fun load(bytes: ByteArray): NativeLibrary {
         return NativeLibrary(checkLibdlResult(memfdCreate("plugin", 0u).use { fd ->
             fd.write(bytes)
-            dlopen(fd.procPath, RTLD_LAZY)
+            dlopenFd(fd)
         }))
     }
 
@@ -31,3 +31,5 @@ class NativeLoader {
         write(buffer, bytes.size.toLong())
     }
 }
+
+expect fun dlopenFd(fd: Fd): CPointer<out CPointed>?
