@@ -42,7 +42,7 @@ do_clean() {
 
 do_install() {
   echo "Assembling Gradle project..."
-  (cd "$GRADLE_DIR" && ./gradlew assemble)
+  (cd "$GRADLE_DIR" && ./gradlew assemble publishAllPublicationsToMavenLocalRepository)
 
   echo "Installing Python project..."
   pip install .
