@@ -5,6 +5,7 @@ from maddie.dependency_container import DependencyContainer
 
 from matilda.di.destructors.destruction_manager import DestructionManager
 from matilda.generated.services import Services
+from matilda.platform.matilda_platform import MatildaPlatform
 from matilda.plugins.plugins_module import PluginsModule
 
 
@@ -22,6 +23,10 @@ class MatildaProcess(Dependency):
     @cached_property
     def plugins(self) -> PluginsModule:
         return self.__dependency_container.get(PluginsModule)
+
+    @property
+    def platform(self) -> MatildaPlatform:
+        return self.__dependency_container.get(MatildaPlatform)
 
     def __enter__(self):
         return self

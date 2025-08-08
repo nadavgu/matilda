@@ -6,6 +6,7 @@ import tests.plugin
 from _pytest.fixtures import SubRequest
 from _pytest.config import Config
 
+from matilda.adb.adb_device import AdbDevice
 from matilda.matilda import Matilda
 from matilda.matilda_process import MatildaProcess
 from matilda.platform.architecture import Architecture
@@ -23,6 +24,11 @@ def pytest_addoption(parser):
 @pytest.fixture(scope='session')
 def run_on_connected_android_device(pytestconfig: Config) -> bool:
     return pytestconfig.getoption("--test-on-connected-android-device")
+
+
+@pytest.fixture(scope='session')
+def adb_device() -> AdbDevice:
+    return AdbDevice()
 
 
 @pytest.fixture(scope='session')
@@ -46,7 +52,7 @@ def matilda() -> Matilda:
 def matilda_platform(request: SubRequest, run_on_connected_android_device: bool) -> MatildaPlatform:
     platform: MatildaPlatform = request.param
     if platform.is_android() and not run_on_connected_android_device:
-        pytest.skip("Not running tests on android in this run - to run pass the option --test-on-connected-android-device")
+        __skip_android_test()
     return platform
 
 
@@ -79,6 +85,7 @@ def matilda_android_native_arm64_process(matilda: Matilda, run_on_connected_andr
     else:
         yield None
 
+
 @pytest.fixture(scope='session')
 def matilda_android_native_arm32_process(matilda: Matilda, run_on_connected_android_device: bool) -> Generator[Optional[MatildaProcess], None, None]:
     if run_on_connected_android_device:
@@ -86,7 +93,6 @@ def matilda_android_native_arm32_process(matilda: Matilda, run_on_connected_andr
             yield process
     else:
         yield None
-
 
 @pytest.fixture(scope='session')
 def matilda_process(matilda_platform: MatildaPlatform, matilda_java_process: MatildaProcess,
@@ -124,3 +130,13 @@ def plugin(plugin_type: PluginType, matilda_process: MatildaProcess, matilda_pla
         if isinstance(matilda_platform, NativeMatildaPlatform):
             pytest.skip("java plugin not supported on native platform")
         return matilda_process.plugins.load_plugin(tests.java_plugin, "test")
+
+
+@pytest.fixture(autouse=True)
+def skip_android_tests_if_should(request: SubRequest, run_on_connected_android_device: bool):
+    if list(request.node.iter_markers("android_test")) and not run_on_connected_android_device:
+        __skip_android_test()
+
+
+def __skip_android_test():
+    pytest.skip("Not running tests on android in this run - to run pass the option --test-on-connected-android-device")
