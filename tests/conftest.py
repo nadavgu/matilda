@@ -57,61 +57,28 @@ def matilda_platform(request: SubRequest, run_on_connected_android_device: bool)
 
 
 @pytest.fixture(scope='session')
-def matilda_java_process(matilda: Matilda) -> Generator[MatildaProcess, None, None]:
-    with matilda.run_in_java_process() as process:
-        yield process
-
-
-@pytest.fixture(scope='session')
 def matilda_native_process(matilda: Matilda) -> Generator[MatildaProcess, None, None]:
     with matilda.run_in_native_process() as process:
         yield process
 
 
 @pytest.fixture(scope='session')
-def matilda_android_process(matilda: Matilda, run_on_connected_android_device: bool) -> Generator[Optional[MatildaProcess], None, None]:
-    if run_on_connected_android_device:
-        with matilda.run_in_android_java_process() as process:
-            yield process
-    else:
-        yield None
-
-
-@pytest.fixture(scope='session')
-def matilda_android_native_arm64_process(matilda: Matilda, run_on_connected_android_device: bool) -> Generator[Optional[MatildaProcess], None, None]:
-    if run_on_connected_android_device:
-        with matilda.run_in_android_native_process(architecture=Architecture.ARM64) as process:
-            yield process
-    else:
-        yield None
-
-
-@pytest.fixture(scope='session')
-def matilda_android_native_arm32_process(matilda: Matilda, run_on_connected_android_device: bool) -> Generator[Optional[MatildaProcess], None, None]:
-    if run_on_connected_android_device:
-        with matilda.run_in_android_native_process(architecture=Architecture.ARM32) as process:
-            yield process
-    else:
-        yield None
-
-@pytest.fixture(scope='session')
-def matilda_process(matilda_platform: MatildaPlatform, matilda_java_process: MatildaProcess,
-                    matilda_native_process: MatildaProcess, matilda_android_process: MatildaProcess,
-                    matilda_android_native_arm64_process: MatildaProcess,
-                    matilda_android_native_arm32_process: MatildaProcess,
-                    ) -> MatildaProcess:
+def matilda_process(matilda: Matilda, matilda_platform: MatildaPlatform) -> Generator[MatildaProcess, None, None]:
     if matilda_platform == JVM:
-        return matilda_java_process
+        process = matilda.run_in_java_process()
     elif matilda_platform == ANDROID:
-        return matilda_android_process
+        process = matilda.run_in_android_java_process()
     elif matilda_platform == LINUX_X64:
-        return matilda_native_process
+        process = matilda.run_in_native_process()
     elif matilda_platform == ANDROID_NATIVE_ARM64:
-        return matilda_android_native_arm64_process
+        process = matilda.run_in_android_native_process(architecture=Architecture.ARM64)
     elif matilda_platform == ANDROID_NATIVE_ARM32:
-        return matilda_android_native_arm32_process
+        process = matilda.run_in_android_native_process(architecture=Architecture.ARM32)
     else:
         raise ValueError(matilda_platform)
+
+    with process:
+        yield process
 
 
 @pytest.fixture(params = [
