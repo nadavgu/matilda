@@ -17,10 +17,6 @@ class MatildaProcess(Dependency):
         self.__dependency_container.get(DestructionManager).destruct()
 
     @cached_property
-    def services(self) -> Services:
-        return self.__dependency_container.get(Services)
-
-    @cached_property
     def plugins(self) -> PluginsModule:
         return self.__dependency_container.get(PluginsModule)
 
