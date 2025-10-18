@@ -9,11 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added full support for android native agents (arm32 & arm64). Matilda can now run agents in android native processes.
+- Plugins can also be loaded in android native processes
+- Added an api function that runs matilda in a new native process on an android device connected through adb
+
 ### Fixed
+
+- Considering mavenLocal in repositories to allow using local dependencies
+- Not throwing exceptions in native across interop border to prevent ABI problems
+- ./setup.sh install also installs matilda's gradle libraries locally
 
 ### Changed
 
+- Upgraded to Kotlin 2.2
+- Upgraded to KSP 2
+- Upgraded to dagger 2.57
+
 ### Removed
+
+- Removed the MatildaProcess.services API
 
 ## [0.8.0] - 2025-07-17
 
@@ -22,12 +36,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added full support for android java agents. Matilda can now run agents in android jvm processes.
 - Plugins can also be loaded in android jvm processes
 - Added an api function that runs matilda in a new java process on an android device connected through adb
-
-### Fixed
-
-### Changed
-
-### Removed
 
 ## [0.7.0] - 2025-06-07
 
