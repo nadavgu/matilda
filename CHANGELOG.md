@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added full support for android native agents (arm32 & arm64). Matilda can now run agents in android native processes.
 - Plugins can also be loaded in android native processes
 - Added an api function that runs matilda in a new native process on an android device connected through adb
+- Added option to run linux native matilda agent in a way that blocks until a debugger connects
 
 ### Fixed
 

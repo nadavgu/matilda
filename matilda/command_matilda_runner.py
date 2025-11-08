@@ -1,11 +1,12 @@
 from subprocess import Popen, PIPE
+from typing import List
 
 from matilda.matilda_connection import MatildaConnection
 from matilda.popen_matilda_connection import PopenMatildaConnection
 
 
 class CommandMatildaRunner:
-    def __init__(self, *args: str):
+    def __init__(self, args: List[str]):
         self.__args = args
 
     def run(self) -> MatildaConnection:

@@ -8,8 +8,8 @@ from matilda.resources.resources import get_resource_path
 
 class JavaProcessMatildaRunner(MatildaRunner):
     def __init__(self, java_path: str = 'java'):
-        self.__command_runner = CommandMatildaRunner(java_path, "-cp", get_resource_path("agent.jar"),
-                                                     "org.matilda.Main")
+        self.__command_runner = CommandMatildaRunner([java_path, "-cp", get_resource_path("agent.jar"),
+                                                     "org.matilda.Main"])
 
     def run(self) -> MatildaConnection:
         return self.__command_runner.run()

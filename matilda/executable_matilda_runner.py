@@ -7,8 +7,11 @@ from matilda.resources.resources import get_executable_path
 
 
 class ExecutableMatildaRunner(MatildaRunner):
-    def __init__(self):
-        self.__command_runner = CommandMatildaRunner(get_executable_path(NativeMatildaPlatform.of_this_machine()))
+    def __init__(self, wait_for_debugger: bool = False):
+        args = [get_executable_path(NativeMatildaPlatform.of_this_machine())]
+        if wait_for_debugger:
+            args.append("--wait-for-debugger")
+        self.__command_runner = CommandMatildaRunner(args)
 
     def run(self) -> MatildaConnection:
         return self.__command_runner.run()

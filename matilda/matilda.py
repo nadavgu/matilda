@@ -26,8 +26,8 @@ class Matilda:
     def run_in_java_process(self, java_path='java') -> MatildaProcess:
         return self.run(JavaProcessMatildaRunner(java_path=java_path))
 
-    def run_in_native_process(self) -> MatildaProcess:
-        return self.run(ExecutableMatildaRunner())
+    def run_in_native_process(self, wait_for_debugger: bool = False) -> MatildaProcess:
+        return self.run(ExecutableMatildaRunner(wait_for_debugger))
 
     def run_in_android_java_process(self) -> MatildaProcess:
         return self.run(AdbJavaProcessMatildaRunner())
