@@ -7,6 +7,7 @@ from _pytest.fixtures import SubRequest
 from _pytest.config import Config
 
 from matilda.adb.adb_device import AdbDevice
+from matilda.exceptions.architecture_not_supported_by_device_exception import ArchitectureNotSupportedByDeviceException
 from matilda.matilda import Matilda
 from matilda.matilda_process import MatildaProcess
 from matilda.platform.architecture import Architecture
@@ -71,14 +72,21 @@ def matilda_process(matilda: Matilda, matilda_platform: MatildaPlatform) -> Gene
     elif matilda_platform == LINUX_X64:
         process = matilda.run_in_native_process()
     elif matilda_platform == ANDROID_NATIVE_ARM64:
-        process = matilda.run_in_android_native_process(architecture=Architecture.ARM64)
+        process = __run_in_android_native_process(matilda, Architecture.ARM64)
     elif matilda_platform == ANDROID_NATIVE_ARM32:
-        process = matilda.run_in_android_native_process(architecture=Architecture.ARM32)
+        process = __run_in_android_native_process(matilda, Architecture.ARM32)
     else:
         raise ValueError(matilda_platform)
 
     with process:
         yield process
+
+
+def __run_in_android_native_process(matilda: Matilda, architecture: Architecture) -> MatildaProcess:
+    try:
+        return matilda.run_in_android_native_process(architecture=architecture)
+    except ArchitectureNotSupportedByDeviceException as e:
+        return pytest.skip(str(e))
 
 
 @pytest.fixture(params = [
