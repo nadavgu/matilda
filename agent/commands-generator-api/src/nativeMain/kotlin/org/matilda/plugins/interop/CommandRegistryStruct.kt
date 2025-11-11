@@ -67,3 +67,6 @@ fun CommandRegistry.toCommandRegistryStruct() = nativeHeap.alloc<CommandRegistry
 }
 
 fun <R> CommandRegistry.tempCommandRegistryStruct(block: (CommandRegistryStruct) -> R): R = toCommandRegistryStruct().use(block)
+
+// This function is required to use COpaquePointer as plugins code cannot use the interop classes directly
+fun CommandRegistry.toCommandRegistryStructPtr(): COpaquePointer = toCommandRegistryStruct().ptr

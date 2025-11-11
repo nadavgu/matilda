@@ -8,7 +8,7 @@ import test.TestPlugin
 import kotlin.experimental.ExperimentalNativeApi
 
 @CName(externName = "createCommandRegistry")
-fun createCommandRegistry(pluginDependencies: CPointer<PluginDependenciesStruct>): CPointer<CommandRegistryStruct> {
-    val commandRegistry = TestPlugin.createCommandRegistry(pluginDependencies.pointed.toPluginDependencies())
-    return commandRegistry.toCommandRegistryStruct().ptr
+fun createCommandRegistry(pluginDependencies: COpaquePointer): COpaquePointer {
+    val commandRegistry = TestPlugin.createCommandRegistry(pluginDependencies.toPluginDependencies())
+    return commandRegistry.toCommandRegistryStructPtr()
 }
