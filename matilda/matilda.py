@@ -2,6 +2,7 @@ from threading import Thread
 from typing import Optional
 
 from maddie.dependency_container import DependencyContainer
+from matilda.di.dependency_tags import DependencyTags
 
 from matilda.adb_executable_matilda_runner import AdbExecutableMatildaRunner
 from matilda.adb_java_process_matilda_runner import AdbJavaProcessMatildaRunner
@@ -53,14 +54,21 @@ class Matilda:
     @staticmethod
     def __create_dependency_container(environment: MatildaAgentEnvironment) -> DependencyContainer:
         dependency_container = DependencyContainer()
-        dependency_container.add(MatildaConnection, connection)
-        dependency_container.add(MatildaPlatform, platform)
         dependency_container.add_dependency(environment)
         dependency_container.add(MatildaConnection, environment.connection)
         dependency_container.add(MatildaPlatform, environment.platform)
         dependency_container.add(Filesystem, environment.filesystem)
+        dependency_container.add(DependencyContainer,
+                                 Matilda.__create_agent_environment_dependency_container(environment),
+                                 DependencyTags.AGENT_ENVIRONMENT_DEPENDENCY_CONTAINER)
         add_dependency_providers(dependency_container)
         return dependency_container
+
+    @staticmethod
+    def __create_agent_environment_dependency_container(environment: MatildaAgentEnvironment):
+        agent_environment_container = DependencyContainer()
+        agent_environment_container.add(Filesystem, environment.filesystem)
+        return agent_environment_container
 
     @staticmethod
     def __start_message_server(message_server: MessageServer, destruction_manager: DestructionManager,

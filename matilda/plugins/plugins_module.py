@@ -7,6 +7,7 @@ from typing import Dict
 
 from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
+from matilda.di.dependency_tags import DependencyTags
 
 from matilda.commands.command_id_holder import CommandIdHolder
 from matilda.commands.command_registry_manager import CommandRegistryManager
@@ -35,10 +36,13 @@ DEFAULT_BINARY_NAMES = {
 
 class PluginsModule(Dependency):
     def __init__(self, plugins_service: PluginsService, command_runner: CommandRunner,
-                 command_registry_manager: CommandRegistryManager, platform: MatildaPlatform):
+                 command_registry_manager: CommandRegistryManager,
+                 agent_environment_dependency_container: DependencyContainer,
+                 platform: MatildaPlatform):
         self.__plugins_service = plugins_service
         self.__command_runner = command_runner
         self.__command_registry_manager = command_registry_manager
+        self.__agent_environment_dependency_container = agent_environment_dependency_container
         self.__platform = platform
 
     def __getattr__(self, item):
@@ -56,7 +60,7 @@ class PluginsModule(Dependency):
         return module.load_plugin(plugin_dependencies)
 
     def __load_plugin_dependencies(self, module: ModuleType, plugin_name: str):
-        dependencies_container = DependencyContainer()
+        dependencies_container = DependencyContainer(parent=self.__agent_environment_dependency_container)
         dependencies_container.add_dependency(self.__load_plugin_id(module, plugin_name))
         dependencies_container.add_dependency(self.__command_runner)
         dependencies_container.add(CommandRegistryManager, self.__command_registry_manager)
@@ -91,4 +95,6 @@ class PluginsModule(Dependency):
     def create(dependency_container: DependencyContainer) -> 'PluginsModule':
         return PluginsModule(dependency_container.get(PluginsService), dependency_container.get(CommandRunner),
                              dependency_container.get(CommandRegistryManager),
+                             dependency_container.get(DependencyContainer,
+                                                      DependencyTags.AGENT_ENVIRONMENT_DEPENDENCY_CONTAINER),
                              dependency_container.get(MatildaPlatform))

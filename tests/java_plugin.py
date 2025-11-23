@@ -16,5 +16,5 @@ PLUGIN_ENTRY_POINTS = {
 
 
 def load_plugin(dependencies_container: DependencyContainer):
-    return TestPlugin(dependencies_container.get(JavaTestService))
+    return TestPlugin(dependencies_container.get(JavaTestService), dependencies_container)
 

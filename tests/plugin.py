@@ -23,13 +23,19 @@ def load_plugin(dependencies_container: DependencyContainer):
 
 
 class TestPlugin(Dependency):
-    def __init__(self, test_service: Union[MatildaTestService, JavaTestService]):
+    def __init__(self, test_service: Union[MatildaTestService, JavaTestService],
+                 dependency_container: DependencyContainer):
         self.__test_service = test_service
+        self.__dependency_container = dependency_container
 
     @property
     def service(self) -> MatildaTestService:
         return self.__test_service
 
+    @property
+    def dependency_container(self) -> DependencyContainer:
+        return self.__dependency_container
+
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'TestPlugin':
-        return TestPlugin(dependency_container.get(MatildaTestService))
+        return TestPlugin(dependency_container.get(MatildaTestService), dependency_container)

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added an api function that runs matilda in a new native process on an android device connected through adb
 - Added option to run linux native matilda agent in a way that blocks until a debugger connects
 - Added a platform-independent filesystem abstraction
+- Plugins now receive environment dependencies via a parent dependency container
 
 ### Fixed
 
