@@ -7,6 +7,8 @@ from matilda.adb_executable_matilda_runner import AdbExecutableMatildaRunner
 from matilda.adb_java_process_matilda_runner import AdbJavaProcessMatildaRunner
 from matilda.di.dependency_providers import add_dependency_providers
 from matilda.di.destructors.destruction_manager import DestructionManager
+from matilda.environment.filesystem import Filesystem
+from matilda.environment.matilda_environment import MatildaAgentEnvironment
 from matilda.executable_matilda_runner import ExecutableMatildaRunner
 from matilda.java_process_matilda_runner import JavaProcessMatildaRunner
 from matilda.matilda_connection import MatildaConnection
@@ -19,9 +21,8 @@ from matilda.messages.message_server import MessageServer
 
 class Matilda:
     def run(self, runner: MatildaRunner) -> MatildaProcess:
-        platform = runner.platform()
-        connection = runner.run()
-        return self.__create_matilda_process(connection, platform)
+        environment = runner.run()
+        return self.__create_matilda_process(environment)
 
     def run_in_java_process(self, java_path='java') -> MatildaProcess:
         return self.run(JavaProcessMatildaRunner(java_path=java_path))
@@ -36,12 +37,12 @@ class Matilda:
         return self.run(AdbExecutableMatildaRunner(architecture))
 
     @staticmethod
-    def __create_matilda_process(connection: MatildaConnection, platform: MatildaPlatform) -> MatildaProcess:
-        dependency_container = Matilda.__create_dependency_container(connection, platform)
+    def __create_matilda_process(environment: MatildaAgentEnvironment) -> MatildaProcess:
+        dependency_container = Matilda.__create_dependency_container(environment)
         Matilda.__start_message_server(dependency_container.get(MessageServer),
                                        dependency_container.get(DestructionManager),
-                                       connection)
-        dependency_container.get(DestructionManager).add_destructor(connection.close)
+                                       environment.connection)
+        dependency_container.get(DestructionManager).add_destructor(environment.connection.close)
 
         try:
             return dependency_container.get(MatildaProcess)
@@ -50,10 +51,14 @@ class Matilda:
             raise
 
     @staticmethod
-    def __create_dependency_container(connection: MatildaConnection, platform: MatildaPlatform) -> DependencyContainer:
+    def __create_dependency_container(environment: MatildaAgentEnvironment) -> DependencyContainer:
         dependency_container = DependencyContainer()
         dependency_container.add(MatildaConnection, connection)
         dependency_container.add(MatildaPlatform, platform)
+        dependency_container.add_dependency(environment)
+        dependency_container.add(MatildaConnection, environment.connection)
+        dependency_container.add(MatildaPlatform, environment.platform)
+        dependency_container.add(Filesystem, environment.filesystem)
         add_dependency_providers(dependency_container)
         return dependency_container
 

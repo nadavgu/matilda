@@ -41,8 +41,10 @@ The `MatildaAgent`'s constructor receives:
 
 `MatildaAgent`'s `run` function is blocking until the connection to the python side is severed.
 
-From your python `MatildaRunner`'s `run` function, you should return a `MatildaConnection` object, that contains input &
-output streams connected to the python side.
+From your python `MatildaRunner`'s `run` function, you should return a `MatildaAgentEnvironment` object, containing:
+- A `MatildaConnection` object, that contains input & output streams connected to the python side
+- The `MatildaPlatform` the agent is running on
+- A `Filesystem` used to read files from the agent's environment
 
 Once you have created your matilda runner, you can pass it to `Matilda`:
 ```python

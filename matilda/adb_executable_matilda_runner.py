@@ -2,13 +2,13 @@ from functools import cached_property
 from typing import Optional
 
 from matilda.adb.adb_device import AdbDevice
+from matilda.adb_matilda_runner import AdbMatildaRunner
+from matilda.environment.matilda_environment import MatildaAgentEnvironment
 from matilda.exceptions.architecture_not_supported_by_device_exception import ArchitectureNotSupportedByDeviceException
+from matilda.matilda_runner import MatildaRunner
 from matilda.platform.architecture import Architecture
 from matilda.platform.native_matilda_platform import NativeMatildaPlatform
 from matilda.platform.operating_system import OperatingSystem
-from matilda.matilda_connection import MatildaConnection
-from matilda.matilda_runner import MatildaRunner
-from matilda.popen_matilda_connection import PopenMatildaConnection
 from matilda.resources.resources import get_executable_path
 
 
@@ -16,14 +16,12 @@ class AdbExecutableMatildaRunner(MatildaRunner):
     def __init__(self, architecture: Optional[Architecture] = None):
         self.__architecture = architecture
         self.__adb_device = AdbDevice()
+        self.__adb_runner = AdbMatildaRunner(self.__adb_device)
 
-    def platform(self) -> NativeMatildaPlatform:
-        return self.__selected_platform
-
-    def run(self) -> MatildaConnection:
+    def run(self) -> MatildaAgentEnvironment:
         self.__adb_device.files.push(get_executable_path(self.__selected_platform), self.__device_path)
         self.__adb_device.files.chmod(self.__device_path, 0o777)
-        return PopenMatildaConnection.create(self.__adb_device.shell.run_async(self.__device_path))
+        return self.__adb_runner.run(self.__device_path, self.__selected_platform)
 
     @property
     def __device_path(self) -> str:

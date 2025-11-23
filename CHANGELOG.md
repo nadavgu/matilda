@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `MatildaRunner.run` now returns a `MatildaAgentEnvironment` instead of a `MatildaConnection`
 - Upgraded to Kotlin 2.2
 - Upgraded to KSP 2
 - Upgraded to dagger 2.57

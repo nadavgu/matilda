@@ -1,11 +1,8 @@
-import os
-
 from matilda.adb.adb_device import AdbDevice
-from matilda.matilda_connection import MatildaConnection
+from matilda.adb_matilda_runner import AdbMatildaRunner
+from matilda.environment.matilda_environment import MatildaAgentEnvironment
 from matilda.matilda_runner import MatildaRunner
-from matilda.platform.matilda_platform import MatildaPlatform
 from matilda.platform.supported_platforms import ANDROID
-from matilda.popen_matilda_connection import PopenMatildaConnection
 from matilda.resources.resources import get_resource_path
 
 
@@ -14,13 +11,11 @@ class AdbJavaProcessMatildaRunner(MatildaRunner):
 
     def __init__(self):
         self.__adb_device = AdbDevice()
+        self.__adb_runner = AdbMatildaRunner(self.__adb_device)
 
-    def platform(self) -> MatildaPlatform:
-        return ANDROID
-
-    def run(self) -> MatildaConnection:
+    def run(self) -> MatildaAgentEnvironment:
         self.__adb_device.files.push(get_resource_path('android-agent.apk'), self.__DEVICE_PATH)
-        return PopenMatildaConnection.create(self.__adb_device.shell.run_async(self.__build_app_process_command()))
+        return self.__adb_runner.run(self.__build_app_process_command(), ANDROID)
 
     @staticmethod
     def __build_app_process_command() -> str:

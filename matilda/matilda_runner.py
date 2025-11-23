@@ -1,14 +1,9 @@
 from abc import ABC, abstractmethod
 
-from matilda.matilda_connection import MatildaConnection
-from matilda.platform.matilda_platform import MatildaPlatform
+from matilda.environment.matilda_environment import MatildaAgentEnvironment
 
 
 class MatildaRunner(ABC):
     @abstractmethod
-    def run(self) -> MatildaConnection:
-        pass
-
-    @abstractmethod
-    def platform(self) -> MatildaPlatform:
+    def run(self) -> MatildaAgentEnvironment:
         pass

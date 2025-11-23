@@ -1,7 +1,6 @@
-from matilda.command_matilda_runner import CommandMatildaRunner
-from matilda.matilda_connection import MatildaConnection
+from matilda.local_matilda_runner import LocalMatildaRunner
+from matilda.environment.matilda_environment import MatildaAgentEnvironment
 from matilda.matilda_runner import MatildaRunner
-from matilda.platform.matilda_platform import MatildaPlatform
 from matilda.platform.native_matilda_platform import NativeMatildaPlatform
 from matilda.resources.resources import get_executable_path
 
@@ -11,10 +10,8 @@ class ExecutableMatildaRunner(MatildaRunner):
         args = [get_executable_path(NativeMatildaPlatform.of_this_machine())]
         if wait_for_debugger:
             args.append("--wait-for-debugger")
-        self.__command_runner = CommandMatildaRunner(args)
+        self.__command_runner = LocalMatildaRunner(args,
+                                                   NativeMatildaPlatform.of_this_machine())
 
-    def run(self) -> MatildaConnection:
+    def run(self) -> MatildaAgentEnvironment:
         return self.__command_runner.run()
-
-    def platform(self) -> MatildaPlatform:
-        return NativeMatildaPlatform.of_this_machine()
