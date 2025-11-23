@@ -1,8 +1,7 @@
-from subprocess import Popen
+from tempfile import NamedTemporaryFile
 
 from matilda.adb.adb_commander import AdbCommander
 from matilda.adb.adb_device_shell import AdbDeviceShell
-from matilda.exceptions.shell_command_failed_exception import ShellCommandFailedException
 
 
 class AdbDeviceFiles:
@@ -18,3 +17,9 @@ class AdbDeviceFiles:
 
     def chmod(self, path: str, mode: int):
         self.__shell.run(f"chmod {oct(mode)[2:]} {path}")
+
+    def read(self, path: str):
+        with NamedTemporaryFile() as temp_file:
+            self.pull(path, temp_file.name)
+            with open(temp_file.name, 'rb') as f:
+                return f.read()
