@@ -158,8 +158,8 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("me.tatarka.inject:kotlin-inject-runtime:$kotlinInjectVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-                implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.6.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.9.0")
                 implementation(project(":commands-generator-api"))
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
                 api("pro.streem.pbandk:pbandk-runtime:$pbandkVersion")
